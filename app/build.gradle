@@ -1,15 +1,16 @@
 plugins {
     id 'com.android.application'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
     namespace 'mad4124.team_sundry.task'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "mad4124.team_sundry.task"
         minSdk 21
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -26,14 +27,56 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    buildFeatures{
+        viewBinding true
+        dataBinding true
+    }
+}
+
+ext{
+    room_version = '2.5.0'
+    glide_version = '4.12.0'
+    hilt_version = '2.42'
+    navigation_version = '2.5.3'
+    okhttp_version = '4.9.0'
+    material_version = '1.8.0'
+    swipe_version = '1.1.0'
+    multidex_version = '2.0.1'
 }
 
 dependencies {
 
-    implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.google.android.material:material:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation("com.google.android.material:material:$material_version")
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+    //Multidex
+    implementation("androidx.multidex:multidex:$multidex_version")
+
+    //Navigation components
+    implementation("androidx.navigation:navigation-fragment:$navigation_version")
+    implementation("androidx.navigation:navigation-ui:$navigation_version")
+
+    //Room database
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+
+    //Glide (Image loading)
+    implementation("com.github.bumptech.glide:glide:$glide_version")
+    annotationProcessor("com.github.bumptech.glide:compiler:$glide_version")
+
+    //Dependency Injection
+    implementation("com.google.dagger:hilt-android:$hilt_version")
+    annotationProcessor("com.google.dagger:hilt-compiler:$hilt_version")
+
+    //Swipe to Refresh
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:$swipe_version")
+
+    //Circular Image
+    implementation('com.mikhaellopez:circularimageview:4.3.0')
 }

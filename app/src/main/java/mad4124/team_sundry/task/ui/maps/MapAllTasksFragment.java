@@ -12,6 +12,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        
+
     }
 }

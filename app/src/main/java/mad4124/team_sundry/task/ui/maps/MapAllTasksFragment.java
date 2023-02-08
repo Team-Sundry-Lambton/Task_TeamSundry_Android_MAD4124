@@ -4,14 +4,18 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.appcompat.widget.SearchView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -27,7 +31,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+
+import com.google.android.gms.common.api.Status;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -68,6 +82,35 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
         fragmentTransaction.add(R.id.map, mMapFragment);
         fragmentTransaction.commit();
         mMapFragment.getMapAsync(this);
+
+        // Initialize the AutocompleteSupportFragment.
+        if (!Places.isInitialized()) {
+            Places.initialize(getContext(), getString(R.string.google_maps_key));
+        }
+
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        autocompleteFragment.setPlaceFields(Arrays.asList(
+                Place.Field.ID,
+                Place.Field.NAME,
+                Place.Field.ADDRESS,
+                Place.Field.LAT_LNG));
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                Log.i("0", "Place: " + place.getName() + ", " + place.getId());
+                setMarker(place.getLatLng());
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i("0", "An error occurred: " + status);
+            }
+        });
     }
 
     /**
@@ -92,7 +135,7 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                setHomeMarker(location);
+//                setHomeMarker(location);
             }
 
             @Override
@@ -118,9 +161,10 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
     }
 
     private void setMarker(LatLng latLng) {
-//        MarkerOptions options = new MarkerOptions().position(latLng)
-//                .title("Your destination");
-//        mMap.addMarker(options);
+        MarkerOptions options = new MarkerOptions().position(latLng)
+                .title("Your destination");
+        mMap.addMarker(options);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
     private void clearMap() {

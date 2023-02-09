@@ -59,7 +59,6 @@ public class TaskListFragment extends Fragment {
         Log.d("set source", "setDataSource: ");
     }
 
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();

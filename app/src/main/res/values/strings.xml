@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Task_TeamSundry_Android_MAD4124</string>
     <string name="google_maps_key"></string>
+    <string name="task_image">Task image</string>
+    <string name="title_row">Title</string>
+    <string name="category_row">Category</string>
+    <string name="description_row">Description</string>
+    <string name="due_date_row">Due Date</string>
 </resources>

@@ -90,7 +90,7 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
 
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-
+        autocompleteFragment.getView().setBackgroundColor(Color.WHITE);
         autocompleteFragment.setPlaceFields(Arrays.asList(
                 Place.Field.ID,
                 Place.Field.NAME,

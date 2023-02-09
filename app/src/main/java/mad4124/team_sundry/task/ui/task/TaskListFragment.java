@@ -18,26 +18,29 @@ import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import mad4124.team_sundry.task.R;
+import mad4124.team_sundry.task.adapter.RecyclerViewAdapter;
 import mad4124.team_sundry.task.databinding.FragmentTaskListBinding;
 import mad4124.team_sundry.task.model.Task;
 import mad4124.team_sundry.task.ui.taskDetail.TaskDetailFragment;
 
 @AndroidEntryPoint
-public class TaskListFragment extends Fragment {
+public class TaskListFragment extends Fragment implements RecyclerViewAdapter.OnItemClickListener{
     public static final String TASK_NAME = "task_name";
     private FragmentTaskListBinding binding;
 
     private List<Task> taskList = new ArrayList<>();
-
+    private RecyclerViewAdapter adapter;
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
+        adapter = new RecyclerViewAdapter(taskList, getContext(), this);
 
         binding = FragmentTaskListBinding.inflate(inflater, container, false);
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
+        binding.recyclerView.setAdapter(adapter);
         return binding.getRoot();
 
     }
@@ -56,7 +59,7 @@ public class TaskListFragment extends Fragment {
     void setDataSource(List<Task> departmentsWithEmployees) {
         taskList.clear();
         taskList.addAll(departmentsWithEmployees);
-        Log.d("set source", "setDataSource: ");
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -64,5 +67,12 @@ public class TaskListFragment extends Fragment {
         super.onDestroyView();
         binding = null;
         Log.d("TAG", "onDestroyView: ");
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Intent intent = new Intent(getActivity(), TaskDetailFragment.class);
+        intent.putExtra(TASK_NAME, taskList.get(position).getId()).toString();
+        startActivity(intent);
     }
 }

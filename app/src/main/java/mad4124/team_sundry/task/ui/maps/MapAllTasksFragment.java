@@ -158,13 +158,22 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
             requestLocationPermission();
         else
             startUpdateLocation();
+
+        // apply long press gesture
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(@NonNull LatLng latLng) {
+                setMarker(latLng);
+            }
+        });
     }
 
     private void setMarker(LatLng latLng) {
+        mMap.clear();
         MarkerOptions options = new MarkerOptions().position(latLng)
                 .title("Your destination");
         mMap.addMarker(options);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
     }
 
     private void clearMap() {

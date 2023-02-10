@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -35,32 +37,38 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import mad4124.team_sundry.task.R;
 import mad4124.team_sundry.task.databinding.FragmentMapAllTasksBinding;
+import mad4124.team_sundry.task.model.MapLocation;
+import mad4124.team_sundry.task.model.Task;
 
 @AndroidEntryPoint
 public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback {
 
+    //GG Map
     private GoogleMap mMap;
 
-    private static final int REQUEST_CODE = 1;
-    List<Marker> markers = new ArrayList();
-    Marker currentLocationMarker;
-    Boolean isShowAllMap = false;
+    //Inside logic
+    private Location currentLocation;
+
+    List<MapLocation> locations = new ArrayList(); //send this if wanna show tasks locations (Optional)
+    Boolean isShowAllMap = false; // send this if it show all map or pick loc map (Required)
+    MapLocation selectedLocationObj; //send this if edit (Optional), get this when finish selected (Optional)
 
     // location with location manager and listener
-    LocationManager locationManager;
-    LocationListener locationListener;
-    Location currentLocation;
-    LatLng selectLocation;
+    private static final int REQUEST_CODE = 1;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
 
     //Binding
-    FragmentMapAllTasksBinding binding;
+    private FragmentMapAllTasksBinding binding;
 
     @Nullable
     @Override
@@ -101,7 +109,7 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
                 Log.i("0", "Place: " + place.getName() + ", " + place.getId());
-                setMarker(place.getLatLng());
+                setMarker(place.getLatLng(), place.getName());
             }
 
             @Override
@@ -134,10 +142,16 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                if (currentLocation == null && !isShowAllMap) {
+                if (currentLocation == null && !isShowAllMap && selectedLocationObj == null) { //pick map
                     currentLocation = location;
                     //show set current location.
-                    setCurrentLocationMarker();
+                    try {
+                        setCurrentLocationMarker();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else if (selectedLocationObj != null && !isShowAllMap && currentLocation == null) { //edit map
+                    setMarker(new LatLng(selectedLocationObj.getLat(), selectedLocationObj.getLng()), selectedLocationObj.getName());
                 }
             }
         };
@@ -153,9 +167,9 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
             binding.currentLocBtn.setVisibility(View.GONE);
 
             //show all markers
-            if (markers.size() > 0) {
-                for (Marker marker : markers) {
-                    setMarker(marker.getPosition());
+            if (locations.size() > 0) {
+                for (MapLocation location : locations) {
+                    setMarker(new LatLng(location.getLat(), location.getLng()), location.getName());
                 }
             }
         } else {
@@ -168,47 +182,70 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
             mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                 @Override
                 public void onMapLongClick(@NonNull LatLng latLng) {
-                    setMarker(latLng);
+                    try {
+                        setMarker(latLng, getAddress(latLng));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
 
             binding.currentLocBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    setCurrentLocationMarker();
+                    try {
+                        setCurrentLocationMarker();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         }
     }
 
-    private void setMarker(LatLng latLng) {
+    private void setMarker(LatLng latLng, String title) {
         if (!isShowAllMap) {
             mMap.clear();
-            setSelectLocation(latLng);
+            setSelectLocation(latLng, title);
         } else {
-            setSelectLocation(null);
+            setSelectLocation(null, null);
         }
 
         MarkerOptions options = new MarkerOptions().position(latLng)
-                .title("Your destination");
+                .title(title);
         mMap.addMarker(options);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
     }
 
-    private void setCurrentLocationMarker() {
+    private void setCurrentLocationMarker() throws IOException {
         mMap.clear();
         LatLng userLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
         MarkerOptions options = new MarkerOptions().position(userLocation)
                 .title("You are here")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
                 .snippet("Your Location");
-        currentLocationMarker = mMap.addMarker(options);
-        setSelectLocation(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+        mMap.addMarker(options);
+        setSelectLocation(userLocation, getAddress(userLocation));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
     }
 
-    private void setSelectLocation(LatLng latLng) {
-        selectLocation = latLng;
+    private void setSelectLocation(LatLng latLng, String title) {
+        selectedLocationObj = new MapLocation();
+        selectedLocationObj.setLat(latLng.latitude);
+        selectedLocationObj.setLng(latLng.longitude);
+        selectedLocationObj.setName(title);
+    }
+
+    private String getAddress(LatLng latLng) throws IOException {
+        Geocoder geocoder;
+        List<Address> addresses;
+        geocoder = new Geocoder(getActivity(), Locale.getDefault());
+
+        addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+
+        String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+
+        return address;
     }
 
     private void startUpdateLocation() {

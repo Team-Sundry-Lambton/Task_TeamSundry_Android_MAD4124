@@ -1,10 +1,13 @@
 package mad4124.team_sundry.task.ui.task;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -135,5 +138,28 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
             }
         }
         return false;
+    }
+
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        String[] options = {"Title","Created Date","Due Date"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.pick_sort_option)
+                .setItems(options, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case 0:
+                                taskList = appDatabase.dbDao().getAllTasks();
+                                break;
+                            case 1:
+                                taskList = appDatabase.dbDao().getAllTasksSortByCreatedDate();
+                                break;
+                            case 2:
+                                taskList = appDatabase.dbDao().getAllTasksSortByDueDate();
+                                break;
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+        return builder.create();
     }
 }

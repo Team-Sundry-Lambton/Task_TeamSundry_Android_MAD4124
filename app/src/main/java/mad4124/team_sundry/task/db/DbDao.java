@@ -43,4 +43,10 @@ public interface DbDao {
 
     @Query("UPDATE tasks SET status =:complete WHERE id = :id")
     void markTaskCompleted(boolean complete, int id);
+
+    @Query("SELECT * FROM tasks ORDER BY createdDate ASC")
+    List<Task> getAllTasksSortByCreatedDate();
+
+    @Query("SELECT * FROM tasks ORDER BY dueDate ASC")
+    List<Task> getAllTasksSortByDueDate();
 }

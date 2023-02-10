@@ -6,4 +6,5 @@
     <string name="category_row">Category</string>
     <string name="description_row">Description</string>
     <string name="due_date_row">Due Date</string>
+    <string name="pick_sort_option">Pick Sort Option</string>
 </resources>

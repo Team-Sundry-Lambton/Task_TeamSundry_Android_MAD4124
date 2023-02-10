@@ -26,8 +26,8 @@ public interface DbDao {
     @Delete
     void deleteCategory(Category category);
 
-    @Query("SELECT * FROM tasks ORDER BY title ASC")
-    List<Task> getAllTasks();
+    @Query("SELECT * FROM tasks WHERE category_id = :categoryID ORDER BY title ASC")
+    List<Task> getAllTasks(int categoryID);
 
     @Query("Select * from medias  WHERE task_id = :taskID")
     List<MediaFile> getAllMedias(int taskID);
@@ -44,9 +44,9 @@ public interface DbDao {
     @Query("UPDATE tasks SET status =:complete WHERE id = :id")
     void markTaskCompleted(boolean complete, int id);
 
-    @Query("SELECT * FROM tasks ORDER BY createdDate ASC")
-    List<Task> getAllTasksSortByCreatedDate();
+    @Query("SELECT * FROM tasks WHERE category_id = :categoryID ORDER BY createdDate ASC")
+    List<Task> getAllTasksSortByCreatedDate(int categoryID);
 
-    @Query("SELECT * FROM tasks ORDER BY dueDate ASC")
-    List<Task> getAllTasksSortByDueDate();
+    @Query("SELECT * FROM tasks WHERE category_id = :categoryID ORDER BY dueDate ASC")
+    List<Task> getAllTasksSortByDueDate(int categoryID);
 }

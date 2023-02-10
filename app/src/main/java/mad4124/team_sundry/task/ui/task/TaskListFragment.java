@@ -1,5 +1,7 @@
 package mad4124.team_sundry.task.ui.task;
 
+import static android.content.Intent.getIntent;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -32,6 +34,8 @@ import mad4124.team_sundry.task.db.AppDatabase;
 import mad4124.team_sundry.task.model.MediaFile;
 import mad4124.team_sundry.task.model.SubTask;
 import mad4124.team_sundry.task.model.Task;
+import mad4124.team_sundry.task.ui.category.CategoryListFragment;
+import mad4124.team_sundry.task.ui.maps.MapAllTasksFragment;
 import mad4124.team_sundry.task.ui.taskDetail.TaskDetailFragment;
 
 @AndroidEntryPoint
@@ -45,11 +49,17 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
     private AppDatabase appDatabase;
 
     private Task deletedTask;
+
+    private int categoryId = 0;
+
+    private List<Task> selectedTasks = new ArrayList<>();
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
+
+
 
         adapter = new RecyclerViewAdapter(taskList, getContext(), this);
 
@@ -75,7 +85,7 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
     }
 
     private void loadTasks() {
-        taskList = appDatabase.dbDao().getAllTasks();
+        taskList = appDatabase.dbDao().getAllTasks(categoryId);
         if (taskList.size() > 0) {
             binding.emptyView.setVisibility(View.INVISIBLE);
         }else {
@@ -94,14 +104,14 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
     @Override
     public void onItemClick(int position) {
         Intent intent = new Intent(getActivity(), TaskDetailFragment.class);
-        intent.putExtra(TASK_ID, taskList.get(position).getId()).toString();
+        intent.putExtra(TASK_ID, taskList.get(position).getId());
         startActivity(intent);
     }
 
     private void deleteTask(int position) {
         Task task = taskList.get(position);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Deleting Task will delete it subtasks also. Are you sure?");
+        builder.setTitle("Deleting Task will delete it subtasks also. Do you want to delete?");
         builder.setPositiveButton("Yes", (dialog, which) -> {
             deletedTask = task;
             appDatabase.dbDao().delete(task);
@@ -140,7 +150,7 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
         return false;
     }
 
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    private void createMenuOptions() {
         String[] options = {"Title","Created Date","Due Date"};
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.pick_sort_option)
@@ -148,18 +158,50 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which){
                             case 0:
-                                taskList = appDatabase.dbDao().getAllTasks();
+                                taskList = appDatabase.dbDao().getAllTasks(categoryId);
                                 break;
                             case 1:
-                                taskList = appDatabase.dbDao().getAllTasksSortByCreatedDate();
+                                taskList = appDatabase.dbDao().getAllTasksSortByCreatedDate(categoryId);
                                 break;
                             case 2:
-                                taskList = appDatabase.dbDao().getAllTasksSortByDueDate();
+                                taskList = appDatabase.dbDao().getAllTasksSortByDueDate(categoryId);
                                 break;
                         }
                         adapter.notifyDataSetChanged();
                     }
                 });
-        return builder.create();
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void loadMapView(int position){
+        Intent intent = new Intent(getActivity(), MapAllTasksFragment.class);
+        intent.putExtra(TASK_ID, taskList.get(position).getId());
+        startActivity(intent);
+    }
+
+    private void deleteSelectedTasks(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Deleting Tasks will delete it subtasks also. Do you want to delete?");
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            for (Task task:selectedTasks
+                 ) {
+                appDatabase.dbDao().delete(task);
+
+            }
+            adapter.notifyDataSetChanged();
+            Toast.makeText(getActivity(), "Tasks deleted", Toast.LENGTH_SHORT).show();
+        });
+        builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
+            dialog.cancel();
+            adapter.notifyDataSetChanged();
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void moveSelectedTasks() {
+
     }
 }

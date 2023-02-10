@@ -11,6 +11,7 @@ import java.util.List;
 
 import mad4124.team_sundry.task.model.Category;
 import mad4124.team_sundry.task.model.MediaFile;
+import mad4124.team_sundry.task.model.SubTask;
 import mad4124.team_sundry.task.model.Task;
 
 @Dao
@@ -25,9 +26,21 @@ public interface DbDao {
     @Delete
     void deleteCategory(Category category);
 
-    @Query("Select * from tasks")
+    @Query("SELECT * FROM tasks ORDER BY title ASC")
     List<Task> getAllTasks();
 
     @Query("Select * from medias  WHERE task_id = :taskID")
     List<MediaFile> getAllMedias(int taskID);
+
+    @Delete
+    public abstract void delete(Task task);
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    public abstract void insert(Task task);
+
+    @Query("Select * from subTasks  WHERE task_id = :taskID")
+    List<SubTask> getAllSubTask(int taskID);
+
+    @Query("UPDATE tasks SET status =:complete WHERE id = :id")
+    void markTaskCompleted(boolean complete, int id);
 }

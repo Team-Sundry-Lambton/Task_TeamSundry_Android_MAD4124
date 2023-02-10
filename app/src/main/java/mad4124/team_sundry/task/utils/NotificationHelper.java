@@ -61,10 +61,10 @@ public class NotificationHelper {
                 .setContentText(content)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setAutoCancel(true)
-                .setContentTitle("My notification")
-                .setContentText("Hello World!")
+                .setContentTitle("Task Reminder")
+                .setContentText(content)
                 .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText("Much longer text that cannot fit one line..."))
+                        .bigText(content))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setChannelId(NOTIFICATION_CHANNEL_ID);
         return builder.build();

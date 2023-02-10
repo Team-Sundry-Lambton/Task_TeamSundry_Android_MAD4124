@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import mad4124.team_sundry.task.R;
+import mad4124.team_sundry.task.db.AppDatabase;
 import mad4124.team_sundry.task.model.MediaFile;
 import mad4124.team_sundry.task.model.Task;
 
@@ -50,6 +51,8 @@ public class RecyclerViewAdapter <T> extends RecyclerView.Adapter<RecyclerViewAd
         if (t instanceof Task) {
             Task task = (Task) t;
             int id = task.getId();
+            AppDatabase appDatabase = AppDatabase.getInstance(context);
+            List<MediaFile> mediaFiles = appDatabase.dbDao().getAllMedias(id);
             holder.title.setText(task.getTitle());
             if(task.isTask()) {
                 holder.category.setText("Task");
@@ -58,7 +61,17 @@ public class RecyclerViewAdapter <T> extends RecyclerView.Adapter<RecyclerViewAd
             }
             holder.description.setText(task.getDescription());
              holder.due_date.setText(task.getDueDate().toString());
-            holder.imageView.setVisibility(View.VISIBLE);
+             if(mediaFiles.size() > 0) {
+                 holder.imageView.setVisibility(View.VISIBLE);
+                 MediaFile file = mediaFiles.get(0);
+                 if(file.isImage()){
+                     holder.imageView.setBackgroundResource(R.drawable.ic_audio);
+                 }else {
+                     holder.imageView.setBackgroundResource(R.drawable.ic_audio);
+                 }
+             }else {
+                 holder.imageView.setVisibility(View.INVISIBLE);
+             }
             Log.d(TAG, "onBindViewHolder: task");
         } /*else if (t instanceof Category) {
             Category d = (Category) t;

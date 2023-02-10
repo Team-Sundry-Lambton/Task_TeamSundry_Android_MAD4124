@@ -10,4 +10,8 @@
     <color name="theme_color">#6979F8</color>
     <color name="textColorPrimary">#FFDDDBDB</color>
     <color name="textColorDisabled">#FF000000</color>
+    <color name="theme_light_purple">#CDD2FD</color>
+    <color name="theme_purple">#9BA6FA</color>
+    <color name="theme_dark_purple">#6979F8</color>
+    <color name="theme_yellow">#FFBA00</color>
 </resources>

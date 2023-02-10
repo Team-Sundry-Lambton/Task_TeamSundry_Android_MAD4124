@@ -10,6 +10,7 @@ import androidx.room.Query;
 import java.util.List;
 
 import mad4124.team_sundry.task.model.Category;
+import mad4124.team_sundry.task.model.Task;
 
 @Dao
 public interface DbDao {
@@ -22,5 +23,8 @@ public interface DbDao {
 
     @Delete
     void deleteCategory(Category category);
+
+    @Query("Select * from tasks")
+    List<Task> getAllTasks();
 
 }

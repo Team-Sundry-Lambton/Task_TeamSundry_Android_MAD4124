@@ -1,5 +1,6 @@
 package mad4124.team_sundry.task.ui.task;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import mad4124.team_sundry.task.R;
 import mad4124.team_sundry.task.adapter.RecyclerViewAdapter;
 import mad4124.team_sundry.task.databinding.FragmentTaskListBinding;
+import mad4124.team_sundry.task.db.AppDatabase;
 import mad4124.team_sundry.task.model.Task;
 import mad4124.team_sundry.task.ui.taskDetail.TaskDetailFragment;
 
@@ -30,17 +32,22 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
 
     private List<Task> taskList = new ArrayList<>();
     private RecyclerViewAdapter adapter;
+
+    private AppDatabase appDatabase;
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
+
         adapter = new RecyclerViewAdapter(taskList, getContext(), this);
 
         binding = FragmentTaskListBinding.inflate(inflater, container, false);
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
         binding.recyclerView.setAdapter(adapter);
+        appDatabase = AppDatabase.getInstance(getActivity());
+        loadTasks();
         return binding.getRoot();
 
     }
@@ -56,9 +63,13 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
         });
     }
 
-    void setDataSource(List<Task> departmentsWithEmployees) {
-        taskList.clear();
-        taskList.addAll(departmentsWithEmployees);
+    private void loadTasks() {
+        taskList = appDatabase.dbDao().getAllTasks();
+        if (taskList.size() > 0) {
+            binding.emptyView.setVisibility(View.INVISIBLE);
+        }else {
+            binding.emptyView.setVisibility(View.VISIBLE);
+        }
         adapter.notifyDataSetChanged();
     }
 

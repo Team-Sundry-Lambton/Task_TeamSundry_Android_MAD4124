@@ -49,6 +49,7 @@ public class RecyclerViewAdapter <T> extends RecyclerView.Adapter<RecyclerViewAd
         T t = tList.get(position);
         if (t instanceof Task) {
             Task task = (Task) t;
+            int id = task.getId();
             holder.title.setText(task.getTitle());
             if(task.isTask()) {
                 holder.category.setText("Task");

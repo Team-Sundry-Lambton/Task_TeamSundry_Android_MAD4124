@@ -50,6 +50,6 @@ public interface DbDao {
     @Query("SELECT * FROM tasks WHERE category_id = :categoryID ORDER BY dueDate ASC")
     List<Task> getAllTasksSortByDueDate(int categoryID);
 
-    @Query("UPDATE tasks SET category_id =:categoryId WHERE id in :(taskIDs)")
-    void changeParentOfSelectedTasks(int categoryId, List<Integer> taskIds);
+    @Query("UPDATE tasks SET category_id =:categoryId WHERE id = :taskIs")
+    void changeParentOfSelectedTasks(int categoryId,int taskIs);
 }

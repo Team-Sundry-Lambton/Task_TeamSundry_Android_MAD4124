@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -129,8 +130,30 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
             return false;
         });
 
+        registerForContextMenu(binding.optionMenu);
     }
 
+    //Context Menu Creation
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.add(0, v.getId(), 0, "Select Task");
+        menu.add(1, v.getId(), 1, "Sort Task");
+        menu.add(2, v.getId(), 2, "View On Map");
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (item.getItemId() == 0) {
+            moveOptionSelected();
+        }
+        else if (item.getItemId() == 1) {
+            createSortMenuOptions();
+        }else if (item.getItemId() == 2) {
+            loadMapView();
+        }
+        return true;
+    }
     private void loadTasks() {
         taskList = appDatabase.dbDao().getAllTasks(categoryId);
         if (taskList.size() > 0) {
@@ -268,8 +291,7 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
         alertDialog.show();
     }
 
-    private void loadMapView(int position){
-        Task task = taskList.get(position);
+    private void loadMapView(){
         Bundle bundle = new Bundle();
         bundle.putSerializable("data", null);
         Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_taskListFragment_to_mapAllTasksFragment,bundle);
@@ -308,12 +330,10 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
         Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_taskListFragment_to_mapAllTasksFragment,bundle);
     }
     private void moveSelectedTasks() {
-        List<Integer> taskIds = new ArrayList<>();
         for (Task task:selectedTasks
         ) {
-            taskIds.add(task.getId());
+            appDatabase.dbDao().changeParentOfSelectedTasks(categoryId,task.getId());
         }
-        appDatabase.dbDao().changeParentOfSelectedTasks(categoryId,taskIds);
     }
 
     //Search Tasks

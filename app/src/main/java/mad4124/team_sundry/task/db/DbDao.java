@@ -21,7 +21,7 @@ public interface DbDao {
     void addCategory(Category category);
 
     @Query("Select * from categories")
-    LiveData<List<Category>> getAllCategories();
+    List<Category> getAllCategories();
 
     @Delete
     void deleteCategory(Category category);

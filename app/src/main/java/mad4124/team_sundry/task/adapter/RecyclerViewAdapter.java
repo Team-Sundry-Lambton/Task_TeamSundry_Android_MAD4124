@@ -17,6 +17,7 @@ import java.util.List;
 
 import mad4124.team_sundry.task.R;
 import mad4124.team_sundry.task.db.AppDatabase;
+import mad4124.team_sundry.task.model.Category;
 import mad4124.team_sundry.task.model.MediaFile;
 import mad4124.team_sundry.task.model.Task;
 
@@ -40,9 +41,18 @@ public class RecyclerViewAdapter <T> extends RecyclerView.Adapter<RecyclerViewAd
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.task_row, parent, false);
-        return new ViewHolder(view);
+        T t = tList.get(0);
+        View view;
+        if (t instanceof Task) {
+             view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.task_row, parent, false);
+            return new ViewHolder(view);
+        }else if (t instanceof Task) {
+             view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.row_category_list_layout, parent, false);
+            return new ViewHolder(view);
+        }
+        return null;
     }
 
     @SuppressLint("LongLogTag")
@@ -74,10 +84,10 @@ public class RecyclerViewAdapter <T> extends RecyclerView.Adapter<RecyclerViewAd
                  holder.imageView.setVisibility(View.INVISIBLE);
              }
             Log.d(TAG, "onBindViewHolder: task");
-        } /*else if (t instanceof Category) {
-            Category d = (Category) t;
-            Log.d(TAG, "onBindViewHolder: categoru");
-        } else if (t instanceof CategoryWithTask) {
+        } else if (t instanceof Category) {
+            Category category = (Category) t;
+            holder.title.setText(category.getName());
+        }/* else if (t instanceof CategoryWithTask) {
             CategoryWithTask dwe = (CategoryWithTask) t;
         }*/
         Log.d(TAG, "onBindViewHolder: none");
@@ -98,12 +108,16 @@ public class RecyclerViewAdapter <T> extends RecyclerView.Adapter<RecyclerViewAd
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            title = itemView.findViewById(R.id.title_row);
-            category = itemView.findViewById(R.id.category_row);
-            description = itemView.findViewById(R.id.description_row);
-            due_date = itemView.findViewById(R.id.due_date_row);
-            imageView = itemView.findViewById(R.id.imageView);
+            T t = tList.get(0);
+            if (t instanceof Task) {
+                title = itemView.findViewById(R.id.title_row);
+                category = itemView.findViewById(R.id.category_row);
+                description = itemView.findViewById(R.id.description_row);
+                due_date = itemView.findViewById(R.id.due_date_row);
+                imageView = itemView.findViewById(R.id.imageView);
+            } else if (t instanceof Category) {
+                title = itemView.findViewById(R.id.title_row);
+            }
 
             itemView.setOnClickListener(this);
 

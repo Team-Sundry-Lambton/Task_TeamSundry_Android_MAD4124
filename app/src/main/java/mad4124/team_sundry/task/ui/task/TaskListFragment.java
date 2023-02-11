@@ -121,7 +121,7 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
                     moveOptionSelected();
                     return true;
                 case R.id.move:
-                    moveSelectedTasks();
+                    loadCategoryList();
                     return true;
                 case R.id.delete:
                     deleteSelectedTasks();
@@ -329,12 +329,7 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
         bundle.putSerializable("data", null);
         Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_taskListFragment_to_mapAllTasksFragment,bundle);
     }
-    private void moveSelectedTasks() {
-        for (Task task:selectedTasks
-        ) {
-            appDatabase.dbDao().changeParentOfSelectedTasks(categoryId,task.getId());
-        }
-    }
+
 
     //Search Tasks
     private ArrayList<Task> searchTask(String text) {

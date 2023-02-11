@@ -16,7 +16,9 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +39,7 @@ import mad4124.team_sundry.task.model.Task;
 import mad4124.team_sundry.task.ui.category.CategoryListFragment;
 import mad4124.team_sundry.task.ui.maps.MapAllTasksFragment;
 import mad4124.team_sundry.task.ui.taskDetail.TaskDetailFragment;
+import mad4124.team_sundry.task.utils.BsItemOptions;
 
 @AndroidEntryPoint
 public class TaskListFragment extends Fragment implements RecyclerViewAdapter.OnItemClickListener{
@@ -59,27 +62,52 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
             Bundle savedInstanceState
     ) {
 
-
-
-        adapter = new RecyclerViewAdapter(taskList, getContext(), this);
-
         binding = FragmentTaskListBinding.inflate(inflater, container, false);
-        binding.recyclerView.setHasFixedSize(true);
-        binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
-        binding.recyclerView.setAdapter(adapter);
-        appDatabase = AppDatabase.getInstance(getActivity());
-        loadTasks();
         return binding.getRoot();
 
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        adapter = new RecyclerViewAdapter(taskList, getContext(), this);
+        binding.recyclerView.setHasFixedSize(true);
+        binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
+        binding.recyclerView.setAdapter(adapter);
+        appDatabase = AppDatabase.getInstance(getActivity());
+        loadTasks();
         binding.addTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 NavHostFragment.findNavController(TaskListFragment.this)
                         .navigate(R.id.action_taskListFragment_to_taskDetailFragment);
+            }
+        });
+
+        binding.taskSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            // Override onQueryTextSubmit method which is call when submit query is searched
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                ArrayList<Task> taskArrayList = searchTask(query);
+                if (taskArrayList.size() > 0) {
+
+                    adapter.setDataList(
+                            taskArrayList
+                    );
+
+                } else {
+                    Toast.makeText(requireContext(), "No found", Toast.LENGTH_LONG).show();
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                ArrayList<Task> taskArrayList = searchTask(newText);
+                adapter.setDataList(
+                        taskArrayList
+                );
+                return false;
             }
         });
     }
@@ -103,9 +131,32 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
 
     @Override
     public void onItemClick(int position) {
-        Intent intent = new Intent(getActivity(), TaskDetailFragment.class);
-        intent.putExtra(TASK_ID, taskList.get(position).getId());
-        startActivity(intent);
+        BsItemOptions.ActionProvider provider = new BsItemOptions.ActionProvider() {
+            @Override
+            public void complete() {
+                markTaskCompleted(position);
+            }
+
+            @Override
+            public void edit() {
+                editTask(position);
+            }
+
+            @Override
+            public void delete() {
+                deleteTask(position);
+            }
+        };
+        BsItemOptions options = new BsItemOptions();
+        options.provider = provider;
+        options.show(getChildFragmentManager(),"ITEM_OPTIONS");
+    }
+
+    private void editTask(int position){
+        Task task = taskList.get(position);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("data", null);
+        Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_taskListFragment_to_taskDetailFragment,bundle);
     }
 
     private void deleteTask(int position) {
@@ -203,5 +254,17 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
 
     private void moveSelectedTasks() {
 
+    }
+
+    private ArrayList<Task> searchTask(String text) {
+        ArrayList<Task> matches = new ArrayList<>();
+        for(Task task : taskList) {
+            if (task.getTitle().toLowerCase().contains(text.toLowerCase())) {
+                matches.add(task);
+            }else  if (task.getDescription().toLowerCase().contains(text.toLowerCase())) {
+                matches.add(task);
+            }
+        }
+        return matches;
     }
 }

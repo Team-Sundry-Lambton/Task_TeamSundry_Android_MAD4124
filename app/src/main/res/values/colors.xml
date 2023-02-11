@@ -8,4 +8,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="theme_color">#6979F8</color>
+    <color name="textColorPrimary">#FFDDDBDB</color>
+    <color name="textColorDisabled">#FF000000</color>
 </resources>

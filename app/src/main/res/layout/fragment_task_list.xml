@@ -65,6 +65,8 @@
     <androidx.appcompat.widget.SearchView
         android:id="@+id/task_search"
         android:layout_width="match_parent"
+        style="@style/SearchViewStyle"
+        android:background="#DDDBDB"
         android:layout_height="50dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"

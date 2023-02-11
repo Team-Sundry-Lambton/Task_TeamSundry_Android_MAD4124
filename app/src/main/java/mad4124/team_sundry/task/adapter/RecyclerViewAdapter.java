@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import mad4124.team_sundry.task.R;
@@ -120,5 +121,10 @@ public class RecyclerViewAdapter <T> extends RecyclerView.Adapter<RecyclerViewAd
 
     public interface OnItemClickListener {
         void onItemClick(int position);
+    }
+
+    public void setDataList(List<T> tList) {
+        this.tList = tList;
+        notifyDataSetChanged();
     }
 }

@@ -27,6 +27,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import mad4124.team_sundry.task.R;
@@ -56,6 +57,8 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
     private int categoryId = 0;
 
     private List<Task> selectedTasks = new ArrayList<>();
+
+    boolean isMultiSelection = false;
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
@@ -110,6 +113,22 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
                 return false;
             }
         });
+
+        binding.bottomAppBar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.done:
+                    moveOptionSelected();
+                    return true;
+                case R.id.move:
+                    moveSelectedTasks();
+                    return true;
+                case R.id.delete:
+                    deleteSelectedTasks();
+                    return true;
+            }
+            return false;
+        });
+
     }
 
     private void loadTasks() {
@@ -131,27 +150,38 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
 
     @Override
     public void onItemClick(int position) {
-        BsItemOptions.ActionProvider provider = new BsItemOptions.ActionProvider() {
-            @Override
-            public void complete() {
-                markTaskCompleted(position);
-            }
 
-            @Override
-            public void edit() {
-                editTask(position);
+        if(isMultiSelection){
+            Task task = taskList.get(position);
+            if(selectedTasks.contains(task)){
+                selectedTasks.remove(task);
+            }else {
+                selectedTasks.add(task);
             }
+        }else {
+            BsItemOptions.ActionProvider provider = new BsItemOptions.ActionProvider() {
+                @Override
+                public void complete() {
+                    markTaskCompleted(position);
+                }
 
-            @Override
-            public void delete() {
-                deleteTask(position);
-            }
-        };
-        BsItemOptions options = new BsItemOptions();
-        options.provider = provider;
-        options.show(getChildFragmentManager(),"ITEM_OPTIONS");
+                @Override
+                public void edit() {
+                    editTask(position);
+                }
+
+                @Override
+                public void delete() {
+                    deleteTask(position);
+                }
+            };
+            BsItemOptions options = new BsItemOptions();
+            options.provider = provider;
+            options.show(getChildFragmentManager(), "ITEM_OPTIONS");
+        }
     }
 
+    //Single Task Selection Option
     private void editTask(int position){
         Task task = taskList.get(position);
         Bundle bundle = new Bundle();
@@ -201,7 +231,20 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
         return false;
     }
 
-    private void createMenuOptions() {
+    //Menu Context View Options
+    private void moveOptionSelected(){
+        if (isMultiSelection){
+            isMultiSelection = false;
+            binding.bottomAppBar.setVisibility(View.GONE);
+            binding.addTask.setVisibility(View.VISIBLE);
+        }else {
+            isMultiSelection = true;
+            binding.bottomAppBar.setVisibility(View.VISIBLE);
+            binding.addTask.setVisibility(View.GONE);
+        }
+    }
+
+    private void createSortMenuOptions() {
         String[] options = {"Title","Created Date","Due Date"};
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.pick_sort_option)
@@ -226,11 +269,13 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
     }
 
     private void loadMapView(int position){
-        Intent intent = new Intent(getActivity(), MapAllTasksFragment.class);
-        intent.putExtra(TASK_ID, taskList.get(position).getId());
-        startActivity(intent);
+        Task task = taskList.get(position);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("data", null);
+        Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_taskListFragment_to_mapAllTasksFragment,bundle);
     }
 
+    //Selected Tasks Options
     private void deleteSelectedTasks(){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -252,10 +297,26 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
         alertDialog.show();
     }
 
+    private void loadCategoryList(){
+        List<Integer> taskIds = new ArrayList<>();
+        for (Task task:selectedTasks
+             ) {
+            taskIds.add(task.getId());
+        }
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("data", null);
+        Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_taskListFragment_to_mapAllTasksFragment,bundle);
+    }
     private void moveSelectedTasks() {
-
+        List<Integer> taskIds = new ArrayList<>();
+        for (Task task:selectedTasks
+        ) {
+            taskIds.add(task.getId());
+        }
+        appDatabase.dbDao().changeParentOfSelectedTasks(categoryId,taskIds);
     }
 
+    //Search Tasks
     private ArrayList<Task> searchTask(String text) {
         ArrayList<Task> matches = new ArrayList<>();
         for(Task task : taskList) {

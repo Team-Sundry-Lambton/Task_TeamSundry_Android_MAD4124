@@ -23,7 +23,7 @@
             android:id="@+id/imageClass_adapter"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/asset_bg_paleblue"
+            android:src="@drawable/asset_bg_green"
             android:scaleType="centerCrop"/>
 
         <RelativeLayout
@@ -34,11 +34,11 @@
             android:paddingTop="12dp"
             android:paddingRight="12dp"
             android:paddingBottom="12dp"
-            android:background="@drawable/gradient_color_1"
+            android:background="@drawable/gradient_color_2"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/categoryName_adapter"
+                android:id="@+id/categoryName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Cloud Computing"
@@ -47,11 +47,11 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/totalTasks_adapter"
+                android:id="@+id/totalTasks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/categoryName_adapter"
-                android:layout_marginTop="20dp"
+                android:layout_below="@+id/categoryName"
+                android:layout_marginTop="49dp"
                 android:text="tasks/notes: 0"
                 android:textColor="@color/white" />
         </RelativeLayout>

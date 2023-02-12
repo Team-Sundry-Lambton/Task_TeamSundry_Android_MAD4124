@@ -22,7 +22,7 @@ public class MainViewModel extends ViewModel {
         this.repo = repo;
     }
 
-    void addCategory(Category category) {
+    public void addCategory(Category category) {
         repo.addCategory(category);
     }
 

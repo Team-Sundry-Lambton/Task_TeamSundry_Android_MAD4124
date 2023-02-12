@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,23 +20,20 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import mad4124.team_sundry.task.R;
-import mad4124.team_sundry.task.adapter.RecyclerViewAdapter;
-import mad4124.team_sundry.task.databinding.FragmentTaskListBinding;
+import mad4124.team_sundry.task.adapter.CategoryRecyclerViewAdapter;
 import mad4124.team_sundry.task.databinding.FragmentTaskMoveCategoryListBinding;
-import mad4124.team_sundry.task.db.AppDatabase;
 import mad4124.team_sundry.task.model.Category;
-import mad4124.team_sundry.task.model.Task;
+import mad4124.team_sundry.task.ui.MainViewModel;
 
-public class TaskMoveCategoryListFragment extends Fragment implements RecyclerViewAdapter.OnItemClickListener{
+public class TaskMoveCategoryListFragment extends Fragment implements CategoryRecyclerViewAdapter.OnItemClickListener{
 
 
     private FragmentTaskMoveCategoryListBinding binding;
 
     private List<Category> categoryList = new ArrayList<>();
-    private RecyclerViewAdapter adapter;
+    private CategoryRecyclerViewAdapter adapter;
 
-    private AppDatabase appDatabase;
+    MainViewModel viewModel;
 
     private  List<Integer> selectedTasksIds = new ArrayList<>();
 
@@ -45,7 +43,6 @@ public class TaskMoveCategoryListFragment extends Fragment implements RecyclerVi
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-
         binding = FragmentTaskMoveCategoryListBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
@@ -53,16 +50,16 @@ public class TaskMoveCategoryListFragment extends Fragment implements RecyclerVi
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        adapter = new RecyclerViewAdapter(categoryList, getContext(), this);
+        adapter = new CategoryRecyclerViewAdapter(categoryList, getContext(), this);
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
         binding.recyclerView.setAdapter(adapter);
-        appDatabase = AppDatabase.getInstance(getActivity());
+        viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
         loadFolders();
     }
 
     private void loadFolders() {
-        categoryList = appDatabase.dbDao().getAllCategories();
+        categoryList = viewModel.getAllCategories();
         adapter.notifyDataSetChanged();
     }
 
@@ -87,7 +84,7 @@ public class TaskMoveCategoryListFragment extends Fragment implements RecyclerVi
     private void moveSelectedTasks(Integer categoryId) {
         for (Integer taskId:selectedTasksIds
         ) {
-            appDatabase.dbDao().changeParentOfSelectedTasks(categoryId,taskId);
+            viewModel.changeParentOfSelectedTasks(categoryId,taskId);
         }
     }
 

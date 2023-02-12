@@ -1,12 +1,7 @@
 package mad4124.team_sundry.task.ui.task;
 
-import static android.content.Intent.getIntent;
-
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -19,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -28,31 +24,25 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import mad4124.team_sundry.task.R;
-import mad4124.team_sundry.task.adapter.RecyclerViewAdapter;
+import mad4124.team_sundry.task.adapter.TaskRecyclerViewAdapter;
 import mad4124.team_sundry.task.databinding.FragmentTaskListBinding;
-import mad4124.team_sundry.task.db.AppDatabase;
-import mad4124.team_sundry.task.model.MediaFile;
 import mad4124.team_sundry.task.model.SubTask;
 import mad4124.team_sundry.task.model.Task;
-import mad4124.team_sundry.task.ui.category.CategoryListFragment;
-import mad4124.team_sundry.task.ui.maps.MapAllTasksFragment;
-import mad4124.team_sundry.task.ui.taskDetail.TaskDetailFragment;
+import mad4124.team_sundry.task.ui.MainViewModel;
 import mad4124.team_sundry.task.utils.BsItemOptions;
 
 @AndroidEntryPoint
-public class TaskListFragment extends Fragment implements RecyclerViewAdapter.OnItemClickListener{
+public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapter.OnItemClickListener{
     public static final String TASK_ID = "task_id";
     private FragmentTaskListBinding binding;
 
     private List<Task> taskList = new ArrayList<>();
-    private RecyclerViewAdapter adapter;
+    private TaskRecyclerViewAdapter adapter;
 
-    private AppDatabase appDatabase;
-
+    MainViewModel viewModel;
     private Task deletedTask;
 
     private int categoryId = 0;
@@ -74,11 +64,12 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        adapter = new RecyclerViewAdapter(taskList, getContext(), this);
+        viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
+        adapter = new TaskRecyclerViewAdapter(taskList, getContext(), this,viewModel);
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
         binding.recyclerView.setAdapter(adapter);
-        appDatabase = AppDatabase.getInstance(getActivity());
+
         loadTasks();
         binding.addTask.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,7 +146,7 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
         return true;
     }
     private void loadTasks() {
-        taskList = appDatabase.dbDao().getAllTasks(categoryId);
+        taskList = viewModel.getAllTasks(categoryId);
         if (taskList.size() > 0) {
             binding.emptyView.setVisibility(View.INVISIBLE);
         }else {
@@ -218,10 +209,10 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
         builder.setTitle("Deleting Task will delete it subtasks also. Do you want to delete?");
         builder.setPositiveButton("Yes", (dialog, which) -> {
             deletedTask = task;
-            appDatabase.dbDao().delete(task);
+            viewModel.delete(task);
             adapter.notifyItemRemoved(position);
             Snackbar.make(binding.recyclerView, deletedTask.getTitle() + " is deleted!", Snackbar.LENGTH_LONG)
-                    .setAction("Undo", v -> appDatabase.dbDao().insert(deletedTask)).show();
+                    .setAction("Undo", v -> viewModel.insert(deletedTask)).show();
             Toast.makeText(getActivity(), task.getTitle() + " deleted", Toast.LENGTH_SHORT).show();
         });
         builder.setNegativeButton("No", (dialog, which) -> adapter.notifyItemChanged(position));
@@ -240,12 +231,12 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
         }else {
-            appDatabase.dbDao().markTaskCompleted(true,id);
+            viewModel.markTaskCompleted(true,id);
         }
     }
     private boolean taskContainInCompleteSubTask(int id) {
 
-        List<SubTask> subTasks = appDatabase.dbDao().getAllSubTask(id);
+        List<SubTask> subTasks = viewModel.getAllSubTask(id);
         for ( SubTask subTask:subTasks) {
             if (subTask.isStatus() == false){
                 return true;
@@ -275,13 +266,13 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which){
                             case 0:
-                                taskList = appDatabase.dbDao().getAllTasks(categoryId);
+                                taskList = viewModel.getAllTasks(categoryId);
                                 break;
                             case 1:
-                                taskList = appDatabase.dbDao().getAllTasksSortByCreatedDate(categoryId);
+                                taskList = viewModel.getAllTasksSortByCreatedDate(categoryId);
                                 break;
                             case 2:
-                                taskList = appDatabase.dbDao().getAllTasksSortByDueDate(categoryId);
+                                taskList = viewModel.getAllTasksSortByDueDate(categoryId);
                                 break;
                         }
                         adapter.notifyDataSetChanged();
@@ -305,7 +296,7 @@ public class TaskListFragment extends Fragment implements RecyclerViewAdapter.On
         builder.setPositiveButton("Yes", (dialog, which) -> {
             for (Task task:selectedTasks
                  ) {
-                appDatabase.dbDao().delete(task);
+                viewModel.delete(task);
 
             }
             adapter.notifyDataSetChanged();

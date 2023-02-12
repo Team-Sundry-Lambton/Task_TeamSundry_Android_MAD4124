@@ -33,10 +33,10 @@ public interface DbDao {
     List<MediaFile> getAllMedias(int taskID);
 
     @Delete
-    public abstract void delete(Task task);
+    void delete(Task task);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    public abstract void insert(Task task);
+   void insert(Task task);
 
     @Query("Select * from subTasks  WHERE task_id = :taskID")
     List<SubTask> getAllSubTask(int taskID);

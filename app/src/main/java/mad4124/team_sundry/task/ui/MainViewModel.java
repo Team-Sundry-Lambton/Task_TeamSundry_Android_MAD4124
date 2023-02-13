@@ -65,4 +65,6 @@ public class MainViewModel extends ViewModel {
     public List<MediaFile> getAllMedias(int taskID){
         return repo.getAllMedias(taskID);
     }
+
+    public void updateCategoryName(String categoryName,int id){ repo.updateCategoryName(categoryName, id); }
 }

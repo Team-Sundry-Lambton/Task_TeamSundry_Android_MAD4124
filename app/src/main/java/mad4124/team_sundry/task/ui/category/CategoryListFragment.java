@@ -55,7 +55,7 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
         loadCategories();
-        adapter = new CategoryListRecyclerViewAdapter(categoryList, getContext(), this);
+        adapter = new CategoryListRecyclerViewAdapter(categoryList, getContext(), this, viewModel);
         binding.categoryRecycler.setHasFixedSize(true);
         binding.categoryRecycler.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
         binding.categoryRecycler.setAdapter(adapter);

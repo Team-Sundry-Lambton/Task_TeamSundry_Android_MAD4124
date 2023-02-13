@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="onboard_dot_size">8dp</dimen>
+    <dimen name="onboard_dot_spacing">8dp</dimen>
+    <dimen name="onboard_dot_cornerRadius">8dp</dimen>
+
+    <dimen name="margin_horizontal">16dp</dimen>
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="margin_default">16dp</dimen>
+    <dimen name="margin_extra">32dp</dimen>
+
+    <dimen name="padding_small">8dp</dimen>
+    <dimen name="padding_default">16dp</dimen>
+    <dimen name="padding_high">30dp</dimen>
+
+
+</resources>

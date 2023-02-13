@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupMenu;
@@ -26,6 +27,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import mad4124.team_sundry.task.R;
 import mad4124.team_sundry.task.databinding.CategoryRowBinding;
@@ -43,6 +45,8 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
     private MainViewModel viewModel;
     private AlertDialog dialog;
 
+    private int[] backgroundImages = new int[] { R.drawable.asset_bg_green, R.drawable.asset_bg_paleblue, R.drawable.asset_bg_paleorange , R.drawable.asset_bg_palegreen, R.drawable.asset_bg_yellow};
+    private int[] backgroundColors= new int[] { R.drawable.gradient_color_2, R.drawable.gradient_color_1, R.drawable.gradient_color_5, R.drawable.gradient_color_4, R.drawable.gradient_color_3};
     public CategoryListRecyclerViewAdapter(List<Category> categoryList, Context context, OnItemClickListener onItemClickListener, MainViewModel viewModel){
         this.context = context;
         this.onItemClickListener = onItemClickListener;
@@ -65,6 +69,9 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         holder.bind(categoryList.get(position));
+//        int randomIndex = new Random().nextInt(backgroundImages.length);
+//        holder.itemView.setBackgroundResource(backgroundImages[randomIndex]);
+
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -90,6 +97,9 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
         }
         public void bind(Category model){
             int id = model.getId();
+            int randomIndex = new Random().nextInt(backgroundImages.length);
+            binding.imageClassAdapter.setBackgroundResource(backgroundImages[randomIndex]);
+            binding.frameBg.setBackgroundResource(backgroundColors[randomIndex]);
             binding.categoryName.setText(model.getName());
             binding.totalTasks.setText(model.getName());
         }
@@ -160,6 +170,7 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
                 String newCategory = categoryTitleEditText.getText().toString();
                 int id = category.getId();
                 viewModel.updateCategoryName(newCategory,id);
+                Toast.makeText(context, "Category updated successfully!", Toast.LENGTH_SHORT).show();
                 // Notify the adapter that the data has changed
                 setDataList(viewModel.getAllCategories());
             }
@@ -206,6 +217,13 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
         });
 
         dialog.show();
+    }
+
+    private void setBackgroundOpacity(View view, float opacity) {
+        AlphaAnimation alpha = new AlphaAnimation(opacity, opacity);
+        alpha.setDuration(0);
+        alpha.setFillAfter(true);
+        view.startAnimation(alpha);
     }
 }
 

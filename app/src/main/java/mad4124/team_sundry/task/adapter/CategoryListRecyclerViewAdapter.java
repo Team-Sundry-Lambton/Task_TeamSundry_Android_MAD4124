@@ -30,6 +30,7 @@ import java.util.List;
 import mad4124.team_sundry.task.R;
 import mad4124.team_sundry.task.databinding.CategoryRowBinding;
 import mad4124.team_sundry.task.model.Category;
+import mad4124.team_sundry.task.model.Task;
 import mad4124.team_sundry.task.ui.MainViewModel;
 
 
@@ -103,8 +104,8 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
         void onItemClick(int position);
     }
 
-    public void setDataList() {
-        this.categoryList = viewModel.getAllCategories();
+    public void setDataList(List<Category> categories) {
+        this.categoryList = categories;
         notifyDataSetChanged();
     }
 
@@ -160,7 +161,7 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
                 int id = category.getId();
                 viewModel.updateCategoryName(newCategory,id);
                 // Notify the adapter that the data has changed
-                setDataList();
+                setDataList(viewModel.getAllCategories());
             }
         });
         // Add a negative button for cancelling the changes
@@ -200,7 +201,7 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
                 dialog.dismiss();
                 Toast.makeText(context, "Category removed successfully!", Toast.LENGTH_SHORT).show();
                 // Notify the adapter that the data has changed
-                setDataList();
+                setDataList(viewModel.getAllCategories());
             }
         });
 

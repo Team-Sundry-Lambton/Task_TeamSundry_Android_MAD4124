@@ -67,7 +67,12 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
     @Override
     public void onResume() {
         super.onResume();
-        setCategoryListRecyclerView();
+        updateCategoryList();
+    }
+
+    public void updateCategoryList(){
+        categoryList = viewModel.getAllCategories();
+        adapter.setDataList(viewModel.getAllCategories());
     }
 
     @Override
@@ -107,7 +112,7 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
                 viewModel.addCategory(category);
                 dialog.dismiss();
                 Toast.makeText(getContext(), "Category added successfully!", Toast.LENGTH_SHORT).show();
-                setCategoryListRecyclerView();
+                updateCategoryList();
             }
         });
 

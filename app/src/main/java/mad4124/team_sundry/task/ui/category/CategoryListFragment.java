@@ -55,6 +55,7 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
         binding.categoryRecycler.setHasFixedSize(true);
         binding.categoryRecycler.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
         binding.categoryRecycler.setAdapter(adapter);
+
     }
 
     public void loadCategories() {

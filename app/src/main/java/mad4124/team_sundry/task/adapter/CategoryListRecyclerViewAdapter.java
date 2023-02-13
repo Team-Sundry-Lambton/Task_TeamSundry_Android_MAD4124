@@ -1,15 +1,24 @@
 package mad4124.team_sundry.task.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 
+import mad4124.team_sundry.task.R;
 import mad4124.team_sundry.task.databinding.CategoryRowBinding;
 import mad4124.team_sundry.task.model.Category;
 
@@ -39,7 +48,17 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
         holder.bind(categoryList.get(position));
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                // Show the action popup
+                showPopupMenu(v);
+                return false;
+            }
+        });
     }
 
     @Override
@@ -73,5 +92,32 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
         this.categoryList = tList;
         notifyDataSetChanged();
     }
+
+    // pop menu
+
+    private void showPopupMenu(View view) {
+        PopupMenu popup = new PopupMenu(view.getContext(), view);
+        popup.inflate(R.menu.category_context_menu);
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.action_edit:
+                        // Handle the edit action
+                        return true;
+                    case R.id.action_delete:
+                        // Handle the delete action
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+        popup.show();
+    }
+
+
+
+
 
 }

@@ -34,7 +34,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        app:title="Category List"
+        app:title="All Categories"
+        app:titleTextColor="@color/theme_dark_purple"
         tools:ignore="MissingConstraints" />
 
     <com.google.android.material.bottomappbar.BottomAppBar

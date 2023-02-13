@@ -162,21 +162,34 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
         // Set the dialog's view
         builder.setView(dialogView);
 
+        // Get references to the dialog's views
+        Button btnNegative = dialogView.findViewById(R.id.cancel_button);
+        Button btnPositive = dialogView.findViewById(R.id.add_button);
+
         // Add a positive button for saving the changes
-        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+        btnPositive.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
+            public void onClick(View v) {
                 // Update the category object with the new title
                 String newCategory = categoryTitleEditText.getText().toString();
                 int id = category.getId();
                 viewModel.updateCategoryName(newCategory,id);
+                dialog.dismiss();
                 Toast.makeText(context, "Category updated successfully!", Toast.LENGTH_SHORT).show();
                 // Notify the adapter that the data has changed
                 setDataList(viewModel.getAllCategories());
             }
         });
+
         // Add a negative button for cancelling the changes
-        builder.setNegativeButton("Cancel", null);
+        btnNegative.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Perform action on click
+                dialog.dismiss();
+            }
+        });
+
         // Show the dialog
         builder.show();
     }

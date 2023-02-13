@@ -1,10 +1,13 @@
 package mad4124.team_sundry.task.ui.category;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import mad4124.team_sundry.task.R;
 import mad4124.team_sundry.task.adapter.CategoryListRecyclerViewAdapter;
 import mad4124.team_sundry.task.adapter.CategoryRecyclerViewAdapter;
 import mad4124.team_sundry.task.adapter.TaskRecyclerViewAdapter;
@@ -35,7 +39,7 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
     private List<Category> categoryList = new ArrayList<>();
     private CategoryListRecyclerViewAdapter adapter;
     MainViewModel viewModel;
-
+    private AlertDialog dialog;
 
     @Nullable
     @Override
@@ -55,6 +59,10 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
         binding.categoryRecycler.setHasFixedSize(true);
         binding.categoryRecycler.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
         binding.categoryRecycler.setAdapter(adapter);
+
+        binding.fabCategory.setOnClickListener(v->{
+            showAddCategoryModal();
+        });
 
     }
 
@@ -77,5 +85,39 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
     public void onItemClick(int position) {
 
     }
+
+    // add new category dialog
+
+    private void showAddCategoryModal() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        View view = getLayoutInflater().inflate(R.layout.modal_add_category, null);
+        final EditText etCategoryTitle = view.findViewById(R.id.category_title_input);
+        Button btnAdd = view.findViewById(R.id.add_button);
+        Button btnCancel = view.findViewById(R.id.cancel_button);
+
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Add the new category to the database or data source
+                String categoryTitle = etCategoryTitle.getText().toString();
+                Category category = new Category();
+                category.setName(categoryTitle);
+                viewModel.addCategory(category);
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Dismiss the modal dialog
+                dialog.dismiss();
+            }
+        });
+
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.show();
+    }
+
 
 }

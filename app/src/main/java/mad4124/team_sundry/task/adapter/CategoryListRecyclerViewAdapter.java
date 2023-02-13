@@ -15,6 +15,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupMenu;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
@@ -37,7 +39,7 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
     private OnItemClickListener onItemClickListener;
     private List<Category> categoryList ;
 
-    MainViewModel viewModel;
+    private MainViewModel viewModel;
     private AlertDialog dialog;
 
     public CategoryListRecyclerViewAdapter(List<Category> categoryList, Context context, OnItemClickListener onItemClickListener, MainViewModel viewModel){
@@ -122,6 +124,7 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
                         return true;
                     case R.id.action_delete:
                         // Handle the delete action
+                        showDeleteCategoryDialog(category);
                         return true;
                     default:
                         return false;
@@ -164,6 +167,44 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
         builder.setNegativeButton("Cancel", null);
         // Show the dialog
         builder.show();
+    }
+
+    // delete dialog box
+    private void showDeleteCategoryDialog(Category category) {
+
+        // Create the dialog using an AlertDialog.Builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        // Inflate the layout for the dialog
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.category_delete_dialog, null);
+        // Set the dialog's view
+        builder.setView(dialogView);
+        dialog = builder.create();
+
+        // Get references to the dialog's views
+        Button btnNegative = dialogView.findViewById(R.id.btn_negative);
+        Button btnPositive = dialogView.findViewById(R.id.btn_positive);
+        btnNegative.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Perform action on click
+                dialog.dismiss();
+            }
+        });
+
+        btnPositive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Perform action on click
+                viewModel.deleteCategory(category);
+                dialog.dismiss();
+                Toast.makeText(context, "Category removed successfully!", Toast.LENGTH_SHORT).show();
+                // Notify the adapter that the data has changed
+                setDataList();
+            }
+        });
+
+        dialog.show();
     }
 }
 

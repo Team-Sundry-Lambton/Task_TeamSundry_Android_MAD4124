@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,10 +37,12 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
 
     FragmentCategoryListBinding binding = null;
 
-    private List<Category> categoryList = new ArrayList<>();
+    private List<Category> categoryList;
     private CategoryListRecyclerViewAdapter adapter;
-    MainViewModel viewModel;
+    private MainViewModel viewModel;
     private AlertDialog dialog;
+
+    private RecyclerView recyclerView;
 
     @Nullable
     @Override
@@ -54,31 +57,17 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
-        loadCategories();
-        adapter = new CategoryListRecyclerViewAdapter(categoryList, getContext(), this, viewModel);
-        binding.categoryRecycler.setHasFixedSize(true);
-        binding.categoryRecycler.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
-        binding.categoryRecycler.setAdapter(adapter);
-
+        setCategoryListRecyclerView();
         binding.fabCategory.setOnClickListener(v->{
             showAddCategoryModal();
         });
 
     }
 
-    public void loadCategories() {
-//        Category category = new Category();
-//        category.setId(5);
-//        category.setName("Shopping");
-//        viewModel.addCategory(category);
-        categoryList = viewModel.getAllCategories();
-    }
-
     @Override
     public void onResume() {
         super.onResume();
-        loadCategories();
-        adapter.notifyDataSetChanged();
+        setCategoryListRecyclerView();
     }
 
     @Override
@@ -86,11 +75,24 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
 
     }
 
+    // set adapter
+
+    private void setCategoryListRecyclerView(){
+        categoryList = viewModel.getAllCategories();
+        adapter = new CategoryListRecyclerViewAdapter(categoryList, getContext(), this, viewModel);
+        recyclerView = binding.categoryRecycler;
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
+        recyclerView.setAdapter(adapter);
+    }
+
     // add new category dialog
 
     private void showAddCategoryModal() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         View view = getLayoutInflater().inflate(R.layout.modal_add_category, null);
+        builder.setView(view);
+        dialog = builder.create();
         final EditText etCategoryTitle = view.findViewById(R.id.category_title_input);
         Button btnAdd = view.findViewById(R.id.add_button);
         Button btnCancel = view.findViewById(R.id.cancel_button);
@@ -103,6 +105,9 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
                 Category category = new Category();
                 category.setName(categoryTitle);
                 viewModel.addCategory(category);
+                dialog.dismiss();
+                Toast.makeText(getContext(), "Category added successfully!", Toast.LENGTH_SHORT).show();
+                setCategoryListRecyclerView();
             }
         });
 
@@ -113,9 +118,6 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
                 dialog.dismiss();
             }
         });
-
-        builder.setView(view);
-        dialog = builder.create();
         dialog.show();
     }
 

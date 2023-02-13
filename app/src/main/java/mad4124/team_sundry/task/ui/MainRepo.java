@@ -64,4 +64,6 @@ public class MainRepo {
         return dbDao.getAllMedias(taskID);
     }
     void updateCategoryName(String categoryName,int id){ dbDao.updateCategoryName(categoryName, id); }
+
+    void deleteCategory(Category category) { dbDao.deleteCategory(category);}
 }

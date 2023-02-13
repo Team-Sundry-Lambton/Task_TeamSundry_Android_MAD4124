@@ -67,4 +67,6 @@ public class MainViewModel extends ViewModel {
     }
 
     public void updateCategoryName(String categoryName,int id){ repo.updateCategoryName(categoryName, id); }
+
+    public void deleteCategory(Category category){ repo.deleteCategory(category); }
 }

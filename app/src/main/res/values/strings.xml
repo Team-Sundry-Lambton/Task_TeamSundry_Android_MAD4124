@@ -1,5 +1,27 @@
 <resources>
     <string name="app_name">Task_TeamSundry_Android_MAD4124</string>
+
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
+    <string name="get_started">Get started</string>
+
+    <string name="onboarding_slide1_title">Step 1</string>
+    <string name="onboarding_slide1_subtitle">Create Category</string>
+    <string name="onboarding_slide1_desc">In particular, the garbled words of bear an unmistakable</string>
+
+    <string name="onboarding_slide2_title">Step 2</string>
+    <string name="onboarding_slide2_subtitle">Create Task/Note</string>
+    <string name="onboarding_slide2_desc">In particular, the garbled words of bear an unmistakable</string>
+
+    <string name="onboarding_slide3_title">Step 3</string>
+    <string name="onboarding_slide3_subtitle">Add/Edit your details</string>
+    <string name="onboarding_slide3_desc">In particular, the garbled words of bear an unmistakable</string>
+
+    <string name="menu_pin">Pin</string>
+    <string name="menu_notify">Notify</string>
+    <string name="menu_archive">Archive</string>
+
+
     <string name="google_maps_key"></string>
     <string name="task_image">Task image</string>
     <string name="title_row">Title</string>
@@ -9,3 +31,4 @@
     <string name="pick_sort_option">Pick Sort Option</string>
     <string name="search">Search...</string>
 </resources>
+

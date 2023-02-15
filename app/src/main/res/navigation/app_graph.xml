@@ -5,6 +5,7 @@
     android:id="@+id/app_graph"
     app:startDestination="@id/categoryListFragment">
 
+
     <fragment
         android:id="@+id/splashFragment"
         android:name="mad4124.team_sundry.task.ui.splash.SplashFragment"

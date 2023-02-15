@@ -97,11 +97,12 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
         }
         public void bind(Category model){
             int id = model.getId();
+            List<Task> tasks = viewModel.getAllTasksSortByCreatedDate(id);
             int randomIndex = new Random().nextInt(backgroundImages.length);
             binding.imageClassAdapter.setBackgroundResource(backgroundImages[randomIndex]);
             binding.frameBg.setBackgroundResource(backgroundColors[randomIndex]);
             binding.categoryName.setText(model.getName());
-            binding.totalTasks.setText(model.getName());
+            binding.totalTasks.setText("Total tasks/notes: "+ tasks.size());
         }
 
         @Override
@@ -161,6 +162,7 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
 
         // Set the dialog's view
         builder.setView(dialogView);
+        dialog = builder.create();
 
         // Get references to the dialog's views
         Button btnNegative = dialogView.findViewById(R.id.cancel_button);
@@ -176,8 +178,6 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
                 viewModel.updateCategoryName(newCategory,id);
                 dialog.dismiss();
                 Toast.makeText(context, "Category updated successfully!", Toast.LENGTH_SHORT).show();
-                // Notify the adapter that the data has changed
-                setDataList(viewModel.getAllCategories());
             }
         });
 
@@ -191,7 +191,7 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
         });
 
         // Show the dialog
-        builder.show();
+        dialog.show();
     }
 
     // delete dialog box
@@ -224,19 +224,12 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
                 viewModel.deleteCategory(category);
                 dialog.dismiss();
                 Toast.makeText(context, "Category removed successfully!", Toast.LENGTH_SHORT).show();
-                // Notify the adapter that the data has changed
-                setDataList(viewModel.getAllCategories());
+
             }
         });
 
         dialog.show();
     }
 
-    private void setBackgroundOpacity(View view, float opacity) {
-        AlphaAnimation alpha = new AlphaAnimation(opacity, opacity);
-        alpha.setDuration(0);
-        alpha.setFillAfter(true);
-        view.startAnimation(alpha);
-    }
 }
 

@@ -1,6 +1,8 @@
 package mad4124.team_sundry.task.ui;
 
 
+import androidx.lifecycle.LiveData;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -26,6 +28,10 @@ public class MainRepo {
 
     List<Category> getAllCategory() {
        return dbDao.getAllCategories();
+    }
+
+    LiveData<List<Category>> getAllLiveCategory(String text) {
+        return dbDao.getAllLiveCategories(text);
     }
 
     void changeParentOfSelectedTasks(int categoryId,int taskIs){

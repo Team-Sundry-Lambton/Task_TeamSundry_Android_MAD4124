@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -62,17 +63,28 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
             showAddCategoryModal();
         });
 
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                loadRecyclerData(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                loadRecyclerData(newText);
+                return false;
+            }
+        });
+
+        loadRecyclerData("");
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        updateCategoryList();
-    }
-
-    public void updateCategoryList(){
-        categoryList = viewModel.getAllCategories();
-        adapter.setDataList(viewModel.getAllCategories());
+        loadRecyclerData("");
     }
 
     @Override
@@ -83,7 +95,6 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
     // set adapter
 
     private void setCategoryListRecyclerView(){
-        categoryList = viewModel.getAllCategories();
         adapter = new CategoryListRecyclerViewAdapter(categoryList, getContext(), this, viewModel);
         recyclerView = binding.categoryRecycler;
         recyclerView.setHasFixedSize(true);
@@ -112,7 +123,6 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
                 viewModel.addCategory(category);
                 dialog.dismiss();
                 Toast.makeText(getContext(), "Category added successfully!", Toast.LENGTH_SHORT).show();
-                updateCategoryList();
             }
         });
 
@@ -125,6 +135,22 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
         });
         dialog.show();
     }
+
+    public void loadRecyclerData(String keyword){
+        viewModel.getAllLiveCategories(keyword).observe(getViewLifecycleOwner(),categories -> {
+            categoryList = categories;
+            adapter.setDataList(categories);
+
+            if(keyword.isEmpty()){
+                binding.categoryToolbar.setTitle("All Categories ("+categories.size()+" available)");
+            }
+            else{
+                binding.categoryToolbar.setTitle("Searched Categories ("+categories.size()+" available)");
+            }
+        });
+    }
+
+
 
 
 }

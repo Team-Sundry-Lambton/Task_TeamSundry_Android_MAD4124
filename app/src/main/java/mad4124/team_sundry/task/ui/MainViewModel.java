@@ -1,5 +1,6 @@
 package mad4124.team_sundry.task.ui;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
@@ -28,6 +29,10 @@ public class MainViewModel extends ViewModel {
 
     public List<Category> getAllCategories(){
         return repo.getAllCategory();
+    }
+
+    public LiveData<List<Category>> getAllLiveCategories(String text){
+        return repo.getAllLiveCategory(text);
     }
 
     public void changeParentOfSelectedTasks(int categoryId,int taskIs){

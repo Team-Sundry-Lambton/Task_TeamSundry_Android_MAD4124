@@ -23,6 +23,9 @@ public interface DbDao {
     @Query("Select * from categories")
     List<Category> getAllCategories();
 
+    @Query("Select * from categories where name like '%'||:text||'%'")
+    LiveData<List<Category>> getAllLiveCategories(String text);
+
     @Delete
     void deleteCategory(Category category);
 

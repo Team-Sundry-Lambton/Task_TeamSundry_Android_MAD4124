@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -89,7 +90,10 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
 
     @Override
     public void onItemClick(int position) {
-
+            Category clickedCategory = categoryList.get(position);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("categoryId", clickedCategory.getId());
+            Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_categoryListFragment_to_taskListFragment,bundle);
     }
 
     // set adapter

@@ -97,11 +97,12 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
         }
         public void bind(Category model){
             int id = model.getId();
+            List<Task> tasks = viewModel.getAllTasksSortByCreatedDate(id);
             int randomIndex = new Random().nextInt(backgroundImages.length);
             binding.imageClassAdapter.setBackgroundResource(backgroundImages[randomIndex]);
             binding.frameBg.setBackgroundResource(backgroundColors[randomIndex]);
             binding.categoryName.setText(model.getName());
-            binding.totalTasks.setText(model.getName());
+            binding.totalTasks.setText("Total tasks/notes: "+ tasks.size());
         }
 
         @Override

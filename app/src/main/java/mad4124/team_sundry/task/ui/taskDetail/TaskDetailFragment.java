@@ -1,9 +1,14 @@
 package mad4124.team_sundry.task.ui.taskDetail;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,6 +17,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -162,7 +169,31 @@ public class TaskDetailFragment extends Fragment {
     }
 
     void showMoreOptions() {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme);
+        View bottomBarView = LayoutInflater.from(requireContext()).inflate(R.layout.task_detail_bottom_sheet_add_more_options, null);
+        bottomSheetDialog.setContentView(bottomBarView);
 
+        // Find the buttons in the bottom bar view and set their onClickListeners
+        Button takePhotoButton = bottomBarView.findViewById(R.id.takePhoto);
+        takePhotoButton.setOnClickListener(v -> {
+            // Handle "Take photo" option
+            bottomSheetDialog.dismiss();
+        });
+
+        Button addImageButton = bottomBarView.findViewById(R.id.addImage);
+        addImageButton.setOnClickListener(v -> {
+            // Handle "Add image" option
+            bottomSheetDialog.dismiss();
+        });
+
+        Button startRecordingButton = bottomBarView.findViewById(R.id.addRecording);
+        startRecordingButton.setOnClickListener(v -> {
+            // Handle "Start recording" option
+            bottomSheetDialog.dismiss();
+        });
+
+        // Show the bottom bar
+        bottomSheetDialog.show();
     }
 
     void saveData(){

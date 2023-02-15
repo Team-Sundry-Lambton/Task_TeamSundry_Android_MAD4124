@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/app_graph"
-    app:startDestination="@id/taskDetailFragment">
+    app:startDestination="@id/categoryListFragment">
+
 
     <fragment
         android:id="@+id/splashFragment"

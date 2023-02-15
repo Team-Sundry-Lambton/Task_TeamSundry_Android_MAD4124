@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="24sp"
+        android:textColor="@color/black"
+        android:text="Options"
+        android:textAlignment="center"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/viewDetail"
+        style="@style/MyTextButton.Options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View Details"
+        app:icon="@drawable/menu_view"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/editDetail"
+        style="@style/MyTextButton.Options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Edit Details"
+        app:icon="@drawable/menu_edit"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/deleteDetail"
+        style="@style/MyTextButton.Options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete Record"
+        app:icon="@drawable/menu_delete"
+        />
+
+</LinearLayout>

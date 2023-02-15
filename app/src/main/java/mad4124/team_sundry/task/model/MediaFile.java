@@ -1,10 +1,21 @@
 package mad4124.team_sundry.task.model;
 
+import static androidx.room.ForeignKey.CASCADE;
+
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 
-@Entity(tableName = "medias")
+@Entity(tableName = "medias",
+        indices = {@Index("task_id")},
+        foreignKeys = @ForeignKey(entity = Task.class,
+                parentColumns = "id",
+                childColumns = "task_id",
+                onDelete = CASCADE)
+)
 public class MediaFile {
 
     @PrimaryKey(autoGenerate = true)
@@ -12,6 +23,7 @@ public class MediaFile {
     private String name;
     private boolean isImage;
     private String path;
+    @ColumnInfo(name = "task_id")
     private int taskId;
 
     public int getId() {

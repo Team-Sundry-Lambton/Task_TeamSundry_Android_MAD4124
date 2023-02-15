@@ -1,11 +1,22 @@
 package mad4124.team_sundry.task.model;
 
+import static androidx.room.ForeignKey.CASCADE;
+
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import java.util.Date;
 
-@Entity(tableName = "tasks")
+@Entity(tableName = "tasks",
+        indices = {@Index("category_id")},
+        foreignKeys = @ForeignKey(entity = Task.class,
+                parentColumns = "id",
+                childColumns = "category_id",
+                onDelete = CASCADE)
+)
 public class Task {
 
     @PrimaryKey(autoGenerate = true)
@@ -17,6 +28,9 @@ public class Task {
     private boolean status;
     private String description;
     private String categoryName;
+
+    @ColumnInfo(name = "category_id")
+    private int parentCategoryId;
 
     public int getId() {
         return id;
@@ -80,5 +94,13 @@ public class Task {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public void setParentCategoryId(int parentCategoryId) {
+        this.parentCategoryId = parentCategoryId;
+    }
+
+    public int getParentCategoryId() {
+        return parentCategoryId;
     }
 }

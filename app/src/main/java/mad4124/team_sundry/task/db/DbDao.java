@@ -52,4 +52,7 @@ public interface DbDao {
 
     @Query("UPDATE tasks SET category_id =:categoryId WHERE id = :taskIs")
     void changeParentOfSelectedTasks(int categoryId,int taskIs);
+
+    @Query("UPDATE categories SET name =:categoryName WHERE id = :id")
+    void updateCategoryName(String categoryName,int id);
 }

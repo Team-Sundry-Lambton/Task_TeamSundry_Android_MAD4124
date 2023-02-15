@@ -22,7 +22,7 @@ public class MainViewModel extends ViewModel {
         this.repo = repo;
     }
 
-    void addCategory(Category category) {
+    public void addCategory(Category category) {
         repo.addCategory(category);
     }
 
@@ -65,4 +65,8 @@ public class MainViewModel extends ViewModel {
     public List<MediaFile> getAllMedias(int taskID){
         return repo.getAllMedias(taskID);
     }
+
+    public void updateCategoryName(String categoryName,int id){ repo.updateCategoryName(categoryName, id); }
+
+    public void deleteCategory(Category category){ repo.deleteCategory(category); }
 }

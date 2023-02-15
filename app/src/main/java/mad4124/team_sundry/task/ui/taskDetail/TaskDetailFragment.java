@@ -27,7 +27,6 @@ import mad4124.team_sundry.task.ui.MainViewModel;
 @AndroidEntryPoint
 public class TaskDetailFragment extends Fragment {
 
-
     FragmentTaskDetailBinding binding;
     MainViewModel viewModel;
     Task task = null;

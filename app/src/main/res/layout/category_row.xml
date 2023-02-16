@@ -40,8 +40,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Cloud Computing"
-                android:textColor="@color/white"
+                android:textColor="@color/text_grey"
                 android:textSize="20dp"
+                android:shadowColor="#ffffff"
+                android:shadowDx="4"
+                android:shadowDy="4"
+                android:shadowRadius="3"
                 android:textStyle="bold" />
 
             <TextView
@@ -51,7 +55,12 @@
                 android:layout_below="@+id/categoryName"
                 android:layout_marginTop="49dp"
                 android:text="tasks/notes: 0"
-                android:textColor="@color/white" />
+                android:shadowColor="#ffffff"
+                android:shadowDx="4"
+                android:shadowDy="4"
+                android:shadowRadius="3"
+                android:textColor="@color/text_grey"
+                android:textStyle="bold"/>
         </RelativeLayout>
 
     </FrameLayout>

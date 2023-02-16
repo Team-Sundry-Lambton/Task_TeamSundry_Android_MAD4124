@@ -20,5 +20,6 @@
     <color name="theme_dark_purple">#6979F8</color>
     <color name="theme_yellow">#FFBA00</color>
     <color name="search_bg_color">#EEF3FF</color>
+    <color name="text_grey">#3C3C43</color>
 </resources>
 

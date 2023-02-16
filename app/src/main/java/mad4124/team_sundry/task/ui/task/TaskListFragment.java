@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -126,36 +127,38 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
             return false;
         });
 
-        registerForContextMenu(binding.optionMenu);
-        binding.optionMenu.setOnClickListener(new Button.OnClickListener() {
+        binding.optionMenu.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                v.showContextMenu();
+                //Creating the instance of PopupMenu
+                PopupMenu popup = new PopupMenu(getContext(), binding.optionMenu);
+                //Inflating the Popup using xml file
+                popup.getMenuInflater().inflate(R.menu.task_popup_menu, popup.getMenu());
+                //registering popup with OnMenuItemClickListener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+
+                        switch (item.getItemId()) {
+                            case R.id.select_task:
+                                moveOptionSelected();
+                                return true;
+                            case R.id.sort_task:
+                                createSortMenuOptions();
+                                return true;
+                            case R.id.view_map:
+                                loadMapView();
+                                return true;
+                        }
+                        return true;
+                    }
+                });
+
+                popup.show();//showing popup menu
             }
         });
     }
 
-    //Context Menu Creation
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, v.getId(), 0, "Select Task");
-        menu.add(1, v.getId(), 1, "Sort Task");
-        menu.add(2, v.getId(), 2, "View On Map");
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        if (item.getTitle() == "Select Task") {
-            moveOptionSelected();
-        }
-        else if (item.getTitle() == "Sort Task") {
-            createSortMenuOptions();
-        }else if (item.getTitle() == "View On Map") {
-            loadMapView();
-        }
-        return true;
-    }
     private void loadTasks() {
         taskList = viewModel.getAllTasks(categoryId);
         if (taskList.size() > 0) {

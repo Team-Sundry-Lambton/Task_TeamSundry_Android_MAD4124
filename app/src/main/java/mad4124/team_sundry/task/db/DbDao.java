@@ -58,4 +58,7 @@ public interface DbDao {
 
     @Query("UPDATE categories SET name =:categoryName WHERE id = :id")
     void updateCategoryName(String categoryName,int id);
+
+    @Query("Select * from categories where id != :categoryID")
+    List<Category> getAllCategoriesExceptSelected(int categoryID);
 }

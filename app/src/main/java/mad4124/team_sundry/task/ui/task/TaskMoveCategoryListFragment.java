@@ -37,6 +37,8 @@ public class TaskMoveCategoryListFragment extends Fragment implements CategoryRe
 
     private  List<Integer> selectedTasksIds = new ArrayList<>();
 
+    private int categoryId = 0;
+
     @Nullable
     @Override
     public View onCreateView(
@@ -55,11 +57,12 @@ public class TaskMoveCategoryListFragment extends Fragment implements CategoryRe
         binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
         binding.recyclerView.setAdapter(adapter);
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
+        categoryId = getArguments().getInt("category_id");
         loadFolders();
     }
 
     private void loadFolders() {
-        categoryList = viewModel.getAllCategories();
+        categoryList = viewModel.getAllCategoriesExceptSelected(categoryId);
         adapter.notifyDataSetChanged();
     }
 

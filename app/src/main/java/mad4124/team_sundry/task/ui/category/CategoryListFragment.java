@@ -39,7 +39,7 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
 
     FragmentCategoryListBinding binding = null;
 
-    private List<Category> categoryList;
+    private List<Category> categoryList = new ArrayList<>();
     private CategoryListRecyclerViewAdapter adapter;
     private MainViewModel viewModel;
     private AlertDialog dialog;

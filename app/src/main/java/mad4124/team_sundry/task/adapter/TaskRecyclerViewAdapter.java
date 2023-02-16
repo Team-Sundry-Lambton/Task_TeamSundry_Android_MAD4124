@@ -59,6 +59,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         public ViewHolder(TaskRowBinding binding){
             super(binding.getRoot());
             this.binding = binding;
+            itemView.setOnClickListener(this);
         }
         public void bind(Task model){
             int id = model.getId();

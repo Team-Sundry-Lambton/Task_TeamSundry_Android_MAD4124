@@ -50,6 +50,7 @@ public class CategoryRecyclerViewAdapter extends RecyclerView.Adapter<CategoryRe
         public ViewHolder(RowCategoryListLayoutBinding binding){
             super(binding.getRoot());
             this.binding = binding;
+            itemView.setOnClickListener(this);
         }
         public void bind(Category model){
             binding.titleRow.setText(model.getName());

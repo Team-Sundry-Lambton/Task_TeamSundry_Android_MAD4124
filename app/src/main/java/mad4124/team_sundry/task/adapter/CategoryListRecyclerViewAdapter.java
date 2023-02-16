@@ -97,6 +97,7 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
         }
         public void bind(Category model){
             int id = model.getId();
+            binding.getRoot().setOnClickListener(this);
             List<Task> tasks = viewModel.getAllTasksSortByCreatedDate(id);
             int randomIndex = new Random().nextInt(backgroundImages.length);
             binding.imageClassAdapter.setBackgroundResource(backgroundImages[randomIndex]);

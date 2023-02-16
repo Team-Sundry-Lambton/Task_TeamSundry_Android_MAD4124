@@ -8,18 +8,22 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity(tableName = "tasks",
         indices = {@Index("category_id")},
-        foreignKeys = @ForeignKey(entity = Task.class,
-                parentColumns = "id",
-                childColumns = "category_id",
-                onDelete = CASCADE)
+        foreignKeys = {
+            @ForeignKey(entity = Category.class,
+                    parentColumns = "id",
+                    childColumns = "category_id",
+                    onDelete = CASCADE)
+        }
 )
-public class Task {
+public class Task implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
     private int id;
     private String title;
     private Long createdDate;

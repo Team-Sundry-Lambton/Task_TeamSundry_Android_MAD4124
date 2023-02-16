@@ -4,6 +4,9 @@ import android.content.Context;
 
 import androidx.room.Room;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -31,6 +34,13 @@ public class DbModule {
     @Singleton
     DbDao provideDbDao(AppDatabase appDatabase) {
         return appDatabase.dbDao();
+    }
+
+    private static final int NUMBER_OF_THREADS = 4;
+    @Provides
+    @Singleton
+    ExecutorService provideExecutorService(){
+        return Executors.newFixedThreadPool(NUMBER_OF_THREADS);
     }
 
 }

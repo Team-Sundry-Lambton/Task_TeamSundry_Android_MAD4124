@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import mad4124.team_sundry.task.R;
@@ -28,6 +29,7 @@ public class TaskDetailFragment extends Fragment {
     FragmentTaskDetailBinding binding;
     MainViewModel viewModel;
     Task task = null;
+    int parentCategoryId = -1;
 
     ArrayList<MediaFile> imageFiles = new ArrayList<>();
     ArrayList<MediaFile> audioFiles = new ArrayList<>();
@@ -52,6 +54,7 @@ public class TaskDetailFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         if (getArguments() != null) {
+            parentCategoryId = getArguments().getInt("id",-1);
             task = (Task) getArguments().getSerializable("task");
             initData(task);
         }
@@ -93,13 +96,21 @@ public class TaskDetailFragment extends Fragment {
             return;
         }
 
-        task.setTitle(binding.etTitle.getText().toString());
-        task.setDescription(binding.etDesc.getText().toString());
+        if(task == null){
+            task = new Task();
+            task.setCreatedDate(Calendar.getInstance().getTimeInMillis());
+        }
+        task.setDueDate(0L);
+        task.setParentCategoryId(parentCategoryId);
+        task.setTitle(title);
+        task.setDescription(desc);
+        task.setStatus(false);
+        task.setTask(true);
 
+        viewModel.insert(task);
         for(MediaFile audio: audioFiles){
             //save audio file
             audio.setTaskId(task.getId());
-
         }
 
         for(MediaFile image: imageFiles){
@@ -110,8 +121,10 @@ public class TaskDetailFragment extends Fragment {
         for(SubTask subTask:subTasks){
             //save subTask of this task
             subTask.setParentTaskId(task.getId());
-
         }
+
+
+
     }
 
     void initData(Task task) {

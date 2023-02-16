@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -69,7 +70,8 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
         binding.recyclerView.setAdapter(adapter);
-
+        binding.bottomAppBar.setVisibility(View.GONE);
+       categoryId = getArguments().getInt("categoryId");
         loadTasks();
         binding.addTask.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,6 +124,12 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
         });
 
         registerForContextMenu(binding.optionMenu);
+        binding.optionMenu.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.showContextMenu();
+            }
+        });
     }
 
     //Context Menu Creation
@@ -135,12 +143,12 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if (item.getItemId() == 0) {
+        if (item.getTitle() == "Select Task") {
             moveOptionSelected();
         }
-        else if (item.getItemId() == 1) {
+        else if (item.getTitle() == "Sort Task") {
             createSortMenuOptions();
-        }else if (item.getItemId() == 2) {
+        }else if (item.getTitle() == "View On Map") {
             loadMapView();
         }
         return true;
@@ -291,34 +299,42 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
     //Selected Tasks Options
     private void deleteSelectedTasks(){
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Deleting Tasks will delete it subtasks also. Do you want to delete?");
-        builder.setPositiveButton("Yes", (dialog, which) -> {
-            for (Task task:selectedTasks
-                 ) {
-                viewModel.delete(task);
+        if (selectedTasks.size() > 0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Deleting Tasks will delete it subtasks also. Do you want to delete?");
+            builder.setPositiveButton("Yes", (dialog, which) -> {
+                for (Task task : selectedTasks
+                ) {
+                    viewModel.delete(task);
 
-            }
-            adapter.notifyDataSetChanged();
-            Toast.makeText(getActivity(), "Tasks deleted", Toast.LENGTH_SHORT).show();
-        });
-        builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
-            dialog.cancel();
-            adapter.notifyDataSetChanged();
-        });
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
+                }
+                adapter.notifyDataSetChanged();
+                Toast.makeText(getActivity(), "Tasks deleted", Toast.LENGTH_SHORT).show();
+            });
+            builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
+                dialog.cancel();
+                adapter.notifyDataSetChanged();
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }else {
+            Toast.makeText(getActivity(),"Please select tasks to delete...",Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void loadCategoryList(){
-        List<Integer> taskIds = new ArrayList<>();
-        for (Task task:selectedTasks
-             ) {
-            taskIds.add(task.getId());
+        if (selectedTasks.size() > 0) {
+            List<Integer> taskIds = new ArrayList<>();
+            for (Task task : selectedTasks
+            ) {
+                taskIds.add(task.getId());
+            }
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("data",null);
+            Navigation.findNavController(requireActivity(), R.id.fragContainerView).navigate(R.id.action_taskListFragment_to_mapAllTasksFragment, bundle);
+        }else {
+            Toast.makeText(getActivity(),"Please select tasks to move...",Toast.LENGTH_SHORT).show();
         }
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("data", null);
-        Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_taskListFragment_to_mapAllTasksFragment,bundle);
     }
 
 

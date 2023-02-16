@@ -151,6 +151,12 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
             else{
                 binding.categoryToolbar.setTitle("Searched Categories ("+categories.size()+" available)");
             }
+
+            if (categoryList.size() > 0) {
+                binding.emptyView.setVisibility(View.INVISIBLE);
+            }else {
+                binding.emptyView.setVisibility(View.VISIBLE);
+            }
         });
     }
 

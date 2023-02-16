@@ -1,6 +1,30 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Recording"
+        android:gravity="center"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:paddingTop="16dp" />
+    <ImageView
+        android:layout_width="88dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:contentDescription="Icon"
+        android:src="@drawable/ic_microphone_96" />
+    <Button
+        android:id="@+id/btnHandleRecording"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:text="START"
+        android:backgroundTint="@color/theme_dark_purple"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

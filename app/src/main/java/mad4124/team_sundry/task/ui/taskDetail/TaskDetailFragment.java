@@ -7,6 +7,8 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
@@ -71,15 +73,22 @@ public class TaskDetailFragment extends Fragment {
     int parentCategoryId = -1;
     boolean isEditing = false;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private ActivityResultLauncher<Intent> cameraLauncher;
     private static final int REQUEST_IMAGE_GALLERY = 101;
     private static final int REQUEST_STORAGE_PERMISSION = 102;
     String currentPhotoPath;
+    String fileName;
+    private static final int GALLERY_REQUEST_CODE = 103;
 
 
     private MediaRecorder mediaRecorder;
     private boolean isRecording = false;
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private AlertDialog dialog;
+    private MediaPlayer mediaPlayer;
+    private boolean isPlaying = false;
+    private File audioFile;
 
     ArrayList<MediaFile> imageFiles = new ArrayList<>();
     ArrayList<MediaFile> audioFiles = new ArrayList<>();
@@ -119,6 +128,20 @@ public class TaskDetailFragment extends Fragment {
 
         binding.fab.setOnClickListener(v -> {
             showMoreOptions();
+        });
+
+        binding.playButton.setOnClickListener(v -> {
+            if (isPlaying) {
+                // Pause the audio
+                mediaPlayer.pause();
+                isPlaying = false;
+                binding.playButton.setText("Play " + fileName.toString());
+            } else {
+                // Play the audio
+                mediaPlayer.start();
+                isPlaying = true;
+                binding.playButton.setText("Playing " + fileName.toString());
+            }
         });
 
         binding.toolbar.setOnMenuItemClickListener(item -> {
@@ -215,16 +238,19 @@ public class TaskDetailFragment extends Fragment {
         bottomSheetDialog.setContentView(bottomBarView);
 
         // Find the buttons in the bottom bar view and set their onClickListeners
+
         //addMoreOptionsBinding.takePhoto.setOnClickListener(new View.OnClickListener() {
         Button takePhotoButton = bottomBarView.findViewById(R.id.takePhoto);
         takePhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d("Take photo", "clicked");
-                // Handle "Open camera and take a photo" option
+                // Handle "Start recording" option
                 if (hasCameraPermission()) {
+                    Log.d("Take photo", "got permission");
                     launchCamera();
                 } else {
+                    Log.d("Take photo", "requesting permission");
                     requestCameraPermission();
                 }
                 bottomSheetDialog.dismiss();
@@ -235,15 +261,14 @@ public class TaskDetailFragment extends Fragment {
         addImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Check if permission to access external storage is granted
-                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    // Permission is granted, launch gallery intent
-                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(intent, REQUEST_IMAGE_GALLERY);
-                } else {
-                    // Permission is not granted, request permission
-                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_STORAGE_PERMISSION);
+                if (!isAddImagePermissionGranted()) {
+                    requestAddImagePermission();
+                    return;
                 }
+                Intent galleryIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                galleryIntent.setType("image/*");
+                galleryLauncher.launch(galleryIntent);
                 bottomSheetDialog.dismiss();
             }
         });
@@ -251,6 +276,7 @@ public class TaskDetailFragment extends Fragment {
         Button startRecordingButton = bottomBarView.findViewById(R.id.addRecording);
         startRecordingButton.setOnClickListener(v -> {
             // Handle "Start recording" option
+            addRecording();
             bottomSheetDialog.dismiss();
         });
 
@@ -355,12 +381,17 @@ public class TaskDetailFragment extends Fragment {
         if (photoFile != null) {
             Uri photoURI = FileProvider.getUriForFile(requireContext(), "mad4124.team_sundry.task.fileprovider", photoFile);
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-            takePictureLauncher.launch(photoURI);
+            Log.d("Take photo", "2");
+            Log.d("Take photo", photoURI.toString());
+
+            Uri uri = FileProvider.getUriForFile(requireActivity(), "mad4124.team_sundry.task.fileprovider", photoFile);
+
+            takePictureLauncher.launch(uri);
         }
     }
 
     // Create an instance of ActivityResultLauncher
-    ActivityResultLauncher<Uri> takePictureLauncher = registerForActivityResult(new ActivityResultContracts.TakePicture(),
+    private ActivityResultLauncher<Uri> takePictureLauncher = registerForActivityResult(new ActivityResultContracts.TakePicture(),
             result -> {
         if (result) {
             // The picture was taken successfully
@@ -394,8 +425,174 @@ public class TaskDetailFragment extends Fragment {
         currentPhotoPath = imageFile.getAbsolutePath();
         return imageFile;
     }
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // END OF HANDLE TAKE PHOTO FROM CAMERA
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+
+    //-------------------------------------------------------------------------------------
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // HANDLE ADD IMAGE FROM GALLERY
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    // Request permission to record audio
+    private void requestAddImagePermission() {
+        String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
+        requestPermissions(permissions, GALLERY_REQUEST_CODE);
+    }
+
+    // Check if permission to record audio has been granted
+    private boolean isAddImagePermissionGranted() {
+        return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+    // Create the ActivityResultLauncher for requesting permissions
+    private ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+//                if (isGranted) {
+//                    // Permission is granted, launch the gallery intent
+//                    launchGallery();
+//                } else {
+//                    // Permission is not granted, handle it
+//                    // For example, show a message to the user
+//                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show();
+//                }
+            });
+
+
+    // Create the ActivityResultLauncher for the gallery intent
+    private ActivityResultLauncher<Intent> galleryLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            // The user has selected an image from the gallery
+                            Intent data = result.getData();
+                            if (data != null) {
+                                Uri selectedImage = data.getData();
+                                // Do something with the selected image URI
+                                Log.d("Add image", "clicked");
+                            }
+                        }
+                    });
+
+
+    private void launchGallery(){
+        Log.d("Add image", "clicked");
+
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // END OF HANDLE ADD IMAGE FROM GALLERY
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    //---------------------------------------------------------------------------------------
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // HANDLE RECORDING
+    //////////////////////////////////////////////////////////////////////////////////////////
+    private void addRecording(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        View view = getLayoutInflater().inflate(R.layout.task_detail_recording_dialog, null);
+        builder.setView(view);
+        dialog = builder.create();
+        Button btnHandleRecording = view.findViewById(R.id.btnHandleRecording);
+
+        btnHandleRecording.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isRecording) {
+                    // Update the UI
+                    isRecording = false;
+                    btnHandleRecording.setText("Start");
+                    stopRecording();
+                    dialog.dismiss();
+                } else {
+                    // Update the UI
+                    isRecording = true;
+                    btnHandleRecording.setText("Stop");
+                    startRecording();
+                }
+            }
+        });
+        dialog.show();
+
+    }
+    // Request permission to record audio
+    private void requestRecordAudioPermission() {
+        String[] permissions = {Manifest.permission.RECORD_AUDIO};
+        requestPermissions(permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+    }
+
+    // Check if permission to record audio has been granted
+    private boolean isRecordAudioPermissionGranted() {
+        return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    // Start recording audio
+    private void startRecording() {
+        // Check if permission to record audio has been granted
+        if (!isRecordAudioPermissionGranted()) {
+            requestRecordAudioPermission();
+            return;
+        }
+
+        // Create a new MediaRecorder instance
+        mediaRecorder = new MediaRecorder();
+
+        // Set the audio source to the microphone
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+
+        // Set the output format to AAC ADTS
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
+
+        // Set the audio encoder to AAC
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+
+        // Generate a new file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        fileName = "AUDIO_" + timeStamp + ".aac";
+
+        // Create a new file to save the recorded audio
+        audioFile = new File(requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC), fileName);
+        Log.d("'audioFile'", fileName);
+
+        // Set the output file
+        mediaRecorder.setOutputFile(audioFile.getAbsolutePath());
+        Log.d("'audioFile'", audioFile.getAbsolutePath());
+
+        try {
+            // Prepare the MediaRecorder
+            mediaRecorder.prepare();
+
+            // Start recording
+            mediaRecorder.start();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Stop recording audio
+    private void stopRecording() {
+        // Stop recording
+        mediaRecorder.stop();
+        mediaRecorder.release();
+        mediaRecorder = null;
+
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+        mediaPlayer = new MediaPlayer();
+        try {
+            File audioFile = new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC), fileName);
+            mediaPlayer.setDataSource(audioFile.getAbsolutePath());
+            mediaPlayer.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // END OF HANDLE RECORDING
     //////////////////////////////////////////////////////////////////////////////////////////
 
 }

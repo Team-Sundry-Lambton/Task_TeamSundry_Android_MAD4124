@@ -151,6 +151,7 @@ public class TaskDetailFragment extends Fragment {
                 case R.id.menu_archive:
                     break;
                 case R.id.menu_notify:
+                    showNotify();
                     break;
                 default:
                     break;
@@ -595,4 +596,15 @@ public class TaskDetailFragment extends Fragment {
     // END OF HANDLE RECORDING
     //////////////////////////////////////////////////////////////////////////////////////////
 
+
+    private void showNotify() {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme);
+        View bottomBarView = LayoutInflater.from(requireContext()).inflate(R.layout.task_detail_bottom_sheet_show_notify, null);
+        bottomSheetDialog.setContentView(bottomBarView);
+
+
+
+        // Show the bottom bar
+        bottomSheetDialog.show();
+    }
 }

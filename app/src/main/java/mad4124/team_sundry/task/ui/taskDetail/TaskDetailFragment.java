@@ -449,9 +449,13 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         if (result) {
             // The picture was taken successfully
             // Get the image from the camera
-            Glide.with(this)
-                    .load(currentPhotoPath)
-                    .into(binding.ivTask);
+            if(imageFiles.size() == 1){
+                Glide.with(this)
+                        .load(currentPhotoPath)
+                        .into(binding.ivTask);
+            } else {
+
+            }
         } else {
             // The user cancelled the operation
             Log.d("Take photo", "Taken picture was unsuccessfully");
@@ -516,10 +520,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                             Intent data = result.getData();
                             if (data != null) {
                                 Uri selectedImage = data.getData();
-                                // Do something with the selected image URI
-                                Glide.with(this)
-                                        .load(selectedImage)
-                                        .into(binding.ivTask);
 
                                 // Get the image name and path
                                 String[] projection = {MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.DATA};
@@ -536,6 +536,15 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                                     imageFiles.add(mediaFile);
 
                                     cursor.close();
+                                }
+
+                                if(imageFiles.size() == 1){
+                                    // Do something with the selected image URI
+                                    Glide.with(this)
+                                            .load(selectedImage)
+                                            .into(binding.ivTask);
+                                } else {
+
                                 }
                             }
                         }

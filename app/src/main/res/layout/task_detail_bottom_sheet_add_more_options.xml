@@ -28,6 +28,17 @@
         />
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/addSubTasks"
+        style="@style/MyTextButton.Options"
+        android:textColor="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add SubTasks"
+        app:iconTint="@color/colorSecondary"
+        app:icon="@drawable/ic_baseline_drag_indicator_24"
+        />
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/addRecording"
         style="@style/MyTextButton.Options"
         android:textColor="@color/white"

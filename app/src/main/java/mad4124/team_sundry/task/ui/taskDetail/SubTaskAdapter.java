@@ -41,7 +41,7 @@ public class SubTaskAdapter extends RecyclerView.Adapter<SubTaskAdapter.VH>{
     }
     public void addNewSubTask(SubTask subTask){
         subTasks.add(subTask);
-        notifyItemInserted(subTasks.size());
+        notifyItemInserted(subTasks.size()-1);
     }
     public List<SubTask> getSubTasks(){
         return subTasks;
@@ -77,14 +77,12 @@ public class SubTaskAdapter extends RecyclerView.Adapter<SubTaskAdapter.VH>{
 
         public void bind(SubTask subTask,SubTaskAdapterListener listener,int position){
 
-
             binding.etSubTask.setText(subTask.getDescriptionSubTask());
             binding.etSubTask.setOnFocusChangeListener((v, hasFocus) -> {
                 if(hasFocus){
                     binding.ivDelete.setVisibility(View.VISIBLE);
                 }
                 else{
-
                     subTask.setDescriptionSubTask(binding.etSubTask.getText().toString());
                     if(!isDeleting){
                         subTasks.set(position,subTask);

@@ -1,6 +1,5 @@
 package mad4124.team_sundry.task.ui.taskDetail;
 
-import static android.app.Activity.RESULT_OK;
 
 import static mad4124.team_sundry.task.ui.task.TaskListFragment.IsShowAllMap;
 import static mad4124.team_sundry.task.ui.task.TaskListFragment.TASK_ID;
@@ -11,8 +10,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -24,23 +21,15 @@ import android.util.Log;
 
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
-import android.view.Gravity;
 
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.PopupMenu;
 import android.widget.TimePicker;
-import android.widget.Toast;
 import android.Manifest;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -51,6 +40,7 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -69,7 +59,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 import mad4124.team_sundry.task.R;
 import mad4124.team_sundry.task.databinding.FragmentTaskDetailBinding;
 import mad4124.team_sundry.task.databinding.TaskDetailBottomSheetAddMoreOptionsBinding;
-import mad4124.team_sundry.task.model.Category;
 import mad4124.team_sundry.task.model.MediaFile;
 import mad4124.team_sundry.task.model.SubTask;
 import mad4124.team_sundry.task.model.Task;
@@ -115,6 +104,8 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     int day, month, year, hour, minute;
     int myday, myMonth, myYear, myHour, myMinute;
 
+    boolean isDeleting = false;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,6 +124,9 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         parentCategoryId = getArguments().getInt(TaskListFragment.CATEGORY_ID,-1);
+
+        initAdapters();
+
         if (getArguments() != null) {
             task = (Task) getArguments().getSerializable(TaskListFragment.TASK_MODEL);
             if(task != null){
@@ -180,6 +174,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                 case R.id.menu_pin:
                     break;
                 case R.id.menu_archive:
+                    deleteTask(task);
                     break;
                 case R.id.menu_notify:
                     showNotify();
@@ -204,6 +199,23 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
     }
 
+
+    public void deleteTask(Task task1){
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
+                .setTitle("Delete")
+                .setMessage("Are you sure ?")
+                .setCancelable(true)
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    viewModel.delete(task1);
+                    isDeleting = true;
+                    NavHostFragment.findNavController(this).popBackStack();
+                })
+                .setNegativeButton("Cancel",((dialog, which) -> {
+
+                }));
+        builder.show();
+
+    }
 
 
     public void initAdapters(){
@@ -271,6 +283,13 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
         // Find the buttons in the bottom bar view and set their onClickListeners
 
+        Button addSubTasks = bottomBarView.findViewById(R.id.addSubTasks);
+        addSubTasks.setOnClickListener(v->{
+            binding.rvSubTasks.setVisibility(View.VISIBLE);
+            binding.btnAddSubTask.setVisibility(View.VISIBLE);
+            bottomSheetDialog.dismiss();
+        });
+
         //addMoreOptionsBinding.takePhoto.setOnClickListener(new View.OnClickListener() {
         Button takePhotoButton = bottomBarView.findViewById(R.id.takePhoto);
         takePhotoButton.setOnClickListener(new View.OnClickListener() {
@@ -318,9 +337,16 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
     void saveData(){
 
+        if(isDeleting){
+            return;
+        }
+
         String title = binding.etTitle.getText().toString();
         String desc = binding.etDesc.getText().toString();
 
+        audioFiles = (ArrayList<MediaFile>) audioAdapter.getList();
+        imageFiles = (ArrayList<MediaFile>) imagesAdapter.getList();
+        subTasks = (ArrayList<SubTask>)  subTaskAdapter.getSubTasks();
 
         if(title.isEmpty() && desc.isEmpty() && audioFiles.isEmpty() && imageFiles.isEmpty() && subTasks.isEmpty()){
             return;
@@ -359,6 +385,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         for(SubTask subTask:subTasks){
             //save subTask of this task
             subTask.setParentTaskId(task.getId());
+            viewModel.insert(subTask);
         }
 
 
@@ -379,6 +406,10 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
     void loadTaskData(Task task){
         viewModel.getSubTasksLive(task.getId()).observe(getViewLifecycleOwner(),subTasks -> {
+            if(!subTasks.isEmpty()){
+                binding.btnAddSubTask.setVisibility(View.VISIBLE);
+                binding.rvSubTasks.setVisibility(View.VISIBLE);
+            }
             subTaskAdapter.setData(subTasks);
         });
 
@@ -388,10 +419,11 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                     binding.ivTask.setVisibility(View.GONE);
                 }
             }
+            imagesAdapter.setData(images);
         });
 
         viewModel.getMediaLive(task.getId(),false).observe(getViewLifecycleOwner(),audios -> {
-
+            audioAdapter.setData(audios);
         });
     }
 
@@ -714,7 +746,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         year = calendar.get(Calendar.YEAR);
         month = calendar.get(Calendar.MONTH);
         day = calendar.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), (DatePickerDialog.OnDateSetListener) getTargetFragment(),year, month,day);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), this,year, month,day);
         datePickerDialog.show();
     }
 
@@ -726,7 +758,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         Calendar c = Calendar.getInstance();
         hour = c.get(Calendar.HOUR);
         minute = c.get(Calendar.MINUTE);
-        TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), (TimePickerDialog.OnTimeSetListener) getTargetFragment(), hour, minute, DateFormat.is24HourFormat(getActivity()));
+        TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));
         timePickerDialog.show();
     }
 

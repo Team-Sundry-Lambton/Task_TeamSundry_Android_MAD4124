@@ -109,10 +109,10 @@ public class MainRepo {
 
 
     void deleteCategory(Category category) {
-        executorService.execute( () -> {
+        executorService.execute(() -> {
             dbDao.deleteCategory(category);
         });
-
+    }
     //void deleteCategory(Category category) { dbDao.deleteCategory(category);}
 
     List<Category> getAllCategoriesExceptSelected(int categoryID){

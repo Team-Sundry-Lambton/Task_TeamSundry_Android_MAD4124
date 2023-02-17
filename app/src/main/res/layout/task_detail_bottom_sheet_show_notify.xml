@@ -109,13 +109,5 @@
         android:text="Pick a date &amp; time"
         app:icon="@drawable/ic_clock"
         />
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnPickLocation"
-        style="@style/MyTextButton.Options"
-        android:textColor="@color/white"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Pick a place"
-        app:icon="@drawable/ic_location"
-        />
+
 </LinearLayout>

@@ -14,7 +14,7 @@ public class MyPreferenceLab {
 
     private static final String FIRST_LOAD = "firstLoad";
     public boolean isFirstLoad() {
-        return sharedPreferences.getBoolean(FIRST_LOAD,false);
+        return sharedPreferences.getBoolean(FIRST_LOAD,true);
     }
     public void setFirstLoad(boolean firstLoad) {
         sharedPreferences.edit().putBoolean(FIRST_LOAD,firstLoad).apply();

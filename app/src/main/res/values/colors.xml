@@ -10,6 +10,7 @@
 
     <color name="colorPrimary">#673AB7</color>
     <color name="colorSecondary">#FF9800</color>
+    <color name="colorSecondaryVariant">#CCFF9800</color>
     <color name="colorAccent">#2196F3</color>
 
     <color name="theme_color">#6979F8</color>

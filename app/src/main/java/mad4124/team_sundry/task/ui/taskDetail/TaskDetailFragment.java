@@ -13,10 +13,14 @@ import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+
+import android.util.Log;
+
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
+
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -62,6 +66,7 @@ import mad4124.team_sundry.task.model.MediaFile;
 import mad4124.team_sundry.task.model.SubTask;
 import mad4124.team_sundry.task.model.Task;
 import mad4124.team_sundry.task.ui.MainViewModel;
+import mad4124.team_sundry.task.ui.task.TaskListFragment;
 
 @AndroidEntryPoint
 public class TaskDetailFragment extends Fragment {
@@ -116,10 +121,12 @@ public class TaskDetailFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        parentCategoryId = getArguments().getInt(TaskListFragment.CATEGORY_ID,-1);
         if (getArguments() != null) {
-            parentCategoryId = getArguments().getInt("id",-1);
-            task = (Task) getArguments().getSerializable("task");
-            initData(task);
+            task = (Task) getArguments().getSerializable(TaskListFragment.TASK_MODEL);
+            if(task != null){
+                initData(task);
+            }
         }
 
         binding.toolbar.setNavigationOnClickListener(v -> {
@@ -303,6 +310,7 @@ public class TaskDetailFragment extends Fragment {
         String title = binding.etTitle.getText().toString();
         String desc = binding.etDesc.getText().toString();
 
+
         if(title.isEmpty() && desc.isEmpty() && audioFiles.isEmpty() && imageFiles.isEmpty() && subTasks.isEmpty()){
             return;
         }
@@ -318,7 +326,15 @@ public class TaskDetailFragment extends Fragment {
         task.setStatus(false);
         task.setTask(true);
 
-        viewModel.insert(task);
+        Log.d("TaskDetail",""+task.toString());
+
+        if(isEditing){
+            viewModel.update(task);
+        }
+        else{
+            viewModel.insert(task);
+        }
+
         for(MediaFile audio: audioFiles){
             //save audio file
             audio.setTaskId(task.getId());
@@ -339,6 +355,11 @@ public class TaskDetailFragment extends Fragment {
     }
 
     void initData(Task task) {
+
+        parentCategoryId = task.getParentCategoryId();
+
+        isEditing = true;
+
         binding.etTitle.setText(task.getTitle());
         binding.etDesc.setText(task.getDescription());
 

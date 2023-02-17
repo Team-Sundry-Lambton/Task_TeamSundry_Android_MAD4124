@@ -24,6 +24,13 @@ public class MainViewModel extends ViewModel {
         this.repo = repo;
     }
 
+    public boolean getFirstLoad(){
+        return repo.getFirstLoad();
+    }
+    public void setFirstLoad(boolean firstLoad){
+        repo.setFirstLoad(firstLoad);
+    }
+
     public void addCategory(Category category) {
         repo.addCategory(category);
     }
@@ -44,6 +51,9 @@ public class MainViewModel extends ViewModel {
         return repo.getAllTasks(categoryID);
     }
 
+    public void update(Task task){
+        repo.update(task);
+    }
     public void delete(Task task){
         repo.delete(task);
     }

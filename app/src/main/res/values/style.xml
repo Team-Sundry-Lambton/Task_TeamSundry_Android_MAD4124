@@ -41,5 +41,13 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <style name="BottomSheetDialogTheme" parent="Theme.Design.BottomSheetDialog">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowAnimationStyle">@style/BottomSheetDialogAnimation</item>
+    </style>
+
+    <style name="BottomSheetDialogAnimation">
+    </style>
 
 </resources>

@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import mad4124.team_sundry.task.model.Category;
+import mad4124.team_sundry.task.model.MapLocation;
 import mad4124.team_sundry.task.model.MediaFile;
 import mad4124.team_sundry.task.model.SubTask;
 import mad4124.team_sundry.task.model.Task;
@@ -77,5 +78,9 @@ public class MainViewModel extends ViewModel {
 
     public List<Category> getAllCategoriesExceptSelected(int categoryID){
         return repo.getAllCategoriesExceptSelected(categoryID);
+    }
+
+    public List<MapLocation> getAllMapPin(int categoryID) {
+        return repo.getAllMapPin(categoryID);
     }
 }

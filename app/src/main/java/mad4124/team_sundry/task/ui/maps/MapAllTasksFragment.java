@@ -1,5 +1,8 @@
 package mad4124.team_sundry.task.ui.maps;
 
+import static mad4124.team_sundry.task.ui.task.TaskListFragment.CATEGORY_ID;
+import static mad4124.team_sundry.task.ui.task.TaskListFragment.IsShowAllMap;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -20,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -48,6 +52,7 @@ import mad4124.team_sundry.task.R;
 import mad4124.team_sundry.task.databinding.FragmentMapAllTasksBinding;
 import mad4124.team_sundry.task.model.MapLocation;
 import mad4124.team_sundry.task.model.Task;
+import mad4124.team_sundry.task.ui.MainViewModel;
 
 @AndroidEntryPoint
 public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback {
@@ -61,6 +66,7 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
     List<MapLocation> locations = new ArrayList(); //send this if wanna show tasks locations (Optional)
     Boolean isShowAllMap = false; // send this if it show all map or pick loc map (Required)
     MapLocation selectedLocationObj; //send this if edit (Optional), get this when finish selected (Optional)
+    MainViewModel viewModel;
 
     // location with location manager and listener
     private static final int REQUEST_CODE = 1;
@@ -80,6 +86,7 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mMapFragment = SupportMapFragment.newInstance();
@@ -118,6 +125,14 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
                 Log.i("0", "An error occurred: " + status);
             }
         });
+
+        //obtain bundle
+        int categoryID = getArguments().getInt(CATEGORY_ID,-1);
+        isShowAllMap = getArguments().getBoolean(IsShowAllMap, false);
+
+        if (categoryID != -1) {
+            locations = viewModel.getAllMapPin(categoryID);
+        }
     }
 
     /**

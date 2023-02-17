@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -30,6 +31,7 @@ import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import mad4124.team_sundry.task.R;
+import mad4124.team_sundry.task.adapter.CategoryListRecyclerViewAdapter;
 import mad4124.team_sundry.task.adapter.TaskRecyclerViewAdapter;
 import mad4124.team_sundry.task.databinding.FragmentTaskListBinding;
 import mad4124.team_sundry.task.model.SubTask;
@@ -72,10 +74,7 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
         super.onViewCreated(view, savedInstanceState);
 
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
-        adapter = new TaskRecyclerViewAdapter(taskList, getContext(), this,viewModel);
-        binding.recyclerView.setHasFixedSize(true);
-        binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
-        binding.recyclerView.setAdapter(adapter);
+        setTaskListRecyclerView();
         binding.bottomAppBar.setVisibility(View.GONE);
         categoryId = getArguments().getInt(CATEGORY_ID);
         loadTasks();
@@ -163,14 +162,30 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
         });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadTasks();
+    }
+
+    private void setTaskListRecyclerView(){
+        adapter = new TaskRecyclerViewAdapter(taskList, getContext(), this,viewModel, isMultiSelection);
+        binding.recyclerView.setHasFixedSize(true);
+        binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
+        binding.recyclerView.setAdapter(adapter);
+    }
+
     private void loadTasks() {
-        taskList = viewModel.getAllTasks(categoryId);
-        if (taskList.size() > 0) {
-            binding.emptyView.setVisibility(View.INVISIBLE);
-        }else {
-            binding.emptyView.setVisibility(View.VISIBLE);
-        }
-        adapter.notifyDataSetChanged();
+        viewModel.getAllLiveTasks(categoryId).observe(getViewLifecycleOwner(),tasks -> {
+                    taskList = tasks;
+            if (taskList.size() > 0) {
+                binding.emptyView.setVisibility(View.INVISIBLE);
+            }else {
+                binding.emptyView.setVisibility(View.VISIBLE);
+            }
+            adapter.setDataList(taskList);
+            adapter.notifyDataSetChanged();
+        });
     }
 
     @Override
@@ -273,11 +288,13 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
             binding.bottomAppBar.setVisibility(View.GONE);
             binding.addTask.setVisibility(View.VISIBLE);
             binding.addTaskBottomBar.setVisibility(View.VISIBLE);
+            adapter.setSelection(isMultiSelection);
         }else {
             isMultiSelection = true;
             binding.bottomAppBar.setVisibility(View.VISIBLE);
             binding.addTask.setVisibility(View.GONE);
             binding.addTaskBottomBar.setVisibility(View.GONE);
+            adapter.setSelection(isMultiSelection);
         }
     }
 

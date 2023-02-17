@@ -135,4 +135,8 @@ public class MainViewModel extends ViewModel {
     public void delete(MediaFile mediaFile){
         repo.update(mediaFile);
     }
+
+    public LiveData<List<Task>> getAllLiveTasks(int categoryID){
+        return repo.getAllLiveTasks(categoryID);
+    }
 }

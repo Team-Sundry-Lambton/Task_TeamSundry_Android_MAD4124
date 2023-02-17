@@ -178,4 +178,8 @@ public class MainRepo {
             dbDao.delete(mediaFile);
         });
     }
+
+    LiveData<List<Task>> getAllLiveTasks(int categoryID){
+        return dbDao.getAllLiveTasks(categoryID);
+    }
 }

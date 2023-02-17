@@ -10,7 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import mad4124.team_sundry.task.R;
@@ -27,12 +29,14 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
     private List<Task> tasksList ;
 
     MainViewModel viewModel;
+    boolean isMultiSelection = false;
 
-    public TaskRecyclerViewAdapter(List<Task> tasks, Context context, OnItemClickListener onItemClickListener, MainViewModel viewModel){
+    public TaskRecyclerViewAdapter(List<Task> tasks, Context context, OnItemClickListener onItemClickListener, MainViewModel viewModel, boolean isMultiSelection){
         this.context = context;
         this.onItemClickListener = onItemClickListener;
         this.tasksList = tasks;
         this.viewModel = viewModel;
+        this.isMultiSelection = isMultiSelection;
     }
 
     @NonNull
@@ -61,17 +65,37 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
             this.binding = binding;
             itemView.setOnClickListener(this);
         }
-        public void bind(Task model){
+        public void bind(Task model) {
             int id = model.getId();
             List<MediaFile> mediaFiles = viewModel.getAllMedias(id);
-            binding.titleRow.setText(model.getTitle());
-            if(model.isTask()) {
+            binding.taskTitleRow.setText(model.getTitle());
+            if (model.isTask()) {
                 binding.categoryRow.setText("Task");
-            }else{
+            } else {
                 binding.categoryRow.setText("Note");
             }
-            binding.descriptionRow.setText(model.getDescription());
-            binding.dueDateRow.setText(model.getDueDate().toString());
+            binding.taskDescriptionRow.setText(model.getDescription());
+
+            if (model.getDueDate() != 0){
+                Long dueDate = model.getDueDate();
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTimeInMillis(dueDate);
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+                System.out.println(format.format(calendar.getTime()));
+                binding.dueDateRow.setText(format.format(calendar.getTime()));
+                binding.dueDateRow.setVisibility(View.VISIBLE);
+            }else if (model.getCreatedDate() != 0){
+                Long createDate = model.getCreatedDate();
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTimeInMillis(createDate);
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+                System.out.println(format.format(calendar.getTime()));
+                binding.dueDateRow.setText(format.format(calendar.getTime()));
+                binding.dueDateRow.setVisibility(View.VISIBLE);
+            }
+            else {
+                binding.dueDateRow.setVisibility(View.INVISIBLE);
+            }
             if(mediaFiles.size() > 0) {
                 binding.imageView.setVisibility(View.VISIBLE);
                 MediaFile file = mediaFiles.get(0);
@@ -88,11 +112,12 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         @Override
         public void onClick(View v) {
             onItemClickListener.onItemClick(getAdapterPosition());
-            if(binding.checkBox.getVisibility()==View.GONE)
-            {
-                binding.checkBox.setVisibility(View.VISIBLE);
-            }else{
-                binding.checkBox.setVisibility(View.GONE);
+            if (isMultiSelection) {
+                if (binding.checkBox.getVisibility() == View.GONE) {
+                    binding.checkBox.setVisibility(View.VISIBLE);
+                } else {
+                    binding.checkBox.setVisibility(View.GONE);
+                }
             }
         }
     }
@@ -103,6 +128,11 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
 
     public void setDataList(List<Task> tList) {
         this.tasksList = tList;
+        notifyDataSetChanged();
+    }
+
+    public void setSelection(boolean isMultiSelection) {
+        this.isMultiSelection = isMultiSelection;
         notifyDataSetChanged();
     }
 

@@ -11,6 +11,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
@@ -94,6 +95,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     String currentPhotoPath;
     String fileName;
     private static final int GALLERY_REQUEST_CODE = 103;
+    private boolean isImage = false;
 
 
     private MediaRecorder mediaRecorder;
@@ -429,6 +431,12 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
             Uri uri = FileProvider.getUriForFile(requireActivity(), "mad4124.team_sundry.task.fileprovider", photoFile);
             takePictureLauncher.launch(uri);
+
+            // Create a new MediaFile object and set the file name
+            isImage = true;
+            MediaFile mediaFile = new MediaFile(photoFile.getName(), isImage, photoFile.getAbsolutePath(), 1);
+            // Add the new MediaFile object to the ArrayList
+            viewModel.insert(mediaFile);
         }
     }
 
@@ -509,6 +517,23 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                                 Glide.with(this)
                                         .load(selectedImage)
                                         .into(binding.ivTask);
+
+                                // Get the image name and path
+                                String[] projection = {MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.DATA};
+                                Cursor cursor = requireContext().getContentResolver().query(selectedImage, projection, null, null, null);
+                                if (cursor != null && cursor.moveToFirst()) {
+                                    String imageName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
+                                    String imagePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
+
+                                    // Create a new MediaFile object and set the file name and path
+                                    isImage = true;
+                                    MediaFile mediaFile = new MediaFile(imageName, isImage, imagePath, 1);
+
+                                    // Add the new MediaFile object to the ArrayList
+                                    viewModel.insert(mediaFile);
+
+                                    cursor.close();
+                                }
                             }
                         }
                     });
@@ -619,6 +644,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             // Set the audio file path to the play button
             binding.btnPlay.setTag(audioFile.getAbsolutePath());
             binding.recordingGroup.setVisibility(View.VISIBLE);
+
         } catch (IOException e) {
             e.printStackTrace();
         }

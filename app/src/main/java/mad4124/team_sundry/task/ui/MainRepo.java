@@ -67,6 +67,9 @@ public class MainRepo {
     }
     void delete(Task task){
         executorService.execute( () -> {
+            dbDao.deleteSubTasks(task.getId());
+            dbDao.deleteMedias(task.getId());
+            dbDao.deleteLocations(task.getId());
             dbDao.delete(task);
         });
     }

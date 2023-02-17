@@ -41,14 +41,20 @@ public interface DbDao {
     void update(Task task);
     @Delete
     void delete(Task task);
+    @Query("Delete from medias where task_id = :taskId")
+    void deleteMedias(int taskId);
+    @Query("Delete from subTasks where task_id = :taskId")
+    void deleteSubTasks(int taskId);
+    @Query("Delete from locations where taskId = :taskId")
+    void deleteLocations(int taskId);
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(SubTask subTask);
     @Update
     void update(SubTask subTask);
     @Delete
     void delete(SubTask subTask);
-    @Query("Select * from subTasks where task_id = :taskId")
+    @Query("Select * from subTasks where task_id = :taskId order by id")
     LiveData<List<SubTask>> getAllLiveSubTasks(int taskId);
     @Query("Select * from medias where task_id = :taskId and isImage = :isImage")
     LiveData<List<MediaFile>> getAllLiveMedias(int taskId,boolean isImage);

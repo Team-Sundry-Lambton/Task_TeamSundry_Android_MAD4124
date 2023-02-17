@@ -54,6 +54,28 @@ public class MainRepo {
         });
     }
 
+    void insert(SubTask subTask){
+        executorService.execute( () -> {
+            dbDao.insert(subTask);
+        });
+    }
+    void update(SubTask subTask){
+        executorService.execute( () -> {
+            dbDao.update(subTask);
+        });
+    }
+    void delete(SubTask subTask){
+        executorService.execute( () -> {
+            dbDao.delete(subTask);
+        });
+    }
+    LiveData<List<SubTask>> getSubTasksLive(int taskId){
+        return dbDao.getAllLiveSubTasks(taskId);
+    }
+    LiveData<List<MediaFile>> getMediaLive(int taskId,boolean isImage){
+        return dbDao.getAllLiveMedias(taskId,isImage);
+    }
+
     void insert(Task task){
         executorService.execute( () -> {
             dbDao.insert(task);

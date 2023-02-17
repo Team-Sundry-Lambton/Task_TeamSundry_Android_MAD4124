@@ -47,6 +47,22 @@ public class MainViewModel extends ViewModel {
         repo.delete(task);
     }
 
+    public void insert(SubTask subTask){
+        repo.insert(subTask);
+    }
+    public void update(SubTask subTask){
+        repo.update(subTask);
+    }
+    public void delete(SubTask subTask){
+        repo.delete(subTask);
+    }
+    public LiveData<List<SubTask>> getSubTasksLive(int taskId){
+        return repo.getSubTasksLive(taskId);
+    }
+    public LiveData<List<MediaFile>> getMediaLive(int taskId,boolean isImage){
+        return repo.getMediaLive(taskId,isImage);
+    }
+
     public void insert(Task task){
         repo.insert(task);
     }

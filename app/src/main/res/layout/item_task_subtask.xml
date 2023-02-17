@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:paddingHorizontal="8dp"
+    android:gravity="center">
+
+    <Space
+        android:id="@+id/space"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        />
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:src="@drawable/ic_baseline_drag_indicator_24"
+        />
+
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:buttonTint="@color/black"
+        />
+
+    <EditText
+        android:id="@+id/etSubTask"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:hint="Sub Task"
+        />
+
+    <ImageView
+        android:id="@+id/ivDelete"
+        android:layout_width="24dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:visibility="invisible"
+        android:src="@drawable/ic_baseline_clear_24"
+        />
+
+</LinearLayout>

@@ -7,6 +7,8 @@ import static mad4124.team_sundry.task.ui.task.TaskListFragment.TASK_ID;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -17,6 +19,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.text.format.DateFormat;
 import android.util.Log;
 
 import android.os.Environment;
@@ -29,8 +32,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.PopupMenu;
+import android.widget.TimePicker;
 import android.widget.Toast;
 import android.Manifest;
 
@@ -70,9 +75,10 @@ import mad4124.team_sundry.task.model.SubTask;
 import mad4124.team_sundry.task.model.Task;
 import mad4124.team_sundry.task.ui.MainViewModel;
 import mad4124.team_sundry.task.ui.task.TaskListFragment;
+import mad4124.team_sundry.task.utils.NotificationHelper;
 
 @AndroidEntryPoint
-public class TaskDetailFragment extends Fragment {
+public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     FragmentTaskDetailBinding binding;
     TaskDetailBottomSheetAddMoreOptionsBinding addMoreOptionsBinding;
@@ -106,6 +112,8 @@ public class TaskDetailFragment extends Fragment {
     ImagesAdapter imagesAdapter;
     AudioAdapter audioAdapter;
 
+    int day, month, year, hour, minute;
+    int myday, myMonth, myYear, myHour, myMinute;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -647,6 +655,49 @@ public class TaskDetailFragment extends Fragment {
         View bottomBarView = LayoutInflater.from(requireContext()).inflate(R.layout.task_detail_bottom_sheet_show_notify, null);
         bottomSheetDialog.setContentView(bottomBarView);
 
+        Calendar calendar = Calendar.getInstance();
+        year = calendar.get(Calendar.YEAR);
+        month = calendar.get(Calendar.MONTH);
+        Button pickDateTimeButton = bottomSheetDialog.findViewById(R.id.btnPickDateTime);
+        pickDateTimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pickDateTime();
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+
+        Button laterToday = bottomSheetDialog.findViewById(R.id.btnLaterToday);
+        laterToday.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                day = calendar.get(Calendar.DAY_OF_MONTH);
+                calendar.set(Calendar.HOUR, 18);
+                Date today = calendar.getTime();
+                myHour = 18;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    NotificationHelper.scheduleNotification(NotificationHelper.getNotification("5 second more",getActivity()),calendar,getActivity());
+                }
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+        Button tmrMorning = bottomSheetDialog.findViewById(R.id.btnTmrMorning);
+        tmrMorning.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                calendar.add(Calendar.DAY_OF_YEAR, 1);
+                calendar.set(Calendar.HOUR, 8);
+                day = calendar.get(Calendar.DAY_OF_MONTH);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    NotificationHelper.scheduleNotification(NotificationHelper.getNotification("5 second more",getActivity()),calendar,getActivity());
+                }
+                myHour = 8;
+                bottomSheetDialog.dismiss();
+            }
+        });
 
 
         // Show the bottom bar
@@ -656,6 +707,47 @@ public class TaskDetailFragment extends Fragment {
     // END OF HANDLE RECORDING
     //////////////////////////////////////////////////////////////////////////////////////////
 
+    public void pickDateTime(){
 
+        // Get Current Date
+        Calendar calendar = Calendar.getInstance();
+        year = calendar.get(Calendar.YEAR);
+        month = calendar.get(Calendar.MONTH);
+        day = calendar.get(Calendar.DAY_OF_MONTH);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), (DatePickerDialog.OnDateSetListener) getTargetFragment(),year, month,day);
+        datePickerDialog.show();
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        myYear = year;
+        myday = day;
+        myMonth = month;
+        Calendar c = Calendar.getInstance();
+        hour = c.get(Calendar.HOUR);
+        minute = c.get(Calendar.MINUTE);
+        TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), (TimePickerDialog.OnTimeSetListener) getTargetFragment(), hour, minute, DateFormat.is24HourFormat(getActivity()));
+        timePickerDialog.show();
+    }
+
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        myHour = hourOfDay;
+        myMinute = minute;
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(myYear,myMonth,myday,myHour,myMinute);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            NotificationHelper.scheduleNotification(NotificationHelper.getNotification("5 second more",getActivity()),calendar,getActivity());
+        }
+
+//        textView.setText("Year: " + myYear + " " +
+//                "Month: " + myMonth + " " +
+//                "Day: " + myday + " " +
+//                "Hour: " + myHour + " " +
+//                "Minute: " + myMinute);
+
+    }
 
 }

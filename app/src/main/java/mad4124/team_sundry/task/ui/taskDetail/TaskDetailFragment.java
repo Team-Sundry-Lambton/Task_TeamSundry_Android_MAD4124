@@ -130,17 +130,30 @@ public class TaskDetailFragment extends Fragment {
             showMoreOptions();
         });
 
-        binding.btnPlay.setOnClickListener(v -> {
-            if (isPlaying) {
-                // Pause the audio
-                mediaPlayer.pause();
-                isPlaying = false;
-                binding.recordingName.setText("Play " + fileName.toString());
-            } else {
-                // Play the audio
-                mediaPlayer.start();
-                isPlaying = true;
-                binding.recordingName.setText("Playing " + fileName.toString());
+
+        binding.btnPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mediaPlayer.isPlaying()) {
+                    // If the media player is already playing, pause it and update the button icon
+                    mediaPlayer.pause();
+                    binding.btnPlay.setImageResource(R.drawable.ic_play_arrow);
+//                    binding.recordingName.setText("Playing " + fileName.toString());
+                } else {
+                    // If the media player is not playing, start playing and update the button icon
+                    String audioFilePath = (String) binding.btnPlay.getTag();
+                    if (audioFilePath != null) {
+                        try {
+                            mediaPlayer.setDataSource(audioFilePath);
+                            mediaPlayer.prepare();
+                            mediaPlayer.start();
+                            binding.btnPlay.setImageResource(R.drawable.ic_play_arrow);
+//                            binding.recordingName.setText("Play " + fileName.toString());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
         });
 
@@ -245,13 +258,10 @@ public class TaskDetailFragment extends Fragment {
         takePhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Take photo", "clicked");
-                // Handle "Start recording" option
+                // Handle "take photo" option
                 if (hasCameraPermission()) {
-                    Log.d("Take photo", "got permission");
                     launchCamera();
                 } else {
-                    Log.d("Take photo", "requesting permission");
                     requestCameraPermission();
                 }
                 bottomSheetDialog.dismiss();
@@ -262,6 +272,7 @@ public class TaskDetailFragment extends Fragment {
         addImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Handle "add image" option
                 pickImage();
                 bottomSheetDialog.dismiss();
             }
@@ -377,11 +388,7 @@ public class TaskDetailFragment extends Fragment {
         if (photoFile != null) {
             Uri photoURI = FileProvider.getUriForFile(requireContext(), "mad4124.team_sundry.task.fileprovider", photoFile);
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-            Log.d("Take photo", "2");
-            Log.d("Take photo", photoURI.toString());
-
             Uri uri = FileProvider.getUriForFile(requireActivity(), "mad4124.team_sundry.task.fileprovider", photoFile);
-
             takePictureLauncher.launch(uri);
         }
     }
@@ -391,7 +398,6 @@ public class TaskDetailFragment extends Fragment {
             result -> {
         if (result) {
             // The picture was taken successfully
-            Log.d("Take photo", "The picture was taken successfully");
             // Get the image from the camera
             Glide.with(this)
                     .load(currentPhotoPath)
@@ -488,13 +494,11 @@ public class TaskDetailFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (isRecording) {
-                    // Update the UI
                     isRecording = false;
                     btnHandleRecording.setText("Start");
                     stopRecording();
                     dialog.dismiss();
                 } else {
-                    // Update the UI
                     isRecording = true;
                     btnHandleRecording.setText("Stop");
                     startRecording();
@@ -541,11 +545,9 @@ public class TaskDetailFragment extends Fragment {
 
         // Create a new file to save the recorded audio
         audioFile = new File(requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC), fileName);
-        Log.d("'audioFile'", fileName);
 
         // Set the output file
         mediaRecorder.setOutputFile(audioFile.getAbsolutePath());
-        Log.d("'audioFile'", audioFile.getAbsolutePath());
 
         try {
             // Prepare the MediaRecorder
@@ -564,7 +566,7 @@ public class TaskDetailFragment extends Fragment {
         // Stop recording
         mediaRecorder.stop();
         mediaRecorder.release();
-        mediaRecorder = null;
+//        mediaRecorder = null;
 
         if (mediaPlayer != null) {
             mediaPlayer.release();
@@ -577,10 +579,11 @@ public class TaskDetailFragment extends Fragment {
 
             // Set the audio file path to the play button
             binding.btnPlay.setTag(audioFile.getAbsolutePath());
-            binding.btnPlay.setVisibility(View.VISIBLE);
+            binding.recordingGroup.setVisibility(View.VISIBLE);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        mediaRecorder = null;
     }
     //////////////////////////////////////////////////////////////////////////////////////////
     // END OF HANDLE RECORDING

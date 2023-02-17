@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/takePhoto"
+        style="@style/MyTextButton.Options"
+        android:textColor="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Take photo"
+        app:icon="@drawable/ic_camera"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/addImage"
+        style="@style/MyTextButton.Options"
+        android:textColor="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add image"
+        app:icon="@drawable/ic_image"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/addRecording"
+        style="@style/MyTextButton.Options"
+        android:textColor="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Recording"
+        app:icon="@drawable/ic_microphone"
+        />
+
+</LinearLayout>

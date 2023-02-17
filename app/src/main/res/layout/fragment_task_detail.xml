@@ -110,7 +110,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 />
+            <LinearLayout
+                android:id="@+id/recordingGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone"
+                >
 
+                <ImageButton
+                    android:id="@+id/btn_play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_play_arrow"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    />
+
+                <TextView
+                    android:id="@+id/recordingName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Play"
+                    />
+            </LinearLayout>
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

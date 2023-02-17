@@ -12,6 +12,15 @@ public class MapLocation {
     private Double lat;
     private Double lng;
     private int taskId;
+    private int categoryID;
+
+    public int getCategoryID() {
+        return categoryID;
+    }
+
+    public void setCategoryID(int categoryID) {
+        this.categoryID = categoryID;
+    }
 
     public int getId() {
         return id;

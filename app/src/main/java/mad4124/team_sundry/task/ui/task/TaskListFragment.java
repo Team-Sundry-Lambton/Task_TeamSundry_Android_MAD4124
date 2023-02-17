@@ -41,6 +41,7 @@ import mad4124.team_sundry.task.utils.BsItemOptions;
 public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapter.OnItemClickListener{
     public static final String TASK_ID = "task_id";
     public static final String CATEGORY_ID = "category_id";
+    public static final String IsShowAllMap = "isShowAllMap";
     private FragmentTaskListBinding binding;
 
     private List<Task> taskList = new ArrayList<>();
@@ -300,6 +301,7 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
     private void loadMapView(){
         Bundle bundle = new Bundle();
         bundle.putSerializable(CATEGORY_ID, categoryId);
+        bundle.putSerializable(IsShowAllMap, true);
         Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_taskListFragment_to_mapAllTasksFragment,bundle);
     }
 

@@ -113,6 +113,7 @@ public class TaskDetailFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
+        mediaPlayer = new MediaPlayer();
     }
 
     @Nullable
@@ -155,7 +156,12 @@ public class TaskDetailFragment extends Fragment {
                     String audioFilePath = (String) binding.btnPlay.getTag();
                     if (audioFilePath != null) {
                         try {
-                            mediaPlayer.setDataSource(audioFilePath);
+                            try {
+                                mediaPlayer.setDataSource(audioFilePath);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                // Handle the error here
+                            }
                             mediaPlayer.prepare();
                             mediaPlayer.start();
                             binding.btnPlay.setImageResource(R.drawable.ic_play_arrow);

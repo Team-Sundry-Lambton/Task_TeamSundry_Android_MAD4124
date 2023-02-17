@@ -130,17 +130,17 @@ public class TaskDetailFragment extends Fragment {
             showMoreOptions();
         });
 
-        binding.playButton.setOnClickListener(v -> {
+        binding.btnPlay.setOnClickListener(v -> {
             if (isPlaying) {
                 // Pause the audio
                 mediaPlayer.pause();
                 isPlaying = false;
-                binding.playButton.setText("Play " + fileName.toString());
+                binding.recordingName.setText("Play " + fileName.toString());
             } else {
                 // Play the audio
                 mediaPlayer.start();
                 isPlaying = true;
-                binding.playButton.setText("Playing " + fileName.toString());
+                binding.recordingName.setText("Playing " + fileName.toString());
             }
         });
 
@@ -262,14 +262,7 @@ public class TaskDetailFragment extends Fragment {
         addImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!isAddImagePermissionGranted()) {
-                    requestAddImagePermission();
-                    return;
-                }
-                Intent galleryIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
-                galleryIntent.setType("image/*");
-                galleryLauncher.launch(galleryIntent);
+                pickImage();
                 bottomSheetDialog.dismiss();
             }
         });
@@ -284,6 +277,8 @@ public class TaskDetailFragment extends Fragment {
         // Show the bottom bar
         bottomSheetDialog.show();
     }
+
+
 
     void saveData(){
 
@@ -437,29 +432,24 @@ public class TaskDetailFragment extends Fragment {
     // HANDLE ADD IMAGE FROM GALLERY
     //////////////////////////////////////////////////////////////////////////////////////////
 
-    // Request permission to record audio
-    private void requestAddImagePermission() {
-        String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
-        requestPermissions(permissions, GALLERY_REQUEST_CODE);
-    }
 
-    // Check if permission to record audio has been granted
-    private boolean isAddImagePermissionGranted() {
-        return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    public void pickImage() {
+        // Check if the app has permission to read external storage
+        /*if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            // If the app does not have permission, request it
+            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
+        } else {
+            // If the app already has permission, launch the gallery intent
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            galleryLauncher.launch(Intent.createChooser(intent, "Select Picture"));
+        }*/
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        galleryLauncher.launch(Intent.createChooser(intent, "Select Picture"));
     }
-    // Create the ActivityResultLauncher for requesting permissions
-    private ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-//                if (isGranted) {
-//                    // Permission is granted, launch the gallery intent
-//                    launchGallery();
-//                } else {
-//                    // Permission is not granted, handle it
-//                    // For example, show a message to the user
-//                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show();
-//                }
-            });
-
 
     // Create the ActivityResultLauncher for the gallery intent
     private ActivityResultLauncher<Intent> galleryLauncher =
@@ -471,16 +461,12 @@ public class TaskDetailFragment extends Fragment {
                             if (data != null) {
                                 Uri selectedImage = data.getData();
                                 // Do something with the selected image URI
-                                Log.d("Add image", "clicked");
+                                Glide.with(this)
+                                        .load(selectedImage)
+                                        .into(binding.ivTask);
                             }
                         }
                     });
-
-
-    private void launchGallery(){
-        Log.d("Add image", "clicked");
-
-    }
 
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -588,6 +574,10 @@ public class TaskDetailFragment extends Fragment {
             File audioFile = new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC), fileName);
             mediaPlayer.setDataSource(audioFile.getAbsolutePath());
             mediaPlayer.prepare();
+
+            // Set the audio file path to the play button
+            binding.btnPlay.setTag(audioFile.getAbsolutePath());
+            binding.btnPlay.setVisibility(View.VISIBLE);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -26,6 +26,13 @@ public class MediaFile {
     @ColumnInfo(name = "task_id")
     private int taskId;
 
+    public MediaFile(String name, boolean isImage, String path, int taskId) {
+        this.name = name;
+        this.isImage = isImage;
+        this.path = path;
+        this.taskId = taskId;
+    }
+
     public int getId() {
         return id;
     }

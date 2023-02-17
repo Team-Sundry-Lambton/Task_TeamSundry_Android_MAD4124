@@ -163,4 +163,19 @@ public class MainRepo {
             dbDao.insertMap(mapLocation);
         });
     }
+    void insert(MediaFile mediaFile){
+        executorService.execute( () -> {
+            dbDao.insert(mediaFile);
+        });
+    }
+    void update(MediaFile mediaFile){
+        executorService.execute( () -> {
+            dbDao.update(mediaFile);
+        });
+    }
+    void delete(MediaFile mediaFile){
+        executorService.execute( () -> {
+            dbDao.delete(mediaFile);
+        });
+    }
 }

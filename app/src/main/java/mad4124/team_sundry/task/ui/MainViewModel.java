@@ -125,4 +125,14 @@ public class MainViewModel extends ViewModel {
     public MapLocation getMapPin(int taskId) {
         return repo.getMapPin(taskId);
     }
+
+    public void insert(MediaFile mediaFile){
+        repo.insert(mediaFile);
+    }
+    public void update(MediaFile mediaFile){
+        repo.update(mediaFile);
+    }
+    public void delete(MediaFile mediaFile){
+        repo.update(mediaFile);
+    }
 }

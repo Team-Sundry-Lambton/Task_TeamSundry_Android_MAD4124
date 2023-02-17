@@ -10,6 +10,12 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+
+
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
+
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -83,6 +89,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     String currentPhotoPath;
     String fileName;
     private static final int GALLERY_REQUEST_CODE = 103;
+    private boolean isImage = false;
 
 
     private MediaRecorder mediaRecorder;
@@ -110,6 +117,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
+        mediaPlayer = new MediaPlayer();
     }
 
     @Nullable
@@ -150,17 +158,20 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                     // If the media player is already playing, pause it and update the button icon
                     mediaPlayer.pause();
                     binding.btnPlay.setImageResource(R.drawable.ic_play_arrow);
-//                    binding.recordingName.setText("Playing " + fileName.toString());
                 } else {
                     // If the media player is not playing, start playing and update the button icon
                     String audioFilePath = (String) binding.btnPlay.getTag();
                     if (audioFilePath != null) {
                         try {
-                            mediaPlayer.setDataSource(audioFilePath);
+                            try {
+                                mediaPlayer.setDataSource(audioFilePath);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                // Handle the error here
+                            }
                             mediaPlayer.prepare();
                             mediaPlayer.start();
                             binding.btnPlay.setImageResource(R.drawable.ic_play_arrow);
-//                            binding.recordingName.setText("Play " + fileName.toString());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -461,6 +472,11 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
             Uri uri = FileProvider.getUriForFile(requireActivity(), "mad4124.team_sundry.task.fileprovider", photoFile);
             takePictureLauncher.launch(uri);
+
+            //save to array list of images
+            // Create a new MediaFile object using the photoFile object
+            MediaFile mediaFile = new MediaFile(photoFile.getName(), true, photoFile.getAbsolutePath(), task.getId());
+            imageFiles.add(mediaFile);
         }
     }
 
@@ -470,9 +486,13 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         if (result) {
             // The picture was taken successfully
             // Get the image from the camera
-            Glide.with(this)
-                    .load(currentPhotoPath)
-                    .into(binding.ivTask);
+            if(imageFiles.size() == 1){
+                Glide.with(this)
+                        .load(currentPhotoPath)
+                        .into(binding.ivTask);
+            } else {
+
+            }
         } else {
             // The user cancelled the operation
             Log.d("Take photo", "Taken picture was unsuccessfully");
@@ -537,10 +557,32 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                             Intent data = result.getData();
                             if (data != null) {
                                 Uri selectedImage = data.getData();
-                                // Do something with the selected image URI
-                                Glide.with(this)
-                                        .load(selectedImage)
-                                        .into(binding.ivTask);
+
+                                // Get the image name and path
+                                String[] projection = {MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.DATA};
+                                Cursor cursor = requireContext().getContentResolver().query(selectedImage, projection, null, null, null);
+                                if (cursor != null && cursor.moveToFirst()) {
+                                    String imageName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
+                                    String imagePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
+
+                                    // Create a new MediaFile object and set the file name and path
+                                    isImage = true;
+                                    MediaFile mediaFile = new MediaFile(imageName, true, imagePath, task.getId());
+
+                                    // Add the new MediaFile object to the ArrayList
+                                    imageFiles.add(mediaFile);
+
+                                    cursor.close();
+                                }
+
+                                if(imageFiles.size() == 1){
+                                    // Do something with the selected image URI
+                                    Glide.with(this)
+                                            .load(selectedImage)
+                                            .into(binding.ivTask);
+                                } else {
+
+                                }
                             }
                         }
                     });
@@ -648,6 +690,10 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             mediaPlayer.setDataSource(audioFile.getAbsolutePath());
             mediaPlayer.prepare();
 
+            // save to array list
+            MediaFile mediaAudioFile = new MediaFile(audioFile.getName(), false, audioFile.getAbsolutePath(), 1);
+            audioFiles.add(mediaAudioFile);
+
             // Set the audio file path to the play button
             binding.btnPlay.setTag(audioFile.getAbsolutePath());
             binding.recordingGroup.setVisibility(View.VISIBLE);
@@ -674,7 +720,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_taskDetailFragment_to_mapPickerFragment,bundle);
     }
     //////////////////////////////////////////////////////////////////////////////////////////
-    // END OF HANDLE RECORDING
+    // END OF HANDLE PICK LOCATION
     //////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -736,7 +782,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         bottomSheetDialog.show();
     }
     //////////////////////////////////////////////////////////////////////////////////////////
-    // END OF HANDLE RECORDING
+    // END OF HANDLE SHOW NOTIFY
     //////////////////////////////////////////////////////////////////////////////////////////
 
     public void pickDateTime(){

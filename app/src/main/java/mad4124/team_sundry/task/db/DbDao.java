@@ -96,4 +96,10 @@ public interface DbDao {
     void updateMap(MapLocation mapLocation);
     @Delete
     void deleteMap(MapLocation mapLocation);
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void insert(MediaFile mediaFile);
+    @Update
+    void update(MediaFile mediaFile);
+    @Delete
+    void delete(MediaFile mediaFile);
 }

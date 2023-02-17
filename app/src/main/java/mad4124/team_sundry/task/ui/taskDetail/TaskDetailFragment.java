@@ -285,6 +285,13 @@ public class TaskDetailFragment extends Fragment {
             bottomSheetDialog.dismiss();
         });
 
+        Button pickLocation = bottomBarView.findViewById(R.id.btnPickLocation);
+        pickLocation.setOnClickListener(v -> {
+            // Handle "pick location" option
+            pickLocation();
+            bottomSheetDialog.dismiss();
+        });
+
         // Show the bottom bar
         bottomSheetDialog.show();
     }
@@ -589,7 +596,22 @@ public class TaskDetailFragment extends Fragment {
     // END OF HANDLE RECORDING
     //////////////////////////////////////////////////////////////////////////////////////////
 
+    //---------------------------------------------------------------------------------------
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // END OF HANDLE PICK LOCATION
+    //////////////////////////////////////////////////////////////////////////////////////////
+    private void pickLocation() {
 
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // END OF HANDLE RECORDING
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+
+    //---------------------------------------------------------------------------------------
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // END OF HANDLE SHOW NOTIFY
+    //////////////////////////////////////////////////////////////////////////////////////////
     private void showNotify() {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme);
         View bottomBarView = LayoutInflater.from(requireContext()).inflate(R.layout.task_detail_bottom_sheet_show_notify, null);
@@ -600,4 +622,10 @@ public class TaskDetailFragment extends Fragment {
         // Show the bottom bar
         bottomSheetDialog.show();
     }
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // END OF HANDLE RECORDING
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 }

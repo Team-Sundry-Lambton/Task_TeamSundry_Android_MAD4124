@@ -110,26 +110,39 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_app_bar"
+        android:layout_marginBottom="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/task_search" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addTask"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/theme_gradient_oval"
-        app:borderWidth="0dp"
-        app:maxImageSize="56dp"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@null"/>
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/addTaskBottomBar"
+        style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
+        android:backgroundTint="@color/theme_dark_purple"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:fabAlignmentMode="end"
+        app:fabAnimationMode="scale"
+        />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addTask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/theme_gradient_oval"
+            app:borderWidth="0dp"
+            app:layout_anchor="@id/addTaskBottomBar"
+            app:maxImageSize="56dp"
+            app:tint="@null" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottom_app_bar"
         style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
@@ -141,6 +154,8 @@
         app:contentInsetStart="0dp"
         app:contentInsetRight="0dp"
         app:contentInsetEnd="0dp"
+        android:visibility="gone"
+        app:menuAlignmentMode="start"
         app:backgroundTint="@color/theme_dark_purple"
         app:fabCradleRoundedCornerRadius="0dp"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -18,11 +18,11 @@
         />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/viewDetail"
+        android:id="@+id/completeTask"
         style="@style/MyTextButton.Options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="View Details"
+        android:text="Mark Complete"
         app:icon="@drawable/menu_view"
         />
 
@@ -31,7 +31,7 @@
         style="@style/MyTextButton.Options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Edit Details"
+        android:text="Edit Task"
         app:icon="@drawable/menu_edit"
         />
 
@@ -40,7 +40,7 @@
         style="@style/MyTextButton.Options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Delete Record"
+        android:text="Delete Task"
         app:icon="@drawable/menu_delete"
         />
 

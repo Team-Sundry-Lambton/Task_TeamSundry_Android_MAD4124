@@ -2,6 +2,7 @@ package mad4124.team_sundry.task.ui.task;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -137,6 +138,9 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
                 //Inflating the Popup using xml file
                 popup.getMenuInflater().inflate(R.menu.task_popup_menu, popup.getMenu());
                 //registering popup with OnMenuItemClickListener
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    popup.setForceShowIcon(true);
+                }
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
 
@@ -179,9 +183,8 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
 
     @Override
     public void onItemClick(int position) {
-
+        Task task = taskList.get(position);
         if(isMultiSelection){
-            Task task = taskList.get(position);
             if(selectedTasks.contains(task)){
                 selectedTasks.remove(task);
             }else {
@@ -204,7 +207,9 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
                     deleteTask(position);
                 }
             };
-            BsItemOptions options = new BsItemOptions();
+            int id = task.getId();
+            List<SubTask> subTasks = viewModel.getAllSubTask(id);
+            BsItemOptions options = new BsItemOptions(task.isTask());
             options.provider = provider;
             options.show(getChildFragmentManager(), "ITEM_OPTIONS");
         }
@@ -242,7 +247,7 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
         boolean status = taskContainInCompleteSubTask(id);
         if(status){
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("You have uncompleted subtask under this Task.Therefore you cannot completed the task");
+            builder.setTitle("You have uncompleted subtasks under this Task.Therefore you cannot completed the task. Please complete all subtasks and continue...");
             builder.setPositiveButton("OK", (dialog, which) -> adapter.notifyItemChanged(position));
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
@@ -267,10 +272,12 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
             isMultiSelection = false;
             binding.bottomAppBar.setVisibility(View.GONE);
             binding.addTask.setVisibility(View.VISIBLE);
+            binding.addTaskBottomBar.setVisibility(View.VISIBLE);
         }else {
             isMultiSelection = true;
             binding.bottomAppBar.setVisibility(View.VISIBLE);
             binding.addTask.setVisibility(View.GONE);
+            binding.addTaskBottomBar.setVisibility(View.GONE);
         }
     }
 

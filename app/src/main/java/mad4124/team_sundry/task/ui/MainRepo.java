@@ -4,6 +4,7 @@ package mad4124.team_sundry.task.ui;
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 
@@ -18,13 +19,18 @@ public class MainRepo {
 
     DbDao dbDao;
 
+    ExecutorService executorService;
+
     @Inject
-    public MainRepo(DbDao dbDao) {
+    public MainRepo(DbDao dbDao,ExecutorService executorService) {
         this.dbDao = dbDao;
+        this.executorService = executorService;
     }
 
     void addCategory(Category category) {
-        dbDao.addCategory(category);
+        executorService.execute( () -> {
+            dbDao.addCategory(category);
+        });
     }
 
     List<Category> getAllCategory() {
@@ -44,15 +50,43 @@ public class MainRepo {
     }
 
     void delete(Task task){
-        dbDao.delete(task);
+        executorService.execute( () -> {
+            dbDao.delete(task);
+        });
+    }
+
+    void insert(SubTask subTask){
+        executorService.execute( () -> {
+            dbDao.insert(subTask);
+        });
+    }
+    void update(SubTask subTask){
+        executorService.execute( () -> {
+            dbDao.update(subTask);
+        });
+    }
+    void delete(SubTask subTask){
+        executorService.execute( () -> {
+            dbDao.delete(subTask);
+        });
+    }
+    LiveData<List<SubTask>> getSubTasksLive(int taskId){
+        return dbDao.getAllLiveSubTasks(taskId);
+    }
+    LiveData<List<MediaFile>> getMediaLive(int taskId,boolean isImage){
+        return dbDao.getAllLiveMedias(taskId,isImage);
     }
 
     void insert(Task task){
-        dbDao.insert(task);
+        executorService.execute( () -> {
+            dbDao.insert(task);
+        });
     }
 
     void markTaskCompleted(boolean complete, int id){
-        dbDao.markTaskCompleted(complete, id);
+        executorService.execute( () -> {
+            dbDao.markTaskCompleted(complete, id);
+        });
     }
 
     List<SubTask> getAllSubTask(int taskID){
@@ -60,6 +94,7 @@ public class MainRepo {
     }
 
     List<Task> getAllTasksSortByCreatedDate(int categoryID){
+//        Future<List<Task>> future =  Executors.newSingleThreadExecutor().submit(() -> dbDao.getAllTasksSortByCreatedDate(categoryID));
         return dbDao.getAllTasksSortByCreatedDate(categoryID);
     }
 
@@ -72,7 +107,13 @@ public class MainRepo {
     }
     void updateCategoryName(String categoryName,int id){ dbDao.updateCategoryName(categoryName, id); }
 
-    void deleteCategory(Category category) { dbDao.deleteCategory(category);}
+
+    void deleteCategory(Category category) {
+        executorService.execute( () -> {
+            dbDao.deleteCategory(category);
+        });
+
+    //void deleteCategory(Category category) { dbDao.deleteCategory(category);}
 
     List<Category> getAllCategoriesExceptSelected(int categoryID){
         return dbDao.getAllCategoriesExceptSelected(categoryID);

@@ -6,6 +6,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -38,6 +39,18 @@ public interface DbDao {
 
     @Delete
     void delete(Task task);
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void insert(SubTask subTask);
+    @Update
+    void update(SubTask subTask);
+    @Delete
+    void delete(SubTask subTask);
+    @Query("Select * from subTasks where task_id = :taskId")
+    LiveData<List<SubTask>> getAllLiveSubTasks(int taskId);
+    @Query("Select * from medias where task_id = :taskId and isImage = :isImage")
+    LiveData<List<MediaFile>> getAllLiveMedias(int taskId,boolean isImage);
+
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
    void insert(Task task);

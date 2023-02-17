@@ -2,6 +2,7 @@ package mad4124.team_sundry.task.ui.task;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -137,6 +138,9 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
                 //Inflating the Popup using xml file
                 popup.getMenuInflater().inflate(R.menu.task_popup_menu, popup.getMenu());
                 //registering popup with OnMenuItemClickListener
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    popup.setForceShowIcon(true);
+                }
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
 

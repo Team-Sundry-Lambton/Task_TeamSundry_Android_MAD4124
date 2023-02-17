@@ -17,7 +17,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/task_search_view" >
+        app:layout_constraintTop_toBottomOf="@+id/task_search" >
 
     <ImageView
         android:id="@+id/empty_image"
@@ -63,37 +63,46 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
-        android:id="@+id/task_search_view"
+        android:id="@+id/task_title_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
->
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/task_search"
-        android:layout_width="0dp"
-        style="@style/SearchViewStyle"
-        android:background="#DDDBDB"
         android:layout_height="50dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_weight="1"
-    />
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+>
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/taskTitleToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/white"
+            app:title="Tasks List"
+            android:layout_weight="1"
+            app:titleTextColor="@color/theme_dark_purple" />
         <ImageButton
             android:id="@+id/option_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_menu"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
             android:backgroundTint="@color/white"
             android:adjustViewBounds="true"
             android:scaleType="centerInside"
             />
     </LinearLayout>
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/task_search"
+        android:layout_width="0dp"
+        style="@style/SearchViewStyle"
+        android:background="@color/search_bg_color"
+        android:layout_height="50dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/task_title_view"
+        />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
@@ -102,23 +111,24 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_app_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/task_search_view" />
+        app:layout_constraintTop_toBottomOf="@+id/task_search" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addTask"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/theme_gradient_oval"
+        app:borderWidth="0dp"
+        app:maxImageSize="56dp"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
-        app:backgroundTint="@color/theme_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_input_add"
-        app:tint="@color/white"/>
+        app:tint="@null"/>
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottom_app_bar"
@@ -131,7 +141,7 @@
         app:contentInsetStart="0dp"
         app:contentInsetRight="0dp"
         app:contentInsetEnd="0dp"
-        app:backgroundTint="@color/theme_color"
+        app:backgroundTint="@color/theme_dark_purple"
         app:fabCradleRoundedCornerRadius="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

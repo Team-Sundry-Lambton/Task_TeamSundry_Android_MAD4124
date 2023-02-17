@@ -72,4 +72,8 @@ public class MainRepo {
     void updateCategoryName(String categoryName,int id){ dbDao.updateCategoryName(categoryName, id); }
 
     void deleteCategory(Category category) { dbDao.deleteCategory(category);}
+
+    List<Category> getAllCategoriesExceptSelected(int categoryID){
+        return dbDao.getAllCategoriesExceptSelected(categoryID);
+    }
 }

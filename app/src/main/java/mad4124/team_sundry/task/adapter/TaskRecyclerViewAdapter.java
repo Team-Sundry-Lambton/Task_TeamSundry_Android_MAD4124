@@ -88,6 +88,12 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         @Override
         public void onClick(View v) {
             onItemClickListener.onItemClick(getAdapterPosition());
+            if(binding.checkBox.getVisibility()==View.GONE)
+            {
+                binding.checkBox.setVisibility(View.VISIBLE);
+            }else{
+                binding.checkBox.setVisibility(View.GONE);
+            }
         }
     }
 

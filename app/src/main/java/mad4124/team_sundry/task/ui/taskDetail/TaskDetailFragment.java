@@ -150,7 +150,6 @@ public class TaskDetailFragment extends Fragment {
                     // If the media player is already playing, pause it and update the button icon
                     mediaPlayer.pause();
                     binding.btnPlay.setImageResource(R.drawable.ic_play_arrow);
-//                    binding.recordingName.setText("Playing " + fileName.toString());
                 } else {
                     // If the media player is not playing, start playing and update the button icon
                     String audioFilePath = (String) binding.btnPlay.getTag();
@@ -160,7 +159,6 @@ public class TaskDetailFragment extends Fragment {
                             mediaPlayer.prepare();
                             mediaPlayer.start();
                             binding.btnPlay.setImageResource(R.drawable.ic_play_arrow);
-//                            binding.recordingName.setText("Play " + fileName.toString());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -662,7 +660,7 @@ public class TaskDetailFragment extends Fragment {
         Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_taskDetailFragment_to_mapPickerFragment,bundle);
     }
     //////////////////////////////////////////////////////////////////////////////////////////
-    // END OF HANDLE RECORDING
+    // END OF HANDLE PICK LOCATION
     //////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -681,7 +679,7 @@ public class TaskDetailFragment extends Fragment {
         bottomSheetDialog.show();
     }
     //////////////////////////////////////////////////////////////////////////////////////////
-    // END OF HANDLE RECORDING
+    // END OF HANDLE SHOW NOTIFY
     //////////////////////////////////////////////////////////////////////////////////////////
 
 

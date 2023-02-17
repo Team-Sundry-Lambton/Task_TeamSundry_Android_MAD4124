@@ -183,9 +183,8 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
 
     @Override
     public void onItemClick(int position) {
-
+        Task task = taskList.get(position);
         if(isMultiSelection){
-            Task task = taskList.get(position);
             if(selectedTasks.contains(task)){
                 selectedTasks.remove(task);
             }else {
@@ -208,7 +207,9 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
                     deleteTask(position);
                 }
             };
-            BsItemOptions options = new BsItemOptions();
+            int id = task.getId();
+            List<SubTask> subTasks = viewModel.getAllSubTask(id);
+            BsItemOptions options = new BsItemOptions(task.isTask());
             options.provider = provider;
             options.show(getChildFragmentManager(), "ITEM_OPTIONS");
         }
@@ -246,7 +247,7 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
         boolean status = taskContainInCompleteSubTask(id);
         if(status){
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("You have uncompleted subtask under this Task.Therefore you cannot completed the task");
+            builder.setTitle("You have uncompleted subtasks under this Task.Therefore you cannot completed the task. Please complete all subtasks and continue...");
             builder.setPositiveButton("OK", (dialog, which) -> adapter.notifyItemChanged(position));
             AlertDialog alertDialog = builder.create();
             alertDialog.show();

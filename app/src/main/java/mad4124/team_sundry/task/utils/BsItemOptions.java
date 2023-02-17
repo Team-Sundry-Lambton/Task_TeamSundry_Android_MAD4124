@@ -15,6 +15,11 @@ import mad4124.team_sundry.task.databinding.ItemOptionsBinding;
 public class BsItemOptions extends BottomSheetDialogFragment {
 
     ItemOptionsBinding binding;
+    boolean isTask;
+
+    public BsItemOptions(boolean isTask) {
+        this.isTask = isTask;
+    }
 
     public interface ActionProvider{
         void complete();
@@ -27,12 +32,17 @@ public class BsItemOptions extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = ItemOptionsBinding.inflate(inflater,container,false);
+        if(isTask){
+            binding.completeTask.setVisibility(View.VISIBLE);
+        }else {
+            binding.completeTask.setVisibility(View.GONE);
+        }
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        binding.viewDetail.setOnClickListener(v ->{
+        binding.completeTask.setOnClickListener(v ->{
             provider.complete();
             dismiss();
         });

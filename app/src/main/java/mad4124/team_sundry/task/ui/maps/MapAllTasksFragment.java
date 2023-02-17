@@ -2,6 +2,7 @@ package mad4124.team_sundry.task.ui.maps;
 
 import static mad4124.team_sundry.task.ui.task.TaskListFragment.CATEGORY_ID;
 import static mad4124.team_sundry.task.ui.task.TaskListFragment.IsShowAllMap;
+import static mad4124.team_sundry.task.ui.task.TaskListFragment.TASK_ID;
 
 import android.Manifest;
 import android.content.Context;
@@ -62,6 +63,7 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
 
     //Inside logic
     private Location currentLocation;
+    private Boolean isEditingMode = false;
 
     List<MapLocation> locations = new ArrayList(); //send this if wanna show tasks locations (Optional)
     Boolean isShowAllMap = false; // send this if it show all map or pick loc map (Required)
@@ -128,10 +130,15 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
 
         //obtain bundle
         int categoryID = getArguments().getInt(CATEGORY_ID,-1);
+        int taskId = getArguments().getInt(TASK_ID,-1);
+
         isShowAllMap = getArguments().getBoolean(IsShowAllMap, false);
 
         if (categoryID != -1) {
             locations = viewModel.getAllMapPin(categoryID);
+        } else if (taskId != -1) {
+            isEditingMode = true;
+            selectedLocationObj = viewModel.getMapPin(taskId);
         }
     }
 
@@ -283,6 +290,22 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
         if (REQUEST_CODE == requestCode) {
             if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, locationListener);
+            }
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        saveMap();
+    }
+
+    private void saveMap() {
+        if (selectedLocationObj != null) {
+            if (isEditingMode) {
+                viewModel.updateMap(selectedLocationObj);
+            } else {
+                viewModel.insertMap(selectedLocationObj);
             }
         }
     }

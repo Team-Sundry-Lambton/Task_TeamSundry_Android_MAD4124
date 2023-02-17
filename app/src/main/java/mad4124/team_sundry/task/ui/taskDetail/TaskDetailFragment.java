@@ -2,6 +2,9 @@ package mad4124.team_sundry.task.ui.taskDetail;
 
 import static android.app.Activity.RESULT_OK;
 
+import static mad4124.team_sundry.task.ui.task.TaskListFragment.IsShowAllMap;
+import static mad4124.team_sundry.task.ui.task.TaskListFragment.TASK_ID;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -622,7 +625,13 @@ public class TaskDetailFragment extends Fragment {
     // END OF HANDLE PICK LOCATION
     //////////////////////////////////////////////////////////////////////////////////////////
     private void pickLocation() {
+        Bundle bundle = new Bundle();
+        if (isEditing) {
+            bundle.putSerializable(TASK_ID, task.getId());
+        }
 
+        bundle.putSerializable(IsShowAllMap, true);
+        Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_taskDetailFragment_to_mapPickerFragment,bundle);
     }
     //////////////////////////////////////////////////////////////////////////////////////////
     // END OF HANDLE RECORDING

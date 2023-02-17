@@ -139,4 +139,25 @@ public class MainRepo {
     List<MapLocation> getAllMapPin(int categoryID) {
         return dbDao.getAllMapPin(categoryID);
     }
+
+    MapLocation getMapPin(int taskId) {
+        return dbDao.getMapPin(taskId);
+    }
+
+    void updateMap(MapLocation mapLocation){
+        executorService.execute( () -> {
+            dbDao.updateMap(mapLocation);
+        });
+    }
+    void deleteMap(MapLocation mapLocation){
+        executorService.execute( () -> {
+            dbDao.deleteMap(mapLocation);
+        });
+    }
+
+    void insertMap(MapLocation mapLocation){
+        executorService.execute( () -> {
+            dbDao.insertMap(mapLocation);
+        });
+    }
 }

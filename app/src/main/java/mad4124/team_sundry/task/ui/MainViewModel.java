@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -67,6 +68,17 @@ public class MainViewModel extends ViewModel {
     public void delete(SubTask subTask){
         repo.delete(subTask);
     }
+
+    public void insertMap(MapLocation mapLocation){
+        repo.insertMap(mapLocation);
+    }
+    public void updateMap(MapLocation mapLocation){
+        repo.updateMap(mapLocation);
+    }
+    public void deleteMap(MapLocation mapLocation){
+        repo.deleteMap(mapLocation);
+    }
+
     public LiveData<List<SubTask>> getSubTasksLive(int taskId){
         return repo.getSubTasksLive(taskId);
     }
@@ -108,5 +120,9 @@ public class MainViewModel extends ViewModel {
 
     public List<MapLocation> getAllMapPin(int categoryID) {
         return repo.getAllMapPin(categoryID);
+    }
+
+    public MapLocation getMapPin(int taskId) {
+        return repo.getMapPin(taskId);
     }
 }

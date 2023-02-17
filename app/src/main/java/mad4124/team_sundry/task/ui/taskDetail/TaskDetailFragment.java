@@ -432,11 +432,10 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             Uri uri = FileProvider.getUriForFile(requireActivity(), "mad4124.team_sundry.task.fileprovider", photoFile);
             takePictureLauncher.launch(uri);
 
-            // Create a new MediaFile object and set the file name
-            isImage = true;
-            MediaFile mediaFile = new MediaFile(photoFile.getName(), isImage, photoFile.getAbsolutePath(), 1);
-            // Add the new MediaFile object to the ArrayList
-            viewModel.insert(mediaFile);
+            //save to array list of images
+            // Create a new MediaFile object using the photoFile object
+            MediaFile mediaFile = new MediaFile(photoFile.getName(), true, photoFile.getAbsolutePath(), task.getId());
+            imageFiles.add(mediaFile);
         }
     }
 
@@ -527,10 +526,10 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
                                     // Create a new MediaFile object and set the file name and path
                                     isImage = true;
-                                    MediaFile mediaFile = new MediaFile(imageName, isImage, imagePath, 1);
+                                    MediaFile mediaFile = new MediaFile(imageName, true, imagePath, task.getId());
 
                                     // Add the new MediaFile object to the ArrayList
-                                    viewModel.insert(mediaFile);
+                                    imageFiles.add(mediaFile);
 
                                     cursor.close();
                                 }
@@ -641,10 +640,13 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             mediaPlayer.setDataSource(audioFile.getAbsolutePath());
             mediaPlayer.prepare();
 
+            // save to array list
+            MediaFile mediaAudioFile = new MediaFile(audioFile.getName(), false, audioFile.getAbsolutePath(), 1);
+            audioFiles.add(mediaAudioFile);
+
             // Set the audio file path to the play button
             binding.btnPlay.setTag(audioFile.getAbsolutePath());
             binding.recordingGroup.setVisibility(View.VISIBLE);
-
         } catch (IOException e) {
             e.printStackTrace();
         }

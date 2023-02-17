@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 import mad4124.team_sundry.task.db.DbDao;
 import mad4124.team_sundry.task.model.Category;
+import mad4124.team_sundry.task.model.MapLocation;
 import mad4124.team_sundry.task.model.MediaFile;
 import mad4124.team_sundry.task.model.SubTask;
 import mad4124.team_sundry.task.model.Task;
@@ -106,9 +107,19 @@ public class MainRepo {
     }
     void updateCategoryName(String categoryName,int id){ dbDao.updateCategoryName(categoryName, id); }
 
+
     void deleteCategory(Category category) {
         executorService.execute( () -> {
             dbDao.deleteCategory(category);
         });
+
+    //void deleteCategory(Category category) { dbDao.deleteCategory(category);}
+
+    List<Category> getAllCategoriesExceptSelected(int categoryID){
+        return dbDao.getAllCategoriesExceptSelected(categoryID);
+    }
+
+    List<MapLocation> getAllMapPin(int categoryID) {
+        return dbDao.getAllMapPin(categoryID);
     }
 }

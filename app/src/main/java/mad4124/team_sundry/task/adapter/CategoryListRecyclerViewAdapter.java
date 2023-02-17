@@ -72,7 +72,6 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
 //        int randomIndex = new Random().nextInt(backgroundImages.length);
 //        holder.itemView.setBackgroundResource(backgroundImages[randomIndex]);
 
-
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -103,7 +102,9 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
             binding.imageClassAdapter.setBackgroundResource(backgroundImages[randomIndex]);
             binding.frameBg.setBackgroundResource(backgroundColors[randomIndex]);
             binding.categoryName.setText(model.getName());
-            binding.totalTasks.setText("Total tasks/notes: "+ tasks.size());
+            binding.totalTasks.setText("Tasks/Notes: "+ tasks.size());
+
+            itemView.setOnClickListener(this);
         }
 
         @Override

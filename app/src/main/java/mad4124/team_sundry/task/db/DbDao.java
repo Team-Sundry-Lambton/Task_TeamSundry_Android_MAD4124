@@ -11,6 +11,7 @@ import androidx.room.Update;
 import java.util.List;
 
 import mad4124.team_sundry.task.model.Category;
+import mad4124.team_sundry.task.model.MapLocation;
 import mad4124.team_sundry.task.model.MediaFile;
 import mad4124.team_sundry.task.model.SubTask;
 import mad4124.team_sundry.task.model.Task;
@@ -71,4 +72,10 @@ public interface DbDao {
 
     @Query("UPDATE categories SET name =:categoryName WHERE id = :id")
     void updateCategoryName(String categoryName,int id);
+
+    @Query("Select * from categories where id != :categoryID")
+    List<Category> getAllCategoriesExceptSelected(int categoryID);
+
+    @Query("Select * from locations where categoryID = :categoryID")
+    List<MapLocation> getAllMapPin(int categoryID);
 }

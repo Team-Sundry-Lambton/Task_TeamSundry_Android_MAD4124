@@ -2,6 +2,7 @@ package mad4124.team_sundry.task.ui.task;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -9,6 +10,9 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -37,6 +41,8 @@ import mad4124.team_sundry.task.utils.BsItemOptions;
 @AndroidEntryPoint
 public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapter.OnItemClickListener{
     public static final String TASK_ID = "task_id";
+    public static final String CATEGORY_ID = "category_id";
+    public static final String IsShowAllMap = "isShowAllMap";
     private FragmentTaskListBinding binding;
 
     private List<Task> taskList = new ArrayList<>();
@@ -50,6 +56,7 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
     private List<Task> selectedTasks = new ArrayList<>();
 
     boolean isMultiSelection = false;
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
@@ -69,7 +76,8 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
         binding.recyclerView.setAdapter(adapter);
-
+        binding.bottomAppBar.setVisibility(View.GONE);
+       categoryId = getArguments().getInt("categoryId");
         loadTasks();
         binding.addTask.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,30 +129,41 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
             return false;
         });
 
-        registerForContextMenu(binding.optionMenu);
+        binding.optionMenu.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                //Creating the instance of PopupMenu
+                PopupMenu popup = new PopupMenu(getContext(), binding.optionMenu);
+                //Inflating the Popup using xml file
+                popup.getMenuInflater().inflate(R.menu.task_popup_menu, popup.getMenu());
+                //registering popup with OnMenuItemClickListener
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    popup.setForceShowIcon(true);
+                }
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+
+                        switch (item.getItemId()) {
+                            case R.id.select_task:
+                                moveOptionSelected();
+                                return true;
+                            case R.id.sort_task:
+                                createSortMenuOptions();
+                                return true;
+                            case R.id.view_map:
+                                loadMapView();
+                                return true;
+                        }
+                        return true;
+                    }
+                });
+
+                popup.show();//showing popup menu
+            }
+        });
     }
 
-    //Context Menu Creation
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, v.getId(), 0, "Select Task");
-        menu.add(1, v.getId(), 1, "Sort Task");
-        menu.add(2, v.getId(), 2, "View On Map");
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        if (item.getItemId() == 0) {
-            moveOptionSelected();
-        }
-        else if (item.getItemId() == 1) {
-            createSortMenuOptions();
-        }else if (item.getItemId() == 2) {
-            loadMapView();
-        }
-        return true;
-    }
     private void loadTasks() {
         taskList = viewModel.getAllTasks(categoryId);
         if (taskList.size() > 0) {
@@ -164,9 +183,8 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
 
     @Override
     public void onItemClick(int position) {
-
+        Task task = taskList.get(position);
         if(isMultiSelection){
-            Task task = taskList.get(position);
             if(selectedTasks.contains(task)){
                 selectedTasks.remove(task);
             }else {
@@ -189,7 +207,9 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
                     deleteTask(position);
                 }
             };
-            BsItemOptions options = new BsItemOptions();
+            int id = task.getId();
+            List<SubTask> subTasks = viewModel.getAllSubTask(id);
+            BsItemOptions options = new BsItemOptions(task.isTask());
             options.provider = provider;
             options.show(getChildFragmentManager(), "ITEM_OPTIONS");
         }
@@ -199,25 +219,26 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
     private void editTask(int position){
         Task task = taskList.get(position);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("data", null);
+        bundle.putSerializable(TASK_ID, task.getId());
         Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_taskListFragment_to_taskDetailFragment,bundle);
     }
 
     private void deleteTask(int position) {
         Task task = taskList.get(position);
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Deleting Task will delete it subtasks also. Do you want to delete?");
-        builder.setPositiveButton("Yes", (dialog, which) -> {
-            deletedTask = task;
-            viewModel.delete(task);
-            adapter.notifyItemRemoved(position);
-            Snackbar.make(binding.recyclerView, deletedTask.getTitle() + " is deleted!", Snackbar.LENGTH_LONG)
-                    .setAction("Undo", v -> viewModel.insert(deletedTask)).show();
-            Toast.makeText(getActivity(), task.getTitle() + " deleted", Toast.LENGTH_SHORT).show();
-        });
-        builder.setNegativeButton("No", (dialog, which) -> adapter.notifyItemChanged(position));
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
+        showDeleteTaskDialog(task,position);
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//        builder.setTitle("Deleting Task will delete it subtasks also. Do you want to delete?");
+//        builder.setPositiveButton("Yes", (dialog, which) -> {
+//            deletedTask = task;
+//            viewModel.delete(task);
+//            adapter.notifyItemRemoved(position);
+//            Snackbar.make(binding.recyclerView, deletedTask.getTitle() + " is deleted!", Snackbar.LENGTH_LONG)
+//                    .setAction("Undo", v -> viewModel.insert(deletedTask)).show();
+//            Toast.makeText(getActivity(), task.getTitle() + " deleted", Toast.LENGTH_SHORT).show();
+//        });
+//        builder.setNegativeButton("No", (dialog, which) -> adapter.notifyItemChanged(position));
+//        AlertDialog alertDialog = builder.create();
+//        alertDialog.show();
     }
 
     private void markTaskCompleted(int position){
@@ -226,7 +247,7 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
         boolean status = taskContainInCompleteSubTask(id);
         if(status){
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("You have uncompleted subtask under this Task.Therefore you cannot completed the task");
+            builder.setTitle("You have uncompleted subtasks under this Task.Therefore you cannot completed the task. Please complete all subtasks and continue...");
             builder.setPositiveButton("OK", (dialog, which) -> adapter.notifyItemChanged(position));
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
@@ -251,10 +272,12 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
             isMultiSelection = false;
             binding.bottomAppBar.setVisibility(View.GONE);
             binding.addTask.setVisibility(View.VISIBLE);
+            binding.addTaskBottomBar.setVisibility(View.VISIBLE);
         }else {
             isMultiSelection = true;
             binding.bottomAppBar.setVisibility(View.VISIBLE);
             binding.addTask.setVisibility(View.GONE);
+            binding.addTaskBottomBar.setVisibility(View.GONE);
         }
     }
 
@@ -284,41 +307,52 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
 
     private void loadMapView(){
         Bundle bundle = new Bundle();
-        bundle.putSerializable("data", null);
+        bundle.putSerializable(CATEGORY_ID, categoryId);
+        bundle.putSerializable(IsShowAllMap, true);
         Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_taskListFragment_to_mapAllTasksFragment,bundle);
     }
 
     //Selected Tasks Options
     private void deleteSelectedTasks(){
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Deleting Tasks will delete it subtasks also. Do you want to delete?");
-        builder.setPositiveButton("Yes", (dialog, which) -> {
-            for (Task task:selectedTasks
-                 ) {
-                viewModel.delete(task);
-
-            }
-            adapter.notifyDataSetChanged();
-            Toast.makeText(getActivity(), "Tasks deleted", Toast.LENGTH_SHORT).show();
-        });
-        builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
-            dialog.cancel();
-            adapter.notifyDataSetChanged();
-        });
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
+        if (selectedTasks.size() > 0) {
+            showDeleteTaskDialog(selectedTasks.get(0),0);
+//            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//            builder.setTitle("Deleting Tasks will delete it subtasks also. Do you want to delete?");
+//            builder.setPositiveButton("Yes", (dialog, which) -> {
+//                for (Task task : selectedTasks
+//                ) {
+//                    viewModel.delete(task);
+//
+//                }
+//                adapter.notifyDataSetChanged();
+//                Toast.makeText(getActivity(), "Tasks deleted", Toast.LENGTH_SHORT).show();
+//            });
+//            builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
+//                dialog.cancel();
+//                adapter.notifyDataSetChanged();
+//            });
+//            AlertDialog alertDialog = builder.create();
+//            alertDialog.show();
+        }else {
+            Toast.makeText(getActivity(),"Please select tasks to delete...",Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void loadCategoryList(){
-        List<Integer> taskIds = new ArrayList<>();
-        for (Task task:selectedTasks
-             ) {
-            taskIds.add(task.getId());
+        if (selectedTasks.size() > 0) {
+            List<Integer> taskIds = new ArrayList<>();
+            for (Task task : selectedTasks
+            ) {
+                taskIds.add(task.getId());
+            }
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(TASK_ID,null);
+            bundle.putSerializable(CATEGORY_ID, categoryId);
+            Navigation.findNavController(requireActivity(), R.id.fragContainerView).navigate(R.id.action_taskListFragment_to_mapAllTasksFragment, bundle);
+        }else {
+            Toast.makeText(getActivity(),"Please select tasks to move...",Toast.LENGTH_SHORT).show();
         }
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("data", null);
-        Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_taskListFragment_to_mapAllTasksFragment,bundle);
     }
 
 
@@ -334,4 +368,70 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
         }
         return matches;
     }
+
+
+    private void showDeleteTaskDialog(Task task, int position) {
+        AlertDialog dialog;
+        // Create the dialog using an AlertDialog.Builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        // Inflate the layout for the dialog
+        View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.category_delete_dialog, null);
+
+        // Set the dialog's view
+        builder.setView(dialogView);
+        dialog = builder.create();
+
+        TextView title = dialogView.findViewById(R.id.tv_title);
+        TextView message = dialogView.findViewById(R.id.tv_message);
+        // Get references to the dialog's views
+        Button btnNegative = dialogView.findViewById(R.id.btn_negative);
+        Button btnPositive = dialogView.findViewById(R.id.btn_positive);
+        if (isMultiSelection) {
+            title.setText("Delete Selected Tasks");
+            message.setText("Deleting Tasks will delete it subtasks also. Do you want to delete?");
+        }else{
+            title.setText("Delete Selected Task");
+            message.setText("Deleting Task will delete it subtasks also. Do you want to delete?");
+        }
+
+        btnNegative.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Perform action on click
+                dialog.dismiss();
+            }
+        });
+
+        btnPositive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Perform action on click
+                if (isMultiSelection) {
+                    for (Task task : selectedTasks
+                    ) {
+                        viewModel.delete(task);
+
+                    }
+                    adapter.notifyDataSetChanged();
+                    Toast.makeText(getActivity(), "Tasks deleted", Toast.LENGTH_SHORT).show();
+                }else {
+                    deleteSelectedTask(task, position);
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void deleteSelectedTask(Task task, int position){
+        deletedTask = task;
+        viewModel.delete(task);
+        adapter.notifyItemRemoved(position);
+        Snackbar.make(binding.recyclerView, deletedTask.getTitle() + " is deleted!", Snackbar.LENGTH_LONG)
+                .setAction("Undo", v -> viewModel.insert(deletedTask)).show();
+        Toast.makeText(getActivity(), task.getTitle() + " deleted", Toast.LENGTH_SHORT).show();
+    }
+
 }

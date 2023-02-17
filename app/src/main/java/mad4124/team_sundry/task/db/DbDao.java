@@ -80,4 +80,14 @@ public interface DbDao {
 
     @Query("Select * from locations where categoryID = :categoryID")
     List<MapLocation> getAllMapPin(int categoryID);
+
+    @Query("Select * from locations where taskId = :taskId limit 1")
+    MapLocation getMapPin(int taskId);
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void insertMap(MapLocation mapLocation);
+    @Update
+    void updateMap(MapLocation mapLocation);
+    @Delete
+    void deleteMap(MapLocation mapLocation);
 }

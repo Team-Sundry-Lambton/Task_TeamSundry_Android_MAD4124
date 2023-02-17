@@ -107,4 +107,19 @@ public class Task implements Serializable {
     public int getParentCategoryId() {
         return parentCategoryId;
     }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", createdDate=" + createdDate +
+                ", dueDate=" + dueDate +
+                ", isTask=" + isTask +
+                ", status=" + status +
+                ", description='" + description + '\'' +
+                ", categoryName='" + categoryName + '\'' +
+                ", parentCategoryId=" + parentCategoryId +
+                '}';
+    }
 }

@@ -37,6 +37,8 @@ public interface DbDao {
     @Query("Select * from medias  WHERE task_id = :taskID")
     List<MediaFile> getAllMedias(int taskID);
 
+    @Update
+    void update(Task task);
     @Delete
     void delete(Task task);
 

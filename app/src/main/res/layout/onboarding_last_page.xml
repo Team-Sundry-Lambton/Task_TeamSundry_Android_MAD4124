@@ -4,9 +4,10 @@
     android:id="@+id/lastContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-
+<!--    android:background="#1C2D41"-->
     <androidx.constraintlayout.widget.Group
        android:id="@+id/group"
         android:layout_width="wrap_content"
@@ -19,7 +20,9 @@
         android:id="@+id/slider"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        tools:src="@tools:sample/backgrounds/scenic"
+        android:alpha="0.97"
+        android:src="@drawable/notespscreen"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,8 +40,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         style="@style/OnBoardTextButton"
+        android:backgroundTint="@color/colorSecondaryVariant"
         android:layout_marginBottom="@dimen/margin_default"
         app:cornerRadius="8dp"
+        android:textColor="@color/white"
         android:onClick="startHome"
         android:visibility="visible"
         android:layout_marginStart="16dp"

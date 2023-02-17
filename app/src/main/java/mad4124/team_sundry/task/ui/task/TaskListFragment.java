@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +39,7 @@ import mad4124.team_sundry.task.utils.BsItemOptions;
 
 @AndroidEntryPoint
 public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapter.OnItemClickListener{
+    public static final String TASK_MODEL = "task";
     public static final String TASK_ID = "task_id";
     public static final String CATEGORY_ID = "category_id";
     public static final String IsShowAllMap = "isShowAllMap";
@@ -77,14 +77,13 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
         binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
         binding.recyclerView.setAdapter(adapter);
         binding.bottomAppBar.setVisibility(View.GONE);
-       categoryId = getArguments().getInt("categoryId");
+        categoryId = getArguments().getInt(CATEGORY_ID);
         loadTasks();
-        binding.addTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NavHostFragment.findNavController(TaskListFragment.this)
-                        .navigate(R.id.action_taskListFragment_to_taskDetailFragment);
-            }
+        binding.addTask.setOnClickListener(view1 -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt(CATEGORY_ID,categoryId);
+            NavHostFragment.findNavController(TaskListFragment.this)
+                    .navigate(R.id.action_taskListFragment_to_taskDetailFragment,bundle);
         });
 
         binding.taskSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -219,6 +218,7 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
     private void editTask(int position){
         Task task = taskList.get(position);
         Bundle bundle = new Bundle();
+        bundle.putSerializable(TASK_MODEL, task);
         bundle.putSerializable(TASK_ID, task.getId());
         Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_taskListFragment_to_taskDetailFragment,bundle);
     }

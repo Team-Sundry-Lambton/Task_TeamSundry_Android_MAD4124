@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 
 import mad4124.team_sundry.task.db.DbDao;
+import mad4124.team_sundry.task.db.MyPreferenceLab;
 import mad4124.team_sundry.task.model.Category;
 import mad4124.team_sundry.task.model.MapLocation;
 import mad4124.team_sundry.task.model.MediaFile;
@@ -21,10 +22,20 @@ public class MainRepo {
 
     ExecutorService executorService;
 
+    MyPreferenceLab myPreferenceLab;
+
     @Inject
-    public MainRepo(DbDao dbDao,ExecutorService executorService) {
+    public MainRepo(DbDao dbDao,ExecutorService executorService,MyPreferenceLab myPreferenceLab) {
         this.dbDao = dbDao;
         this.executorService = executorService;
+        this.myPreferenceLab = myPreferenceLab;
+    }
+
+    boolean getFirstLoad(){
+        return myPreferenceLab.isFirstLoad();
+    }
+    void setFirstLoad(boolean firstLoad){
+        myPreferenceLab.setFirstLoad(firstLoad);
     }
 
     void addCategory(Category category) {
@@ -49,6 +60,11 @@ public class MainRepo {
         return dbDao.getAllTasks(categoryID);
     }
 
+    void update(Task task){
+        executorService.execute( () -> {
+            dbDao.update(task);
+        });
+    }
     void delete(Task task){
         executorService.execute( () -> {
             dbDao.delete(task);
@@ -109,9 +125,10 @@ public class MainRepo {
 
 
     void deleteCategory(Category category) {
-        executorService.execute( () -> {
+        executorService.execute(() -> {
             dbDao.deleteCategory(category);
         });
+    }
 
     //void deleteCategory(Category category) { dbDao.deleteCategory(category);}
 

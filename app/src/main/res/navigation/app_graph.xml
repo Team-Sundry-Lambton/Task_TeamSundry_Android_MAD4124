@@ -35,6 +35,9 @@
         <action
             android:id="@+id/action_taskListFragment_to_mapAllTasksFragment"
             app:destination="@id/mapAllTasksFragment" />
+        <action
+            android:id="@+id/action_taskListFragment_to_taskMoveCategoryListFragment"
+            app:destination="@id/taskMoveCategoryListFragment" />
     </fragment>
     <fragment
         android:id="@+id/taskDetailFragment"
@@ -59,4 +62,9 @@
         android:name="mad4124.team_sundry.task.ui.maps.MapPickerFragment"
         android:label="MapPickerFragment"
         tools:layout="@layout/fragment_map_picker" />
+    <fragment
+        android:id="@+id/taskMoveCategoryListFragment"
+        android:name="mad4124.team_sundry.task.ui.task.TaskMoveCategoryListFragment"
+        android:label="fragment_task_move_category_list"
+        tools:layout="@layout/fragment_task_move_category_list" />
 </navigation>

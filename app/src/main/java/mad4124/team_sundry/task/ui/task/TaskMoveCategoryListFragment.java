@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import mad4124.team_sundry.task.R;
 import mad4124.team_sundry.task.adapter.CategoryRecyclerViewAdapter;
 import mad4124.team_sundry.task.databinding.FragmentTaskMoveCategoryListBinding;
 import mad4124.team_sundry.task.model.Category;
@@ -39,6 +41,9 @@ public class TaskMoveCategoryListFragment extends Fragment implements CategoryRe
 
     private int categoryId = 0;
 
+    public static final String TASK_ID = "task_id";
+    public static final String CATEGORY_ID = "category_id";
+
     @Nullable
     @Override
     public View onCreateView(
@@ -57,12 +62,14 @@ public class TaskMoveCategoryListFragment extends Fragment implements CategoryRe
         binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
         binding.recyclerView.setAdapter(adapter);
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
-        categoryId = getArguments().getInt("category_id");
+        categoryId = getArguments().getInt(CATEGORY_ID);
+        selectedTasksIds = getArguments().getIntegerArrayList(TASK_ID);
         loadFolders();
     }
 
     private void loadFolders() {
         categoryList = viewModel.getAllCategoriesExceptSelected(categoryId);
+        adapter.setDataList(categoryList);
         adapter.notifyDataSetChanged();
     }
 
@@ -75,6 +82,7 @@ public class TaskMoveCategoryListFragment extends Fragment implements CategoryRe
             Category category = categoryList.get(position);
             moveSelectedTasks(category.getId());
             Toast.makeText(getActivity(), "Tasks moved", Toast.LENGTH_SHORT).show();
+            Navigation.findNavController(requireActivity(), R.id.fragContainerView).popBackStack();
         });
         builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
             dialog.cancel();

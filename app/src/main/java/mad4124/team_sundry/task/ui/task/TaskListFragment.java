@@ -165,6 +165,10 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
     @Override
     public void onResume() {
         super.onResume();
+        if (isMultiSelection) {
+            selectedTasks.clear();
+            moveOptionSelected();
+        }
         loadTasks();
     }
 
@@ -358,15 +362,15 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
 
     private void loadCategoryList(){
         if (selectedTasks.size() > 0) {
-            List<Integer> taskIds = new ArrayList<>();
+            ArrayList<Integer> taskIds = new ArrayList<>();
             for (Task task : selectedTasks
             ) {
                 taskIds.add(task.getId());
             }
             Bundle bundle = new Bundle();
-            bundle.putSerializable(TASK_ID,null);
+            bundle.putIntegerArrayList(TASK_ID,taskIds);
             bundle.putSerializable(CATEGORY_ID, categoryId);
-            Navigation.findNavController(requireActivity(), R.id.fragContainerView).navigate(R.id.action_taskListFragment_to_mapAllTasksFragment, bundle);
+            Navigation.findNavController(requireActivity(), R.id.fragContainerView).navigate(R.id.action_taskListFragment_to_taskMoveCategoryListFragment, bundle);
         }else {
             Toast.makeText(getActivity(),"Please select tasks to move...",Toast.LENGTH_SHORT).show();
         }
@@ -428,10 +432,10 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
                     for (Task task : selectedTasks
                     ) {
                         viewModel.delete(task);
-
                     }
                     adapter.notifyDataSetChanged();
                     Toast.makeText(getActivity(), "Tasks deleted", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
                 }else {
                     deleteSelectedTask(task, position);
                     dialog.dismiss();

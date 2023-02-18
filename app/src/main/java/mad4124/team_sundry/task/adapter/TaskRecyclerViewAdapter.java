@@ -94,7 +94,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
                 binding.dueDateRow.setVisibility(View.VISIBLE);
             }
             else {
-                binding.dueDateRow.setVisibility(View.INVISIBLE);
+                binding.dueDateRow.setVisibility(View.GONE);
             }
             if(mediaFiles.size() > 0) {
                 binding.imageView.setVisibility(View.VISIBLE);
@@ -105,7 +105,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
                     binding.imageView.setBackgroundResource(R.drawable.ic_audio);
                 }
             }else {
-                binding.imageView.setVisibility(View.INVISIBLE);
+                binding.imageView.setVisibility(View.GONE);
             }
         }
 

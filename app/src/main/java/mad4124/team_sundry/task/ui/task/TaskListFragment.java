@@ -126,7 +126,6 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
             }
             return false;
         });
-
         binding.optionMenu.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -184,8 +183,10 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
                     taskList = tasks;
             if (taskList.size() > 0) {
                 binding.emptyView.setVisibility(View.INVISIBLE);
+                binding.optionMenu.setVisibility(View.VISIBLE);
             }else {
                 binding.emptyView.setVisibility(View.VISIBLE);
+                binding.optionMenu.setVisibility(View.GONE);
             }
             adapter.setDataList(taskList);
             adapter.notifyDataSetChanged();

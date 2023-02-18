@@ -108,6 +108,7 @@ app:cardCornerRadius="12dp">
                 android:id="@+id/check_box"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
+                android:layout_gravity="bottom"
                 android:src="@drawable/ic_item_select"
                 android:visibility="gone" />
         </LinearLayout>

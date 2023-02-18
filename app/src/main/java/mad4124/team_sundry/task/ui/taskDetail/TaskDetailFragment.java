@@ -13,8 +13,6 @@ import android.content.pm.PackageManager;
 
 
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.media.MediaMetadataRetriever;
 
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -59,6 +57,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -103,6 +102,10 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     ArrayList<MediaFile> imageFiles = new ArrayList<>();
     ArrayList<MediaFile> audioFiles = new ArrayList<>();
     ArrayList<SubTask> subTasks = new ArrayList<>();
+
+    ArrayList<MediaFile> imageToDelete = new ArrayList<>();
+    ArrayList<MediaFile> audioToDelete = new ArrayList<>();
+    ArrayList<SubTask> subTaskToDelete = new ArrayList<>();
 
     SubTaskAdapter subTaskAdapter;
     ImagesAdapter imagesAdapter;
@@ -196,7 +199,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             return false;
         });
 
-        initAdapters();
+//        initAdapters();
 
         binding.btnAddSubTask.setOnClickListener(v->{
             SubTask subTask = new SubTask();
@@ -217,8 +220,10 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                 .setMessage("Are you sure ?")
                 .setCancelable(true)
                 .setPositiveButton("Yes", (dialog, which) -> {
-                    viewModel.delete(task1);
                     isDeleting = true;
+                    if(isEditing){
+                        viewModel.delete(task1);
+                    }
                     NavHostFragment.findNavController(this).popBackStack();
                 })
                 .setNegativeButton("Cancel",((dialog, which) -> {
@@ -233,6 +238,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         SubTaskAdapter.SubTaskAdapterListener subTaskAdapterListener = new SubTaskAdapter.SubTaskAdapterListener() {
             @Override
             public void remove(int position, SubTask subTask) {
+                subTaskToDelete.add(subTask);
 //                if(isEditing){
 //                    viewModel.delete(subTask);
 //                }
@@ -256,7 +262,10 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         ImagesAdapter.ImageAdapterListener imageAdapterListener = new ImagesAdapter.ImageAdapterListener() {
             @Override
             public void remove(int position, MediaFile model) {
-
+//                viewModel.delete(model);
+                imageToDelete.add(model);
+                imagesAdapter.notifyItemRemoved(position);
+                handleImages();
             }
         };
         imagesAdapter = new ImagesAdapter(requireContext(),imageAdapterListener);
@@ -272,7 +281,8 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
             @Override
             public void remove(int position, MediaFile model) {
-
+                audioToDelete.add(model);
+                audioAdapter.notifyItemRemoved(position);
             }
 
             @Override
@@ -345,7 +355,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     }
 
 
-
     void saveData(){
 
         if(isDeleting){
@@ -376,6 +385,17 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
         Log.d("TaskDetail",""+task.toString());
 
+        for(MediaFile audio:audioToDelete){
+            viewModel.delete(audio);
+        }
+        for(SubTask subTask:subTaskToDelete){
+            viewModel.delete(subTask);
+        }
+        for(MediaFile image:imageToDelete){
+            viewModel.delete(image);
+        }
+
+
         if(isEditing){
             viewModel.update(task);
         }
@@ -386,11 +406,13 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         for(MediaFile audio: audioFiles){
             //save audio file
             audio.setTaskId(task.getId());
+            viewModel.insert(audio);
         }
 
         for(MediaFile image: imageFiles){
             //save image file
             image.setTaskId(task.getId());
+            viewModel.insert(image);
         }
 
         for(SubTask subTask:subTasks){
@@ -425,12 +447,8 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         });
 
         viewModel.getMediaLive(task.getId(),true).observe(getViewLifecycleOwner(),images -> {
-            if(isEditing){
-                if(images.isEmpty()){
-                    binding.ivTask.setVisibility(View.GONE);
-                }
-            }
             imagesAdapter.setData(images);
+            handleImages();
         });
 
         viewModel.getMediaLive(task.getId(),false).observe(getViewLifecycleOwner(),audios -> {
@@ -476,7 +494,11 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             //save to array list of images
             // Create a new MediaFile object using the photoFile object
             MediaFile mediaFile = new MediaFile(photoFile.getName(), true, photoFile.getAbsolutePath(), task.getId());
-            imageFiles.add(mediaFile);
+
+            imagesAdapter.addData(mediaFile);
+//            imageFiles.add(mediaFile);
+
+            handleImages();
         }
     }
 
@@ -570,19 +592,13 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                                     MediaFile mediaFile = new MediaFile(imageName, true, imagePath, task.getId());
 
                                     // Add the new MediaFile object to the ArrayList
-                                    imageFiles.add(mediaFile);
+//                                    imageFiles.add(mediaFile);
+                                    imagesAdapter.addData(mediaFile);
 
                                     cursor.close();
                                 }
 
-                                if(imageFiles.size() == 1){
-                                    // Do something with the selected image URI
-                                    Glide.with(this)
-                                            .load(selectedImage)
-                                            .into(binding.ivTask);
-                                } else {
-
-                                }
+                                handleImages();
                             }
                         }
                     });
@@ -591,6 +607,25 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     //////////////////////////////////////////////////////////////////////////////////////////
     // END OF HANDLE ADD IMAGE FROM GALLERY
     //////////////////////////////////////////////////////////////////////////////////////////
+
+    public void handleImages(){
+        int imagesCount = imagesAdapter.getList().size();
+        if(imagesCount == 0){
+            binding.ivTask.setVisibility(View.GONE);
+            binding.rvImages.setVisibility(View.GONE);
+        }
+        else if(imagesCount == 1){
+            binding.rvImages.setVisibility(View.GONE);
+            binding.ivTask.setVisibility(View.VISIBLE);
+            Glide.with(this)
+                    .load(imagesAdapter.getList().get(0).getPath())
+                    .into(binding.ivTask);
+        }
+        else{
+            binding.rvImages.setVisibility(View.VISIBLE);
+            binding.ivTask.setVisibility(View.GONE);
+        }
+    }
 
     //---------------------------------------------------------------------------------------
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -691,8 +726,10 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             mediaPlayer.prepare();
 
             // save to array list
-            MediaFile mediaAudioFile = new MediaFile(audioFile.getName(), false, audioFile.getAbsolutePath(), 1);
-            audioFiles.add(mediaAudioFile);
+            int taskId = (task == null) ? 0 : task.getId();
+            MediaFile mediaAudioFile = new MediaFile(audioFile.getName(), false, audioFile.getAbsolutePath(), taskId);
+//            audioFiles.add(mediaAudioFile);
+            audioAdapter.addData(mediaAudioFile);
 
             // Set the audio file path to the play button
             binding.btnPlay.setTag(audioFile.getAbsolutePath());

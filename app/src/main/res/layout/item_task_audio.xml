@@ -6,6 +6,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     app:cardBackgroundColor="#eaeaea"
+    android:layout_marginTop="8dp"
+    android:layout_marginHorizontal="16dp"
     app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent">
 
     <LinearLayout

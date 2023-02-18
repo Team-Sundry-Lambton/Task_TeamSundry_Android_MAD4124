@@ -89,8 +89,14 @@ public class MainRepo {
             dbDao.delete(subTask);
         });
     }
+    List<SubTask> getSubTasks(int taskId){
+        return dbDao.getAllSubTasks(taskId);
+    }
     LiveData<List<SubTask>> getSubTasksLive(int taskId){
         return dbDao.getAllLiveSubTasks(taskId);
+    }
+    List<MediaFile> getMedia(int taskId,boolean isImage){
+        return dbDao.getAllMedias(taskId,isImage);
     }
     LiveData<List<MediaFile>> getMediaLive(int taskId,boolean isImage){
         return dbDao.getAllLiveMedias(taskId,isImage);

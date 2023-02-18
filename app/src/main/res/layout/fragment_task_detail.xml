@@ -77,7 +77,7 @@
                 android:id="@+id/etDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Note"
+                android:hint="Description"
                 android:textSize="14sp"
                 android:background="@null"
                 android:padding="@dimen/padding_small"

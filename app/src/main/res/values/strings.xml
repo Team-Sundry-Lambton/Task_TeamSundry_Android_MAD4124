@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Task_TeamSundry_Android_MAD4124</string>
+    <string name="app_name">Sundry Notes</string>
 
     <string name="next">Next</string>
     <string name="skip">Skip</string>
@@ -7,15 +7,15 @@
 
     <string name="onboarding_slide1_title">Step 1</string>
     <string name="onboarding_slide1_subtitle">Create Category</string>
-    <string name="onboarding_slide1_desc">In particular, the garbled words of bear an unmistakable</string>
+    <string name="onboarding_slide1_desc">Create a new category to organize your content.</string>
 
     <string name="onboarding_slide2_title">Step 2</string>
     <string name="onboarding_slide2_subtitle">Create Task/Note</string>
-    <string name="onboarding_slide2_desc">In particular, the garbled words of bear an unmistakable</string>
+    <string name="onboarding_slide2_desc">Create a new task and set a due date to manage your to-do list.</string>
 
     <string name="onboarding_slide3_title">Step 3</string>
-    <string name="onboarding_slide3_subtitle">Add/Edit your details</string>
-    <string name="onboarding_slide3_desc">In particular, the garbled words of bear an unmistakable</string>
+    <string name="onboarding_slide3_subtitle">View/Update the content</string>
+    <string name="onboarding_slide3_desc">View or update details of an existing category/task/note.</string>
 
     <string name="menu_pin">Pin</string>
     <string name="menu_notify">Notify</string>

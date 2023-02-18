@@ -30,6 +30,7 @@
         app:dotsSize="@dimen/onboard_dot_size"
         app:dotsSpacing="@dimen/onboard_dot_spacing"
         app:dotsStrokeWidth="1dp"
+        app:dotsColor="@color/theme_dark_purple"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline" />
@@ -41,6 +42,7 @@
         android:layout_marginEnd="@dimen/margin_default"
         android:layout_marginBottom="@dimen/margin_default"
         android:text="@string/next"
+        android:textColor="@color/theme_dark_purple"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_chainStyle="spread"
@@ -71,6 +73,7 @@
         android:layout_marginEnd="@dimen/margin_default"
         android:layout_marginBottom="@dimen/margin_default"
         android:text="@string/skip"
+        android:textColor="@color/theme_dark_purple"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/page_indicator" />

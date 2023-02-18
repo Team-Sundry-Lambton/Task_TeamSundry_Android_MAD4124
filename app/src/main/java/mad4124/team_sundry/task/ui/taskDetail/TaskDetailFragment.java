@@ -33,6 +33,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 import android.Manifest;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -113,6 +114,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
     int day, month, year, hour, minute;
     int myday, myMonth, myYear, myHour, myMinute;
+    Calendar calendar;
 
     boolean isDeleting = false;
 
@@ -422,7 +424,9 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         }
 
 
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            NotificationHelper.scheduleNotification(NotificationHelper.getNotification(task.getTitle(),getActivity()),calendar,getActivity());
+        }
     }
 
     void initData(Task task) {
@@ -765,12 +769,45 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     //////////////////////////////////////////////////////////////////////////////////////////
     // END OF HANDLE SHOW NOTIFY
     //////////////////////////////////////////////////////////////////////////////////////////
+    private static final int NOTIFICATION_PERMISSION_CODE = 123;
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        // Checking the request code of our request
+        if (requestCode == NOTIFICATION_PERMISSION_CODE ) {
+
+            // If permission is granted
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Displaying a toast
+                Toast.makeText(getActivity(), "Permission granted now you can read the storage", Toast.LENGTH_LONG).show();
+                showNotify();
+            } else {
+                // Displaying another toast if permission is not granted
+                Toast.makeText(getActivity(), "Oops you just denied the permission", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void requestNotificationPermission() {
+//        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_NOTIFICATION_POLICY) == PackageManager.PERMISSION_GRANTED)
+//            return;
+
+        requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATION_PERMISSION_CODE );
+    }
+
     private void showNotify() {
+
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestNotificationPermission();
+            return;
+        }
+
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme);
         View bottomBarView = LayoutInflater.from(requireContext()).inflate(R.layout.task_detail_bottom_sheet_show_notify, null);
         bottomSheetDialog.setContentView(bottomBarView);
 
-        Calendar calendar = Calendar.getInstance();
+        calendar = Calendar.getInstance();
         year = calendar.get(Calendar.YEAR);
         month = calendar.get(Calendar.MONTH);
         Button pickDateTimeButton = bottomSheetDialog.findViewById(R.id.btnPickDateTime);
@@ -805,10 +842,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                 calendar.add(Calendar.DAY_OF_YEAR, 1);
                 calendar.set(Calendar.HOUR, 8);
                 day = calendar.get(Calendar.DAY_OF_MONTH);
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    NotificationHelper.scheduleNotification(NotificationHelper.getNotification("5 second more",getActivity()),calendar,getActivity());
-                }
                 myHour = 8;
                 bottomSheetDialog.dismiss();
             }
@@ -829,7 +862,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         year = calendar.get(Calendar.YEAR);
         month = calendar.get(Calendar.MONTH);
         day = calendar.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), this,year, month,day);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), this,year,month,day);
         datePickerDialog.show();
     }
 
@@ -852,17 +885,10 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(myYear,myMonth,myday,myHour,myMinute);
-
+//        calendar.add(Calendar.SECOND, calendar);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             NotificationHelper.scheduleNotification(NotificationHelper.getNotification("5 second more",getActivity()),calendar,getActivity());
         }
-
-//        textView.setText("Year: " + myYear + " " +
-//                "Month: " + myMonth + " " +
-//                "Day: " + myday + " " +
-//                "Hour: " + myHour + " " +
-//                "Minute: " + myMinute);
-
     }
 
 }

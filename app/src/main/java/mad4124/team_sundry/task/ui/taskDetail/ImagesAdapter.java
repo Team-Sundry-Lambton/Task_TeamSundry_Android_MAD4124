@@ -36,7 +36,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.VH>{
     }
     public void addData(MediaFile data){
         list.add(data);
-        notifyItemInserted(list.size());
+        notifyItemInserted(list.size()-1);
     }
     public List<MediaFile> getList(){
         return list;
@@ -70,7 +70,10 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.VH>{
         }
         public void bind(MediaFile model,ImageAdapterListener listener,int position){
 
-            binding.delete.setOnClickListener(v-> listener.remove(position,model));
+            binding.delete.setOnClickListener(v-> {
+                list.remove(position);
+                listener.remove(position,model);
+            });
             Glide.with(context).load(model.getPath()).into(binding.image);
 
         }

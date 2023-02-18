@@ -55,7 +55,11 @@ public interface DbDao {
     @Delete
     void delete(SubTask subTask);
     @Query("Select * from subTasks where task_id = :taskId order by id")
+    List<SubTask> getAllSubTasks(int taskId);
+    @Query("Select * from subTasks where task_id = :taskId order by id")
     LiveData<List<SubTask>> getAllLiveSubTasks(int taskId);
+    @Query("Select * from medias where task_id = :taskId and isImage = :isImage")
+    List<MediaFile> getAllMedias(int taskId,boolean isImage);
     @Query("Select * from medias where task_id = :taskId and isImage = :isImage")
     LiveData<List<MediaFile>> getAllLiveMedias(int taskId,boolean isImage);
 
@@ -98,7 +102,7 @@ public interface DbDao {
     void updateMap(MapLocation mapLocation);
     @Delete
     void deleteMap(MapLocation mapLocation);
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(MediaFile mediaFile);
     @Update
     void update(MediaFile mediaFile);

@@ -41,7 +41,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.VH> {
 
     public void addData(MediaFile data) {
         list.add(data);
-        notifyItemInserted(list.size());
+        notifyItemInserted(list.size()-1);
     }
 
     public List<MediaFile> getList() {
@@ -67,7 +67,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.VH> {
         return list.size();
     }
 
-    static class VH extends RecyclerView.ViewHolder {
+    class VH extends RecyclerView.ViewHolder {
 
         ItemTaskAudioBinding binding;
 
@@ -88,7 +88,10 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.VH> {
                 updatePlayPauseImageResource();
             });
 
-            binding.ivDelete.setOnClickListener(v -> listener.remove(position, model));
+            binding.ivDelete.setOnClickListener(v -> {
+                list.remove(position);
+                listener.remove(position, model);
+            });
 
             binding.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override

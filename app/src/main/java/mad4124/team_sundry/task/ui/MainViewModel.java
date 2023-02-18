@@ -79,8 +79,14 @@ public class MainViewModel extends ViewModel {
         repo.deleteMap(mapLocation);
     }
 
+    public List<SubTask> getSubTasks(int taskId){
+        return repo.getSubTasks(taskId);
+    }
     public LiveData<List<SubTask>> getSubTasksLive(int taskId){
         return repo.getSubTasksLive(taskId);
+    }
+    public List<MediaFile> getMedia(int taskId,boolean isImage){
+        return repo.getMedia(taskId,isImage);
     }
     public LiveData<List<MediaFile>> getMediaLive(int taskId,boolean isImage){
         return repo.getMediaLive(taskId,isImage);

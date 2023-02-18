@@ -105,7 +105,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
                     binding.imageView.setBackgroundResource(R.drawable.ic_audio);
                 }
             }else {
-                binding.imageView.setVisibility(View.INVISIBLE);
+//                binding.imageView.setVisibility(View.INVISIBLE);
             }
         }
 

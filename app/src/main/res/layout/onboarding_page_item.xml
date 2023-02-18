@@ -26,6 +26,7 @@
         android:layout_marginEnd="@dimen/margin_horizontal"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:textStyle="bold"
+        android:textColor="@color/text_grey"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titleTv"/>
@@ -50,7 +51,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/theme_dark_purple"
+        android:textStyle="bold"
+        android:textSize="18dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="@+id/img"
         app:layout_constraintStart_toStartOf="@+id/img"
         app:layout_constraintTop_toBottomOf="@+id/img"/>

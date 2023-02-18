@@ -59,7 +59,6 @@ public interface DbDao {
     @Query("Select * from medias where task_id = :taskId and isImage = :isImage")
     LiveData<List<MediaFile>> getAllLiveMedias(int taskId,boolean isImage);
 
-
     @Insert(onConflict = OnConflictStrategy.IGNORE)
    void insert(Task task);
 
@@ -68,6 +67,9 @@ public interface DbDao {
 
     @Query("UPDATE tasks SET status =:complete WHERE id = :id")
     void markTaskCompleted(boolean complete, int id);
+
+    @Query("SELECT * FROM tasks WHERE category_id = :categoryID ORDER BY title ASC")
+    LiveData<List<Task>> getAllLiveTasks(int categoryID);
 
     @Query("SELECT * FROM tasks WHERE category_id = :categoryID ORDER BY createdDate ASC")
     List<Task> getAllTasksSortByCreatedDate(int categoryID);

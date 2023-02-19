@@ -94,6 +94,8 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     private boolean isPlaying = false;
     private File audioFile;
     private static final int REQUEST_GALLERY_PERMISSION = 300;
+    private static final int NOTIFICATION_PERMISSION_CODE = 123;
+
 
 
     ArrayList<MediaFile> imageFiles = new ArrayList<>();
@@ -301,12 +303,12 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             @Override
             public void onClick(View view) {
                 // Handle "add image" option
-                /*if (isPermissionGranted(REQUEST_GALLERY_PERMISSION)) {
+                if (isPermissionGranted(REQUEST_GALLERY_PERMISSION)) {
                     pickImage();
                 } else {
                     requestPermission(REQUEST_GALLERY_PERMISSION);
-                }*/
-                pickImage();
+                }
+//                pickImage();
 
                 bottomSheetDialog.dismiss();
             }
@@ -456,7 +458,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             requestPermissions(permissions, REQUEST_RECORD_AUDIO_PERMISSION);
         }
         if(requestCode == REQUEST_GALLERY_PERMISSION){
-            Log.d("Add image", "3");
             String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
             requestPermissions(permissions, REQUEST_GALLERY_PERMISSION);
         }
@@ -474,6 +475,66 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
         }
         return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        // Checking the request code of our request
+        if (requestCode == NOTIFICATION_PERMISSION_CODE ) {
+
+            // If permission is granted
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Displaying a toast
+                Toast.makeText(getActivity(), "Permission granted now you can read the storage", Toast.LENGTH_LONG).show();
+                showNotify();
+            } else {
+                // Displaying another toast if permission is not granted
+                Toast.makeText(getActivity(), "Oops you just denied the permission", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        if (requestCode == REQUEST_CAMERA_PERMISSION ) {
+
+            // If permission is granted
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Displaying a toast
+                Toast.makeText(getActivity(), "Permission granted now you can open camera", Toast.LENGTH_LONG).show();
+                launchCamera();
+            } else {
+                // Displaying another toast if permission is not granted
+                Toast.makeText(getActivity(), "Oops you just denied the permission", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        if (requestCode == REQUEST_GALLERY_PERMISSION ) {
+
+            Log.d("Gallery 1", String.valueOf(grantResults[0]));
+            Log.d("grantResults.length  =", String.valueOf(grantResults.length));
+            Log.d("Gallery 2", String.valueOf(PackageManager.PERMISSION_GRANTED));
+            // If permission is granted
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Displaying a toast
+                Toast.makeText(getActivity(), "Permission granted now you can gallery", Toast.LENGTH_LONG).show();
+                pickImage();
+            } else {
+                // Displaying another toast if permission is not granted
+                Toast.makeText(getActivity(), "Oops you just denied the permission", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION ) {
+
+            // If permission is granted
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Displaying a toast
+                Toast.makeText(getActivity(), "Permission granted now you can open microphone for recording", Toast.LENGTH_LONG).show();
+                addRecording();
+            } else {
+                // Displaying another toast if permission is not granted
+                Toast.makeText(getActivity(), "Oops you just denied the permission", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -558,19 +619,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     //////////////////////////////////////////////////////////////////////////////////////////
 
     public void pickImage() {
-
-        Log.d("Ad image", "x");
-        // Check if the app has permission to read external storage
-        /*if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            // If the app does not have permission, request it
-            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
-        } else {
-            // If the app already has permission, launch the gallery intent
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            galleryLauncher.launch(Intent.createChooser(intent, "Select Picture"));
-        }*/
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -662,16 +710,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         });
         dialog.show();
 
-    }
-    // Request permission to record audio
-    private void requestRecordAudioPermission() {
-        String[] permissions = {Manifest.permission.RECORD_AUDIO};
-        requestPermissions(permissions, REQUEST_RECORD_AUDIO_PERMISSION);
-    }
-
-    // Check if permission to record audio has been granted
-    private boolean isRecordAudioPermissionGranted() {
-        return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
     }
 
     // Start recording audio
@@ -769,26 +807,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     //////////////////////////////////////////////////////////////////////////////////////////
     // END OF HANDLE SHOW NOTIFY
     //////////////////////////////////////////////////////////////////////////////////////////
-    private static final int NOTIFICATION_PERMISSION_CODE = 123;
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-        // Checking the request code of our request
-        if (requestCode == NOTIFICATION_PERMISSION_CODE ) {
-
-            // If permission is granted
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Displaying a toast
-                Toast.makeText(getActivity(), "Permission granted now you can read the storage", Toast.LENGTH_LONG).show();
-                showNotify();
-            } else {
-                // Displaying another toast if permission is not granted
-                Toast.makeText(getActivity(), "Oops you just denied the permission", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
     private void requestNotificationPermission() {
 //        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_NOTIFICATION_POLICY) == PackageManager.PERMISSION_GRANTED)
 //            return;

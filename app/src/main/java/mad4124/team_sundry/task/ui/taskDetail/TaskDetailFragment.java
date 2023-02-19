@@ -509,9 +509,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
         if (requestCode == REQUEST_GALLERY_PERMISSION ) {
 
-            Log.d("Gallery 1", String.valueOf(grantResults[0]));
-            Log.d("grantResults.length  =", String.valueOf(grantResults.length));
-            Log.d("Gallery 2", String.valueOf(PackageManager.PERMISSION_GRANTED));
             // If permission is granted
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Displaying a toast

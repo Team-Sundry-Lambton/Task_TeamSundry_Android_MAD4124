@@ -93,6 +93,8 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     private MediaPlayer mediaPlayer;
     private boolean isPlaying = false;
     private File audioFile;
+    private static final int REQUEST_GALLERY_PERMISSION = 300;
+
 
     ArrayList<MediaFile> imageFiles = new ArrayList<>();
     ArrayList<MediaFile> audioFiles = new ArrayList<>();
@@ -285,10 +287,10 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             @Override
             public void onClick(View view) {
                 // Handle "take photo" option
-                if (hasCameraPermission()) {
-                    launchCamera();
+                if (isPermissionGranted(REQUEST_CAMERA_PERMISSION)) {
+                   launchCamera();
                 } else {
-                    requestCameraPermission();
+                    requestPermission(REQUEST_CAMERA_PERMISSION);
                 }
                 bottomSheetDialog.dismiss();
             }
@@ -299,7 +301,13 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             @Override
             public void onClick(View view) {
                 // Handle "add image" option
+                /*if (isPermissionGranted(REQUEST_GALLERY_PERMISSION)) {
+                    pickImage();
+                } else {
+                    requestPermission(REQUEST_GALLERY_PERMISSION);
+                }*/
                 pickImage();
+
                 bottomSheetDialog.dismiss();
             }
         });
@@ -307,7 +315,11 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         Button startRecordingButton = bottomBarView.findViewById(R.id.addRecording);
         startRecordingButton.setOnClickListener(v -> {
             // Handle "Start recording" option
-            addRecording();
+            if (isPermissionGranted(REQUEST_RECORD_AUDIO_PERMISSION)) {
+                addRecording();
+            } else {
+                requestPermission(REQUEST_RECORD_AUDIO_PERMISSION);
+            }
             bottomSheetDialog.dismiss();
         });
 
@@ -432,17 +444,41 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         saveData();
     }
 
+
+    // Request permission
+    private void requestPermission(Integer requestCode) {
+        if(requestCode == REQUEST_CAMERA_PERMISSION){
+            String[] permissions = {Manifest.permission.CAMERA};
+            requestPermissions(permissions, REQUEST_CAMERA_PERMISSION);
+        }
+        if(requestCode == REQUEST_RECORD_AUDIO_PERMISSION){
+            String[] permissions = {Manifest.permission.RECORD_AUDIO};
+            requestPermissions(permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+        }
+        if(requestCode == REQUEST_GALLERY_PERMISSION){
+            Log.d("Add image", "3");
+            String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
+            requestPermissions(permissions, REQUEST_GALLERY_PERMISSION);
+        }
+    }
+
+    // Check if permission to camera has been granted
+    private boolean isPermissionGranted(Integer requestCode) {
+        if(requestCode == REQUEST_CAMERA_PERMISSION){
+            return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
+        }
+        if(requestCode == REQUEST_RECORD_AUDIO_PERMISSION){
+            return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+        }
+        if(requestCode == REQUEST_GALLERY_PERMISSION){
+            return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        }
+        return false;
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // HANDLE TAKE PHOTO FROM CAMERA
     //////////////////////////////////////////////////////////////////////////////////////////
-    private boolean hasCameraPermission() {
-        return ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void requestCameraPermission() {
-        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
-    }
-
     private void launchCamera() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Create the File where the photo should go
@@ -521,8 +557,9 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     // HANDLE ADD IMAGE FROM GALLERY
     //////////////////////////////////////////////////////////////////////////////////////////
 
-
     public void pickImage() {
+
+        Log.d("Ad image", "x");
         // Check if the app has permission to read external storage
         /*if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             // If the app does not have permission, request it
@@ -611,19 +648,15 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         btnHandleRecording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isRecordAudioPermissionGranted()) {
-                    if (isRecording) {
-                        isRecording = false;
-                        btnHandleRecording.setText("Start");
-                        stopRecording();
-                        dialog.dismiss();
-                    } else {
-                        isRecording = true;
-                        btnHandleRecording.setText("Stop");
-                        startRecording();
-                    }
+                if (isRecording) {
+                    isRecording = false;
+                    btnHandleRecording.setText("Start");
+                    stopRecording();
+                    dialog.dismiss();
                 } else {
-                    requestRecordAudioPermission();
+                    isRecording = true;
+                    btnHandleRecording.setText("Stop");
+                    startRecording();
                 }
             }
         });
@@ -644,8 +677,8 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     // Start recording audio
     private void startRecording() {
         // Check if permission to record audio has been granted
-        if (!isRecordAudioPermissionGranted()) {
-            requestRecordAudioPermission();
+        if (!isPermissionGranted(REQUEST_RECORD_AUDIO_PERMISSION)) {
+            requestPermission(REQUEST_RECORD_AUDIO_PERMISSION);
             return;
         }
 

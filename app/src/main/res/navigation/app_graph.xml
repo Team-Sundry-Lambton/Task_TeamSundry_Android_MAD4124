@@ -47,6 +47,9 @@
         <action
             android:id="@+id/action_taskDetailFragment_to_mapPickerFragment"
             app:destination="@id/mapPickerFragment" />
+        <action
+            android:id="@+id/action_taskDetailFragment_to_mapAllTasksFragment"
+            app:destination="@id/mapAllTasksFragment" />
     </fragment>
     <fragment
         android:id="@+id/mapAllTasksFragment"

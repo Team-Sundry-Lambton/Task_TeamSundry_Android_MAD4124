@@ -64,7 +64,6 @@ import java.util.Locale;
 import dagger.hilt.android.AndroidEntryPoint;
 import mad4124.team_sundry.task.R;
 import mad4124.team_sundry.task.databinding.FragmentTaskDetailBinding;
-import mad4124.team_sundry.task.databinding.TaskDetailBottomSheetAddMoreOptionsBinding;
 import mad4124.team_sundry.task.model.MediaFile;
 import mad4124.team_sundry.task.model.SubTask;
 import mad4124.team_sundry.task.model.Task;
@@ -170,8 +169,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             return false;
         });
 
-//        initAdapters();
-
         binding.btnAddSubTask.setOnClickListener(v->{
             SubTask subTask = new SubTask();
             if(task == null){
@@ -275,7 +272,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         bottomSheetDialog.setContentView(bottomBarView);
 
         // Find the buttons in the bottom bar view and set their onClickListeners
-
         Button addSubTasks = bottomBarView.findViewById(R.id.addSubTasks);
         addSubTasks.setOnClickListener(v->{
             binding.rvSubTasks.setVisibility(View.VISIBLE);
@@ -283,7 +279,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             bottomSheetDialog.dismiss();
         });
 
-        //addMoreOptionsBinding.takePhoto.setOnClickListener(new View.OnClickListener() {
         Button takePhotoButton = bottomBarView.findViewById(R.id.takePhoto);
         takePhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -308,8 +303,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                 } else {
                     requestPermission(REQUEST_GALLERY_PERMISSION);
                 }
-//                pickImage();
-
                 bottomSheetDialog.dismiss();
             }
         });

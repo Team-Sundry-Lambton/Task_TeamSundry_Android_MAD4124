@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -302,8 +303,10 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
     private void saveMap() {
         if (selectedLocationObj != null) {
             if (isEditingMode) {
+                Toast.makeText(getActivity(), "Updated Map", Toast.LENGTH_SHORT).show();
                 viewModel.updateMap(selectedLocationObj);
             } else {
+                Toast.makeText(getActivity(), "Saved Map", Toast.LENGTH_SHORT).show();
                 viewModel.insertMap(selectedLocationObj);
             }
         }

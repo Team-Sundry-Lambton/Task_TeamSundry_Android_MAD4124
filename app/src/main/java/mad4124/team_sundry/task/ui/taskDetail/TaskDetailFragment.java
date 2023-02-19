@@ -403,9 +403,10 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             viewModel.insert(subTask);
         }
 
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            NotificationHelper.scheduleNotification(NotificationHelper.getNotification(task.getTitle(),getActivity()),calendar,getActivity());
+        if (calendar != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                NotificationHelper.scheduleNotification(NotificationHelper.getNotification(task.getTitle(),getActivity()),calendar,getActivity());
+            }
         }
     }
 
@@ -792,8 +793,8 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             bundle.putSerializable(TASK_ID, task.getId());
         }
 
-        bundle.putSerializable(IsShowAllMap, true);
-        Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_taskDetailFragment_to_mapPickerFragment,bundle);
+        bundle.putSerializable(IsShowAllMap, false);
+        Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_taskDetailFragment_to_mapAllTasksFragment,bundle);
     }
     //////////////////////////////////////////////////////////////////////////////////////////
     // END OF HANDLE PICK LOCATION

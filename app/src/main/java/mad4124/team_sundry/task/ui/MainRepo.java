@@ -141,8 +141,8 @@ public class MainRepo {
 
     //void deleteCategory(Category category) { dbDao.deleteCategory(category);}
 
-    List<Category> getAllCategoriesExceptSelected(int categoryID){
-        return dbDao.getAllCategoriesExceptSelected(categoryID);
+    LiveData<List<Category>> getAllCategoriesExceptSelected(int categoryID,String text){
+        return dbDao.getAllCategoriesExceptSelected(categoryID,text);
     }
 
     List<MapLocation> getAllMapPin(int categoryID) {

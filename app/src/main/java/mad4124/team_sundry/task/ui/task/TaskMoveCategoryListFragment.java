@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mad4124.team_sundry.task.R;
+import mad4124.team_sundry.task.adapter.CategoryListRecyclerViewAdapter;
 import mad4124.team_sundry.task.adapter.CategoryRecyclerViewAdapter;
 import mad4124.team_sundry.task.databinding.FragmentTaskMoveCategoryListBinding;
 import mad4124.team_sundry.task.model.Category;
@@ -57,20 +59,48 @@ public class TaskMoveCategoryListFragment extends Fragment implements CategoryRe
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        adapter = new CategoryRecyclerViewAdapter(categoryList, getContext(), this);
-        binding.recyclerView.setHasFixedSize(true);
-        binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
-        binding.recyclerView.setAdapter(adapter);
+
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
         categoryId = getArguments().getInt(CATEGORY_ID);
         selectedTasksIds = getArguments().getIntegerArrayList(TASK_ID);
-        loadFolders();
+        setCategoryListRecyclerView();
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                loadFolders(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                loadFolders(newText);
+                return false;
+            }
+        });
+
+        loadFolders("");
     }
 
-    private void loadFolders() {
-        categoryList = viewModel.getAllCategoriesExceptSelected(categoryId);
-        adapter.setDataList(categoryList);
-        adapter.notifyDataSetChanged();
+    private void setCategoryListRecyclerView(){
+        adapter = new CategoryRecyclerViewAdapter(categoryList, getContext(), this,viewModel);
+        binding.recyclerView.setHasFixedSize(true);
+        binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
+        binding.recyclerView.setAdapter(adapter);
+    }
+    private void loadFolders(String keyword){
+//        categoryList = viewModel.getAllCategoriesExceptSelected(categoryId,keyword);
+
+        viewModel.getAllCategoriesExceptSelected(categoryId,keyword).observe(getViewLifecycleOwner(),categories -> {
+            categoryList = categories;
+            adapter.setDataList(categories);
+
+            if(keyword.isEmpty()){
+                binding.categoryToolbar.setTitle("All Categories ("+categories.size()+" available)");
+            }
+            else{
+                binding.categoryToolbar.setTitle("Searched Categories ("+categories.size()+" available)");
+            }
+        });
     }
 
     @Override

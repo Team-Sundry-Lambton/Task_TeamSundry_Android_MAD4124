@@ -9,9 +9,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.Random;
 
+import mad4124.team_sundry.task.R;
 import mad4124.team_sundry.task.databinding.RowCategoryListLayoutBinding;
 import mad4124.team_sundry.task.model.Category;
+import mad4124.team_sundry.task.model.Task;
+import mad4124.team_sundry.task.ui.MainViewModel;
 
 
 public class CategoryRecyclerViewAdapter extends RecyclerView.Adapter<CategoryRecyclerViewAdapter.ViewHolder> {
@@ -20,10 +24,15 @@ public class CategoryRecyclerViewAdapter extends RecyclerView.Adapter<CategoryRe
     private OnItemClickListener onItemClickListener;
     private List<Category> categoryList ;
 
-    public CategoryRecyclerViewAdapter(List<Category> categoryList, Context context, OnItemClickListener onItemClickListener){
+    private MainViewModel viewModel;
+
+    private int[] backgroundImages = new int[] { R.drawable.asset_bg_green, R.drawable.asset_bg_paleblue, R.drawable.asset_bg_paleorange , R.drawable.asset_bg_palegreen, R.drawable.asset_bg_yellow};
+    private int[] backgroundColors= new int[] { R.drawable.gradient_color_2, R.drawable.gradient_color_1, R.drawable.gradient_color_5, R.drawable.gradient_color_4, R.drawable.gradient_color_3};
+    public CategoryRecyclerViewAdapter(List<Category> categoryList, Context context, OnItemClickListener onItemClickListener, MainViewModel viewModel){
         this.context = context;
         this.onItemClickListener = onItemClickListener;
         this.categoryList = categoryList;
+        this.viewModel = viewModel;
     }
 
     @NonNull
@@ -53,7 +62,13 @@ public class CategoryRecyclerViewAdapter extends RecyclerView.Adapter<CategoryRe
             itemView.setOnClickListener(this);
         }
         public void bind(Category model){
-            binding.titleRow.setText(model.getName());
+            int id = model.getId();
+            List<Task> tasks = viewModel.getAllTasksSortByCreatedDate(id);
+            int randomIndex = new Random().nextInt(backgroundImages.length);
+            binding.imageClassAdapter.setBackgroundResource(backgroundImages[randomIndex]);
+            binding.frameBg.setBackgroundResource(backgroundColors[randomIndex]);
+            binding.categoryName.setText(model.getName());
+            binding.totalTasks.setText("Tasks/Notes: "+ tasks.size());
         }
 
         @Override

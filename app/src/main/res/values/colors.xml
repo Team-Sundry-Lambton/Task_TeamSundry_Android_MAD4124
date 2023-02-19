@@ -22,5 +22,6 @@
     <color name="theme_yellow">#FFBA00</color>
     <color name="search_bg_color">#EEF3FF</color>
     <color name="text_grey">#3C3C43</color>
+    <color name="gray_middle">#666666</color>
 </resources>
 

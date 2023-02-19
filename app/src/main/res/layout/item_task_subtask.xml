@@ -14,13 +14,6 @@
         android:visibility="gone"
         />
 
-    <ImageView
-        android:layout_width="24dp"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:src="@drawable/ic_baseline_drag_indicator_24"
-        />
-
     <CheckBox
         android:id="@+id/checkbox"
         android:layout_width="wrap_content"
@@ -34,7 +27,7 @@
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:background="@null"
-        android:hint="Sub Task"
+        android:hint="Title"
         />
 
     <ImageView

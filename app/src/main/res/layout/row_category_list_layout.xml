@@ -1,34 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<com.google.android.material.card.MaterialCardView
+    android:id="@+id/cardView_adapter"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_margin="2dp"
-    android:orientation="horizontal"
-    android:paddingHorizontal="20dp"
-    android:paddingVertical="10dp">
+    android:layout_marginLeft="4dp"
+    android:layout_marginRight="4dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    android:transitionName="ExampleTransition"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="12dp">
 
-    <LinearLayout
+
+    <FrameLayout
+
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        >
         <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/ic_folder"/>
-        <TextView
-            android:id="@+id/title_row"
+            android:id="@+id/imageClass_adapter"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:text="folder"
-            android:textColor="@color/black"
-            android:layout_weight="1"
-            android:layout_marginStart="20dp"/>
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"/>
 
-    </LinearLayout>
+        <RelativeLayout
+            android:id="@+id/frame_bg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="12dp"
+            android:paddingTop="12dp"
+            android:paddingRight="12dp"
+            android:paddingBottom="12dp"
+            android:orientation="vertical">
 
-</LinearLayout>
+            <TextView
+                android:id="@+id/categoryName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Category"
+                android:textColor="@color/text_grey"
+                android:textSize="20dp"
+                android:shadowColor="#ffffff"
+                android:shadowDx="4"
+                android:shadowDy="4"
+                android:shadowRadius="3"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/totalTasks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/categoryName"
+                android:layout_marginTop="49dp"
+                android:text="tasks/notes: 0"
+                android:shadowColor="#ffffff"
+                android:shadowDx="4"
+                android:shadowDy="4"
+                android:shadowRadius="3"
+                android:textColor="@color/text_grey"
+                android:textStyle="bold"/>
+        </RelativeLayout>
+
+    </FrameLayout>
+</com.google.android.material.card.MaterialCardView>

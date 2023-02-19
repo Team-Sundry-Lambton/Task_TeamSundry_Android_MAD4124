@@ -120,8 +120,8 @@ public class MainViewModel extends ViewModel {
 
     public void deleteCategory(Category category){ repo.deleteCategory(category); }
 
-    public List<Category> getAllCategoriesExceptSelected(int categoryID){
-        return repo.getAllCategoriesExceptSelected(categoryID);
+    public LiveData<List<Category>> getAllCategoriesExceptSelected(int categoryID,String text){
+        return repo.getAllCategoriesExceptSelected(categoryID,text);
     }
 
     public List<MapLocation> getAllMapPin(int categoryID) {

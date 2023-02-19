@@ -76,19 +76,13 @@ import mad4124.team_sundry.task.utils.NotificationHelper;
 public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     FragmentTaskDetailBinding binding;
-    TaskDetailBottomSheetAddMoreOptionsBinding addMoreOptionsBinding;
     MainViewModel viewModel;
     Task task = null;
     int parentCategoryId = -1;
     boolean isEditing = false;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private ActivityResultLauncher<Intent> cameraLauncher;
-    private static final int REQUEST_IMAGE_GALLERY = 101;
-    private static final int REQUEST_STORAGE_PERMISSION = 102;
     String currentPhotoPath;
     String fileName;
-    private static final int GALLERY_REQUEST_CODE = 103;
     private boolean isImage = false;
 
 
@@ -155,35 +149,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             showMoreOptions();
         });
 
-
-        binding.btnPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mediaPlayer.isPlaying()) {
-                    // If the media player is already playing, pause it and update the button icon
-                    mediaPlayer.pause();
-                    binding.btnPlay.setImageResource(R.drawable.ic_play_arrow);
-                } else {
-                    // If the media player is not playing, start playing and update the button icon
-                    String audioFilePath = (String) binding.btnPlay.getTag();
-                    if (audioFilePath != null) {
-                        try {
-                            try {
-                                mediaPlayer.setDataSource(audioFilePath);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                // Handle the error here
-                            }
-                            mediaPlayer.prepare();
-                            mediaPlayer.start();
-                            binding.btnPlay.setImageResource(R.drawable.ic_play_arrow);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        });
 
         binding.toolbar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
@@ -256,6 +221,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 //                subTaskAdapter.updateData(subTask,position);
             }
         };
+
         subTaskAdapter = new SubTaskAdapter(requireContext(),subTaskAdapterListener);
         binding.rvSubTasks.setAdapter(subTaskAdapter);
         binding.rvSubTasks.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -735,9 +701,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 //            audioFiles.add(mediaAudioFile);
             audioAdapter.addData(mediaAudioFile);
 
-            // Set the audio file path to the play button
-            binding.btnPlay.setTag(audioFile.getAbsolutePath());
-            binding.recordingGroup.setVisibility(View.VISIBLE);
         } catch (IOException e) {
             e.printStackTrace();
         }

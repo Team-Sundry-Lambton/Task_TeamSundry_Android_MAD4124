@@ -611,15 +611,19 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         btnHandleRecording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isRecording) {
-                    isRecording = false;
-                    btnHandleRecording.setText("Start");
-                    stopRecording();
-                    dialog.dismiss();
+                if (isRecordAudioPermissionGranted()) {
+                    if (isRecording) {
+                        isRecording = false;
+                        btnHandleRecording.setText("Start");
+                        stopRecording();
+                        dialog.dismiss();
+                    } else {
+                        isRecording = true;
+                        btnHandleRecording.setText("Stop");
+                        startRecording();
+                    }
                 } else {
-                    isRecording = true;
-                    btnHandleRecording.setText("Stop");
-                    startRecording();
+                    requestRecordAudioPermission();
                 }
             }
         });

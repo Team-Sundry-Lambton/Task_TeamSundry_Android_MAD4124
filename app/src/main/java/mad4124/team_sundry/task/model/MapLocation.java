@@ -1,17 +1,38 @@
 package mad4124.team_sundry.task.model;
 
+import static androidx.room.ForeignKey.CASCADE;
+
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "locations")
-public class MapLocation {
+import java.io.Serializable;
+
+@Entity(tableName = "locations",
+        indices = {@Index("task_id"),@Index("category_id")},
+        foreignKeys = {
+            @ForeignKey(entity = Task.class,
+                    parentColumns = "id",
+                    childColumns = "task_id",
+                    onDelete = CASCADE),
+            @ForeignKey(entity = Category.class,
+                    parentColumns = "id",
+                    childColumns = "category_id",
+                    onDelete = CASCADE)
+        }
+)
+public class MapLocation implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     private long id;
     private String name;
     private Double lat;
     private Double lng;
+    @ColumnInfo(name = "task_id")
     private long taskId;
+    @ColumnInfo(name = "category_id")
     private long categoryID;
 
     public long getCategoryID() {
@@ -60,5 +81,17 @@ public class MapLocation {
 
     public void setTaskId(long taskId) {
         this.taskId = taskId;
+    }
+
+    @Override
+    public String toString() {
+        return "MapLocation{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", lat=" + lat +
+                ", lng=" + lng +
+                ", taskId=" + taskId +
+                ", categoryID=" + categoryID +
+                '}';
     }
 }

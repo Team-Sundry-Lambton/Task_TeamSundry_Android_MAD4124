@@ -9,12 +9,12 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "subTasks"
-//        ,
-//        indices = {@Index("task_id")},
-//        foreignKeys = @ForeignKey(entity = Task.class,
-//                parentColumns = "id",
-//                childColumns = "task_id",
-//                onDelete = CASCADE)
+        ,
+        indices = {@Index("task_id")},
+        foreignKeys = @ForeignKey(entity = Task.class,
+                parentColumns = "id",
+                childColumns = "task_id",
+                onDelete = CASCADE)
 )
 public class SubTask {
 

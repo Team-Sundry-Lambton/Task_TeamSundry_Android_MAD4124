@@ -43,6 +43,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -65,6 +66,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import mad4124.team_sundry.task.R;
 import mad4124.team_sundry.task.databinding.FragmentTaskDetailBinding;
 import mad4124.team_sundry.task.databinding.TaskDetailBottomSheetAddMoreOptionsBinding;
+import mad4124.team_sundry.task.model.MapLocation;
 import mad4124.team_sundry.task.model.MediaFile;
 import mad4124.team_sundry.task.model.SubTask;
 import mad4124.team_sundry.task.model.Task;
@@ -97,6 +99,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     private static final int NOTIFICATION_PERMISSION_CODE = 123;
 
 
+    Calendar calendar;
 
     ArrayList<MediaFile> imageFiles = new ArrayList<>();
     ArrayList<MediaFile> audioFiles = new ArrayList<>();
@@ -106,13 +109,14 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     ArrayList<MediaFile> audioToDelete = new ArrayList<>();
     ArrayList<SubTask> subTaskToDelete = new ArrayList<>();
 
+    MapLocation location = null;
+
     SubTaskAdapter subTaskAdapter;
     ImagesAdapter imagesAdapter;
     AudioAdapter audioAdapter;
 
     int day, month, year, hour, minute;
     int myday, myMonth, myYear, myHour, myMinute;
-    Calendar calendar;
 
     boolean isDeleting = false;
 
@@ -121,6 +125,15 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
         mediaPlayer = new MediaPlayer();
+
+        getParentFragmentManager().setFragmentResultListener("requestKey", this, (requestKey, bundle) -> {
+            // We use a String here, but any type that can be put in a Bundle is supported
+            location = (MapLocation) bundle.getSerializable("map");
+            Log.d("Task Detail",location.toString());
+            // Do something with the result
+        });
+
+        calendar = Calendar.getInstance();
     }
 
     @Nullable
@@ -135,6 +148,8 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         parentCategoryId = getArguments().getLong(TaskListFragment.CATEGORY_ID,-1);
+
+
 
         initAdapters();
 
@@ -180,6 +195,14 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             }
             subTask.setParentTaskId(task.getId());
             subTaskAdapter.addNewSubTask(subTask);
+        });
+
+        binding.ivDelete.setOnClickListener(v->{
+            MediaFile model = imagesAdapter.getList().get(0);
+            imageToDelete.add(model);
+            imagesAdapter.getList().remove(0);
+            imagesAdapter.notifyItemRemoved(0);
+            handleImages();
         });
 
     }
@@ -351,14 +374,25 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
         if(task == null){
             task = new Task();
-            task.setCreatedDate(Calendar.getInstance().getTimeInMillis());
+//            task.setCreatedDate(Calendar.getInstance().getTimeInMillis());
+            task.setCreatedDate(calendar.getTimeInMillis());
         }
+//        if(task.getCreatedDate() == 0){
+//            task.setCreatedDate(Calendar.getInstance().getTimeInMillis());
+//        }
         task.setDueDate(0L);
         task.setParentCategoryId(parentCategoryId);
         task.setTitle(title);
         task.setDescription(desc);
-        task.setStatus(false);
-        task.setTask(true);
+        boolean isComplete = true;
+        for(SubTask subTask : subTasks){
+            if(!subTask.isStatus()){
+                isComplete = false;
+                break;
+            }
+        }
+        task.setStatus(isComplete);
+        task.setTask(!subTasks.isEmpty());
 
         Log.d("TaskDetail",""+task.toString());
 
@@ -374,29 +408,11 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
 
         if(isEditing){
-            viewModel.update(task,audioFiles,imageFiles,subTasks);
+            viewModel.update(task,audioFiles,imageFiles,subTasks,location);
         }
         else{
-            viewModel.insert(task,audioFiles,imageFiles,subTasks);
+            viewModel.insert(task,audioFiles,imageFiles,subTasks,location);
         }
-
-//        for(MediaFile audio: audioFiles){
-//            //save audio file
-//            audio.setTaskId(task.getId());
-//            viewModel.insert(audio);
-//        }
-//
-//        for(MediaFile image: imageFiles){
-//            //save image file
-//            image.setTaskId(task.getId());
-//            viewModel.insert(image);
-//        }
-//
-//        for(SubTask subTask:subTasks){
-//            //save subTask of this task
-//            subTask.setParentTaskId(task.getId());
-//            viewModel.insert(subTask);
-//        }
 
 
         if(calendar != null){
@@ -440,8 +456,8 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         saveData();
+        super.onDestroyView();
     }
 
 
@@ -684,19 +700,19 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     public void handleImages(){
         int imagesCount = imagesAdapter.getList().size();
         if(imagesCount == 0){
-            binding.ivTask.setVisibility(View.GONE);
+            binding.frameTaskImage.setVisibility(View.GONE);
             binding.rvImages.setVisibility(View.GONE);
         }
         else if(imagesCount == 1){
+            binding.frameTaskImage.setVisibility(View.VISIBLE);
             binding.rvImages.setVisibility(View.GONE);
-            binding.ivTask.setVisibility(View.VISIBLE);
             Glide.with(this)
                     .load(imagesAdapter.getList().get(0).getPath())
                     .into(binding.ivTask);
         }
         else{
+            binding.frameTaskImage.setVisibility(View.GONE);
             binding.rvImages.setVisibility(View.VISIBLE);
-            binding.ivTask.setVisibility(View.GONE);
         }
     }
 

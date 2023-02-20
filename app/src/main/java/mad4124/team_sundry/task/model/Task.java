@@ -26,8 +26,8 @@ public class Task implements Serializable {
     @ColumnInfo(name = "id")
     private long id;
     private String title;
-    private Long createdDate;
-    private Long dueDate;
+    private Long createdDate = 0L;
+    private Long dueDate = 0L;
     private boolean isTask;
     private boolean status;
     private String description;

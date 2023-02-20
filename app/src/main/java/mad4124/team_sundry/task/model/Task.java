@@ -24,7 +24,7 @@ public class Task implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    private int id;
+    private long id;
     private String title;
     private Long createdDate;
     private Long dueDate;
@@ -34,13 +34,13 @@ public class Task implements Serializable {
     private String categoryName;
 
     @ColumnInfo(name = "category_id")
-    private int parentCategoryId;
+    private long parentCategoryId;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -100,11 +100,11 @@ public class Task implements Serializable {
         this.categoryName = categoryName;
     }
 
-    public void setParentCategoryId(int parentCategoryId) {
+    public void setParentCategoryId(long parentCategoryId) {
         this.parentCategoryId = parentCategoryId;
     }
 
-    public int getParentCategoryId() {
+    public long getParentCategoryId() {
         return parentCategoryId;
     }
 

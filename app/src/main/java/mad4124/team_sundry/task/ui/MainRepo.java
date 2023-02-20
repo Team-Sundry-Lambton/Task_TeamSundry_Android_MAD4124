@@ -52,11 +52,11 @@ public class MainRepo {
         return dbDao.getAllLiveCategories(text);
     }
 
-    void changeParentOfSelectedTasks(int categoryId,int taskIs){
+    void changeParentOfSelectedTasks(long categoryId,long taskIs){
         dbDao.changeParentOfSelectedTasks(categoryId,taskIs);
     }
 
-    List<Task> getAllTasks(int categoryID){
+    List<Task> getAllTasks(long categoryID){
         return dbDao.getAllTasks(categoryID);
     }
 
@@ -89,16 +89,16 @@ public class MainRepo {
             dbDao.delete(subTask);
         });
     }
-    List<SubTask> getSubTasks(int taskId){
+    List<SubTask> getSubTasks(long taskId){
         return dbDao.getAllSubTasks(taskId);
     }
-    LiveData<List<SubTask>> getSubTasksLive(int taskId){
+    LiveData<List<SubTask>> getSubTasksLive(long taskId){
         return dbDao.getAllLiveSubTasks(taskId);
     }
-    List<MediaFile> getMedia(int taskId,boolean isImage){
+    List<MediaFile> getMedia(long taskId,boolean isImage){
         return dbDao.getAllMedias(taskId,isImage);
     }
-    LiveData<List<MediaFile>> getMediaLive(int taskId,boolean isImage){
+    LiveData<List<MediaFile>> getMediaLive(long taskId,boolean isImage){
         return dbDao.getAllLiveMedias(taskId,isImage);
     }
 
@@ -107,30 +107,64 @@ public class MainRepo {
             dbDao.insert(task);
         });
     }
+    void insert(Task task,List<MediaFile> audios,List<MediaFile> images,List<SubTask> subTasks){
+        executorService.execute( () -> {
+            long id = dbDao.insert(task);
+            for(MediaFile audio:audios){
+                audio.setTaskId(id);
+                dbDao.insert(audio);
+            }
+            for(MediaFile image:images){
+                image.setTaskId(id);
+                dbDao.insert(image);
+            }
+            for(SubTask subTask:subTasks){
+                subTask.setParentTaskId(id);
+                dbDao.insert(subTask);
+            }
+        });
+    }
+    void update(Task task,List<MediaFile> audios,List<MediaFile> images,List<SubTask> subTasks){
+        executorService.execute( () -> {
+            dbDao.update(task);
+            for(MediaFile audio:audios){
+                audio.setTaskId(task.getId());
+                dbDao.insert(audio);
+            }
+            for(MediaFile image:images){
+                image.setTaskId(task.getId());
+                dbDao.insert(image);
+            }
+            for(SubTask subTask:subTasks){
+                subTask.setParentTaskId(task.getId());
+                dbDao.insert(subTask);
+            }
+        });
+    }
 
-    void markTaskCompleted(boolean complete, int id){
+    void markTaskCompleted(boolean complete, long id){
         executorService.execute( () -> {
             dbDao.markTaskCompleted(complete, id);
         });
     }
 
-    List<SubTask> getAllSubTask(int taskID){
+    List<SubTask> getAllSubTask(long taskID){
         return dbDao.getAllSubTask(taskID);
     }
 
-    List<Task> getAllTasksSortByCreatedDate(int categoryID){
+    List<Task> getAllTasksSortByCreatedDate(long categoryID){
 //        Future<List<Task>> future =  Executors.newSingleThreadExecutor().submit(() -> dbDao.getAllTasksSortByCreatedDate(categoryID));
         return dbDao.getAllTasksSortByCreatedDate(categoryID);
     }
 
-    List<Task> getAllTasksSortByDueDate(int categoryID){
+    List<Task> getAllTasksSortByDueDate(long categoryID){
         return dbDao.getAllTasksSortByDueDate(categoryID);
     }
 
-    List<MediaFile> getAllMedias(int taskID){
+    List<MediaFile> getAllMedias(long taskID){
         return dbDao.getAllMedias(taskID);
     }
-    void updateCategoryName(String categoryName,int id){ dbDao.updateCategoryName(categoryName, id); }
+    void updateCategoryName(String categoryName,long id){ dbDao.updateCategoryName(categoryName, id); }
 
 
     void deleteCategory(Category category) {
@@ -141,15 +175,15 @@ public class MainRepo {
 
     //void deleteCategory(Category category) { dbDao.deleteCategory(category);}
 
-    LiveData<List<Category>> getAllCategoriesExceptSelected(int categoryID,String text){
+    LiveData<List<Category>> getAllCategoriesExceptSelected(long categoryID,String text){
         return dbDao.getAllCategoriesExceptSelected(categoryID,text);
     }
 
-    List<MapLocation> getAllMapPin(int categoryID) {
+    List<MapLocation> getAllMapPin(long categoryID) {
         return dbDao.getAllMapPin(categoryID);
     }
 
-    MapLocation getMapPin(int taskId) {
+    MapLocation getMapPin(long taskId) {
         return dbDao.getMapPin(taskId);
     }
 
@@ -185,7 +219,7 @@ public class MainRepo {
         });
     }
 
-    LiveData<List<Task>> getAllLiveTasks(int categoryID){
+    LiveData<List<Task>> getAllLiveTasks(long categoryID){
         return dbDao.getAllLiveTasks(categoryID);
     }
 }

@@ -9,35 +9,36 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 
-@Entity(tableName = "medias",
-        indices = {@Index("task_id")},
-        foreignKeys = @ForeignKey(entity = Task.class,
-                parentColumns = "id",
-                childColumns = "task_id",
-                onDelete = CASCADE)
+@Entity(tableName = "medias"
+//        ,
+//        indices = {@Index("task_id")},
+//        foreignKeys = @ForeignKey(entity = Task.class,
+//                parentColumns = "id",
+//                childColumns = "task_id",
+//                onDelete = CASCADE)
 )
 public class MediaFile {
 
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private long id;
     private String name;
     private boolean isImage;
     private String path;
     @ColumnInfo(name = "task_id")
-    private int taskId;
+    private long taskId;
 
-    public MediaFile(String name, boolean isImage, String path, int taskId) {
+    public MediaFile(String name, boolean isImage, String path, long taskId) {
         this.name = name;
         this.isImage = isImage;
         this.path = path;
         this.taskId = taskId;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -65,11 +66,11 @@ public class MediaFile {
         this.path = path;
     }
 
-    public int getTaskId() {
+    public long getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(int taskId) {
+    public void setTaskId(long taskId) {
         this.taskId = taskId;
     }
 }

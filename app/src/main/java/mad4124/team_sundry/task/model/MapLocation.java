@@ -7,26 +7,26 @@ import androidx.room.PrimaryKey;
 public class MapLocation {
 
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private long id;
     private String name;
     private Double lat;
     private Double lng;
-    private int taskId;
-    private int categoryID;
+    private long taskId;
+    private long categoryID;
 
-    public int getCategoryID() {
+    public long getCategoryID() {
         return categoryID;
     }
 
-    public void setCategoryID(int categoryID) {
+    public void setCategoryID(long categoryID) {
         this.categoryID = categoryID;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -54,11 +54,11 @@ public class MapLocation {
         this.lng = lng;
     }
 
-    public int getTaskId() {
+    public long getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(int taskId) {
+    public void setTaskId(long taskId) {
         this.taskId = taskId;
     }
 }

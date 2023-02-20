@@ -95,11 +95,11 @@ public class MainViewModel extends ViewModel {
     public void insert(Task task){
         repo.insert(task);
     }
-    public void insert(Task task,List<MediaFile> audios,List<MediaFile> images,List<SubTask> subTasks){
-        repo.insert(task,audios,images,subTasks);
+    public void insert(Task task,List<MediaFile> audios,List<MediaFile> images,List<SubTask> subTasks,MapLocation location){
+        repo.insert(task,audios,images,subTasks,location);
     }
-    public void update(Task task,List<MediaFile> audios,List<MediaFile> images,List<SubTask> subTasks){
-        repo.update(task,audios,images,subTasks);
+    public void update(Task task,List<MediaFile> audios,List<MediaFile> images,List<SubTask> subTasks,MapLocation location){
+        repo.update(task,audios,images,subTasks,location);
     }
 
     public void markTaskCompleted(boolean complete, long id){

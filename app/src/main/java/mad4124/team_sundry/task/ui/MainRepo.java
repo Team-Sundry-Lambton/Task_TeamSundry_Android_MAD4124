@@ -107,7 +107,7 @@ public class MainRepo {
             dbDao.insert(task);
         });
     }
-    void insert(Task task,List<MediaFile> audios,List<MediaFile> images,List<SubTask> subTasks){
+    void insert(Task task,List<MediaFile> audios,List<MediaFile> images,List<SubTask> subTasks,MapLocation location){
         executorService.execute( () -> {
             long id = dbDao.insert(task);
             for(MediaFile audio:audios){
@@ -122,9 +122,14 @@ public class MainRepo {
                 subTask.setParentTaskId(id);
                 dbDao.insert(subTask);
             }
+            if(location != null){
+                location.setTaskId(id);
+                location.setCategoryID(task.getParentCategoryId());
+                dbDao.insertMap(location);
+            }
         });
     }
-    void update(Task task,List<MediaFile> audios,List<MediaFile> images,List<SubTask> subTasks){
+    void update(Task task,List<MediaFile> audios,List<MediaFile> images,List<SubTask> subTasks,MapLocation location){
         executorService.execute( () -> {
             dbDao.update(task);
             for(MediaFile audio:audios){
@@ -138,6 +143,9 @@ public class MainRepo {
             for(SubTask subTask:subTasks){
                 subTask.setParentTaskId(task.getId());
                 dbDao.insert(subTask);
+            }
+            if(location!= null){
+                dbDao.updateMap(location);
             }
         });
     }

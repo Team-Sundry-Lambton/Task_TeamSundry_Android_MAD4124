@@ -296,19 +296,22 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         saveMap();
+        super.onDestroyView();
     }
 
     private void saveMap() {
-        if (selectedLocationObj != null) {
-            if (isEditingMode) {
-                Toast.makeText(getActivity(), "Updated Map", Toast.LENGTH_SHORT).show();
-                viewModel.updateMap(selectedLocationObj);
-            } else {
-                Toast.makeText(getActivity(), "Saved Map", Toast.LENGTH_SHORT).show();
-                viewModel.insertMap(selectedLocationObj);
-            }
-        }
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("map",selectedLocationObj);
+        getParentFragmentManager().setFragmentResult("requestKey",bundle);
+//        if (selectedLocationObj != null) {
+//            if (isEditingMode) {
+//                Toast.makeText(getActivity(), "Updated Map", Toast.LENGTH_SHORT).show();
+//                viewModel.updateMap(selectedLocationObj);
+//            } else {
+//                Toast.makeText(getActivity(), "Saved Map", Toast.LENGTH_SHORT).show();
+//                viewModel.insertMap(selectedLocationObj);
+//            }
+//        }
     }
 }

@@ -45,7 +45,7 @@ public interface DbDao {
     void deleteMedias(long taskId);
     @Query("Delete from subTasks where task_id = :taskId")
     void deleteSubTasks(long taskId);
-    @Query("Delete from locations where taskId = :taskId")
+    @Query("Delete from locations where task_id = :taskId")
     void deleteLocations(long taskId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -90,10 +90,10 @@ public interface DbDao {
     @Query("Select * from categories where name like '%'||:text||'%' AND  id != :categoryID")
     LiveData<List<Category>> getAllCategoriesExceptSelected(long categoryID,String text);
 
-    @Query("Select * from locations where categoryID = :categoryID")
+    @Query("Select * from locations where category_id = :categoryID")
     List<MapLocation> getAllMapPin(long categoryID);
 
-    @Query("Select * from locations where taskId = :taskId limit 1")
+    @Query("Select * from locations where task_id = :taskId limit 1")
     MapLocation getMapPin(long taskId);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)

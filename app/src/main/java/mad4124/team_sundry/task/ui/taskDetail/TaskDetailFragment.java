@@ -378,15 +378,14 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             task = new Task();
 //            task.setCreatedDate(Calendar.getInstance().getTimeInMillis());
             task.setCreatedDate(calendar.getTimeInMillis());
-            if(dueDate != null) {
-                task.setDueDate(dueDate.getTimeInMillis());
-            }
 
         }
 //        if(task.getCreatedDate() == 0){
 //            task.setCreatedDate(Calendar.getInstance().getTimeInMillis());
 //        }
-//        task.setDueDate(0L);
+        if(dueDate != null) {
+            task.setDueDate(dueDate.getTimeInMillis());
+        }
         task.setParentCategoryId(parentCategoryId);
         task.setTitle(title);
         task.setDescription(desc);

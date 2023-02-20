@@ -328,7 +328,7 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
                                 taskList = viewModel.getAllTasksSortByDueDate(categoryId);
                                 break;
                         }
-                        adapter.notifyDataSetChanged();
+                        adapter.setDataList(taskList);
                     }
                 });
         AlertDialog alertDialog = builder.create();

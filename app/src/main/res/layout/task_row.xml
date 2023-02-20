@@ -22,69 +22,63 @@ app:cardCornerRadius="12dp">
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp"
         android:background="@drawable/ic_card_bg"
-        android:paddingHorizontal="10dp">
+        >
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_weight="1"
+            android:scaleType="fitXY"
+            android:contentDescription="@string/task_image"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/complete_status"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:layout_weight="1"
+            android:text="@string/complete"
+            android:textAlignment="textStart"
+            android:textColor="#006400"
+            android:paddingHorizontal="10dp"
+            android:paddingTop="5dp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/task_title_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/theme_color"
-            android:paddingStart="8dp"
             android:text="@string/title_row"
             android:textColor="@color/black"
+            android:paddingHorizontal="10dp"
             android:textSize="24sp"
             android:textStyle="bold" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingTop="8dp">
-
-                    <TextView
-                        android:id="@+id/task_description_row"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/theme_color"
-                        android:text="@string/description_row"
-                        android:textColor="@color/black"
-                        android:textSize="20sp" />
-
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/imageView"
+            <TextView
+                android:id="@+id/task_description_row"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:backgroundTint="@color/theme_color"
+                android:text="@string/description_row"
                 android:layout_weight="1"
-                android:contentDescription="@string/task_image"
-                android:visibility="visible"
-                app:srcCompat="@drawable/ic_task" />
-        </LinearLayout>
+                android:paddingHorizontal="10dp"
+                android:textAlignment="textStart"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+
         <TextView
-            android:id="@+id/category_row"
+            android:id="@+id/task_type"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="25dp"
             android:backgroundTint="@color/theme_color"
-            android:paddingStart="8dp"
-            android:text="@string/category_row"
+            android:paddingHorizontal="10dp"
+            android:layout_weight="1"
+            android:text="@string/title_row"
             android:textAlignment="textEnd"
             android:textColor="@color/quantum_grey600"
             android:textSize="18sp" />
@@ -92,8 +86,8 @@ app:cardCornerRadius="12dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"
             android:orientation="horizontal">
-
             <TextView
                 android:id="@+id/due_date_row"
                 android:layout_width="match_parent"
@@ -103,14 +97,47 @@ app:cardCornerRadius="12dp">
                 android:text="@string/due_date_row"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/check_box"
+                android:id="@+id/map_icon"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_gravity="bottom"
-                android:src="@drawable/ic_item_select"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/ic_location_row"
                 android:visibility="gone" />
+            <ImageView
+                android:id="@+id/audio_icon"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:padding="2dp"
+                android:layout_gravity="bottom"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/ic_audio_row"
+                android:visibility="gone" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/checkBox"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="bottom"
+                android:src="@drawable/ic_item_select_row"
+                android:visibility="gone" />
+
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

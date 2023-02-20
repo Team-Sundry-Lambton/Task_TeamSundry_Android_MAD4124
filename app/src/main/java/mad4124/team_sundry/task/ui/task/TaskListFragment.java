@@ -23,6 +23,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -174,7 +175,8 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
     private void setTaskListRecyclerView(){
         adapter = new TaskRecyclerViewAdapter(taskList, getContext(), this,viewModel, isMultiSelection);
         binding.recyclerView.setHasFixedSize(true);
-        binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
+//        binding.recyclerView.setLayoutManager(new  GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
+        binding.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL));
         binding.recyclerView.setAdapter(adapter);
     }
 
@@ -228,7 +230,7 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
             };
             long id = task.getId();
             List<SubTask> subTasks = viewModel.getAllSubTask(id);
-            BsItemOptions options = new BsItemOptions(task.isTask());
+            BsItemOptions options = new BsItemOptions(task.isTask(),task.isStatus());
             options.provider = provider;
             options.show(getChildFragmentManager(), "ITEM_OPTIONS");
         }
@@ -267,12 +269,18 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
         boolean status = taskContainInCompleteSubTask(id);
         if(status){
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("You have uncompleted subtasks under this Task.Therefore you cannot completed the task. Please complete all subtasks and continue...");
+            builder.setTitle("Mark Complete");
+            builder.setMessage("You have uncompleted subtasks under this Task.Therefore you cannot completed the task. Please complete all subtasks and continue...");
             builder.setPositiveButton("OK", (dialog, which) -> adapter.notifyItemChanged(position));
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
         }else {
-            viewModel.markTaskCompleted(true,id);
+            if (task.isStatus()){
+                viewModel.markTaskCompleted(false,id);
+            }else {
+                viewModel.markTaskCompleted(true, id);
+            }
+            Toast.makeText(getActivity(), "Tasks completed", Toast.LENGTH_SHORT).show();
         }
     }
     private boolean taskContainInCompleteSubTask(long id) {

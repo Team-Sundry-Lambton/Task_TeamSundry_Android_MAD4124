@@ -118,8 +118,8 @@ public class MainViewModel extends ViewModel {
         return repo.getAllTasksSortByDueDate(categoryID);
     }
 
-    public List<MediaFile> getAllMedias(long taskID){
-        return repo.getAllMedias(taskID);
+    public List<MediaFile> getAllMedias(long taskID,boolean isImage){
+        return repo.getAllMedias(taskID, isImage);
     }
 
     public void updateCategoryName(String categoryName,long id){ repo.updateCategoryName(categoryName, id); }

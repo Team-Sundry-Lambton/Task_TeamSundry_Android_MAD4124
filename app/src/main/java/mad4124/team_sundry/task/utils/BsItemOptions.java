@@ -16,9 +16,11 @@ public class BsItemOptions extends BottomSheetDialogFragment {
 
     ItemOptionsBinding binding;
     boolean isTask;
+    boolean isCompleted;
 
-    public BsItemOptions(boolean isTask) {
+    public BsItemOptions(boolean isTask, boolean isCompleted) {
         this.isTask = isTask;
+        this.isCompleted = isCompleted;
     }
 
     public interface ActionProvider{
@@ -33,10 +35,16 @@ public class BsItemOptions extends BottomSheetDialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = ItemOptionsBinding.inflate(inflater,container,false);
         if(isTask){
+            if (isCompleted){
+                binding.completeTask.setText("Mark Incomplete");
+            }else {
+                binding.completeTask.setText("Mark Complete");
+            }
             binding.completeTask.setVisibility(View.VISIBLE);
         }else {
             binding.completeTask.setVisibility(View.GONE);
         }
+
         return binding.getRoot();
     }
 

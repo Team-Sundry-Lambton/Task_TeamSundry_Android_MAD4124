@@ -8,12 +8,15 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
 import mad4124.team_sundry.task.R;
 import mad4124.team_sundry.task.databinding.TaskRowBinding;
+import mad4124.team_sundry.task.model.MapLocation;
 import mad4124.team_sundry.task.model.MediaFile;
 import mad4124.team_sundry.task.model.Task;
 import mad4124.team_sundry.task.ui.MainViewModel;
@@ -63,12 +66,20 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         }
         public void bind(Task model) {
             long id = model.getId();
-            List<MediaFile> mediaFiles = viewModel.getAllMedias(id);
+            List<MediaFile> mediaFiles = viewModel.getAllMedias(id,true);
+            List<MediaFile> audioFiles = viewModel.getAllMedias(id,false);
+            MapLocation location = viewModel.getMapPin(id);
             binding.taskTitleRow.setText(model.getTitle());
             if (model.isTask()) {
-                binding.categoryRow.setText("Task");
+                binding.taskType.setText("Task");
             } else {
-                binding.categoryRow.setText("Note");
+                binding.taskType.setText("Note");
+            }
+
+            if(model.isStatus()){
+                binding.completeStatus.setVisibility(View.VISIBLE);
+            }else {
+                binding.completeStatus.setVisibility(View.GONE);
             }
             binding.taskDescriptionRow.setText(model.getDescription());
 
@@ -76,7 +87,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
                 Long dueDate = model.getDueDate();
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(dueDate);
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                 System.out.println(format.format(calendar.getTime()));
                 binding.dueDateRow.setText(format.format(calendar.getTime()));
                 binding.dueDateRow.setVisibility(View.VISIBLE);
@@ -84,7 +95,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
                 Long createDate = model.getCreatedDate();
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(createDate);
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                 System.out.println(format.format(calendar.getTime()));
                 binding.dueDateRow.setText(format.format(calendar.getTime()));
                 binding.dueDateRow.setVisibility(View.VISIBLE);
@@ -95,13 +106,27 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
             if(mediaFiles.size() > 0) {
                 binding.imageView.setVisibility(View.VISIBLE);
                 MediaFile file = mediaFiles.get(0);
-                if(file.isImage()){
-                    binding.imageView.setBackgroundResource(R.drawable.ic_audio);
-                }else {
-                    binding.imageView.setBackgroundResource(R.drawable.ic_audio);
-                }
+
+                Glide.with(context.getApplicationContext())
+                        .load(file.getPath())
+                        .into(binding.imageView);
+//                binding.imageView.setBackgroundResource(R.drawable.ic_audio_row);
+
+
             }else {
                 binding.imageView.setVisibility(View.GONE);
+            }
+
+            if(audioFiles.size()  > 0) {
+                binding.audioIcon.setVisibility(View.VISIBLE);
+            }else {
+                binding.audioIcon.setVisibility(View.GONE);
+            }
+
+            if(location != null) {
+                binding.mapIcon.setVisibility(View.VISIBLE);
+            }else {
+                binding.mapIcon.setVisibility(View.GONE);
             }
         }
 

@@ -53,7 +53,7 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
     MainViewModel viewModel;
     private Task deletedTask;
 
-    private int categoryId = 0;
+    private long categoryId = 0L;
 
     private List<Task> selectedTasks = new ArrayList<>();
 
@@ -76,11 +76,11 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
         setTaskListRecyclerView();
         binding.bottomAppBar.setVisibility(View.GONE);
-        categoryId = getArguments().getInt(CATEGORY_ID);
+        categoryId = getArguments().getLong(CATEGORY_ID);
         loadTasks();
         binding.addTask.setOnClickListener(view1 -> {
             Bundle bundle = new Bundle();
-            bundle.putInt(CATEGORY_ID,categoryId);
+            bundle.putLong(CATEGORY_ID,categoryId);
             NavHostFragment.findNavController(TaskListFragment.this)
                     .navigate(R.id.action_taskListFragment_to_taskDetailFragment,bundle);
         });
@@ -226,7 +226,7 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
                     deleteTask(position);
                 }
             };
-            int id = task.getId();
+            long id = task.getId();
             List<SubTask> subTasks = viewModel.getAllSubTask(id);
             BsItemOptions options = new BsItemOptions(task.isTask());
             options.provider = provider;
@@ -263,7 +263,7 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
 
     private void markTaskCompleted(int position){
         Task task = taskList.get(position);
-        int id = task.getId();
+        long id = task.getId();
         boolean status = taskContainInCompleteSubTask(id);
         if(status){
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -275,7 +275,7 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
             viewModel.markTaskCompleted(true,id);
         }
     }
-    private boolean taskContainInCompleteSubTask(int id) {
+    private boolean taskContainInCompleteSubTask(long id) {
 
         List<SubTask> subTasks = viewModel.getAllSubTask(id);
         for ( SubTask subTask:subTasks) {
@@ -363,13 +363,18 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
 
     private void loadCategoryList(){
         if (selectedTasks.size() > 0) {
-            ArrayList<Integer> taskIds = new ArrayList<>();
-            for (Task task : selectedTasks
-            ) {
-                taskIds.add(task.getId());
+//            ArrayList<Long> taskIds = new ArrayList<>();
+            long[] taskIds = new long[selectedTasks.size()];
+//            for (Task task : selectedTasks
+//            ) {
+//                taskIds.add(task.getId());
+//            }
+            for(int i = 0;i<selectedTasks.size();i++){
+                taskIds[i] = selectedTasks.get(i).getId();
             }
             Bundle bundle = new Bundle();
-            bundle.putIntegerArrayList(TASK_ID,taskIds);
+            bundle.putLongArray(TASK_ID,taskIds);
+//            bundle.putIntegerArrayList(TASK_ID,taskIds);
             bundle.putSerializable(CATEGORY_ID, categoryId);
             Navigation.findNavController(requireActivity(), R.id.fragContainerView).navigate(R.id.action_taskListFragment_to_taskMoveCategoryListFragment, bundle);
         }else {

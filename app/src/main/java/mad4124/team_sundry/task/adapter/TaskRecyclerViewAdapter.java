@@ -62,7 +62,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
             itemView.setOnClickListener(this);
         }
         public void bind(Task model) {
-            int id = model.getId();
+            long id = model.getId();
             List<MediaFile> mediaFiles = viewModel.getAllMedias(id);
             binding.taskTitleRow.setText(model.getTitle());
             if (model.isTask()) {

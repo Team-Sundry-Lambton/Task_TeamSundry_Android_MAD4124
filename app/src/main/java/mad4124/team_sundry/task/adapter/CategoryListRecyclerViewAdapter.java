@@ -95,7 +95,7 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
             this.binding = binding;
         }
         public void bind(Category model){
-            int id = model.getId();
+            long id = model.getId();
             binding.getRoot().setOnClickListener(this);
             List<Task> tasks = viewModel.getAllTasksSortByCreatedDate(id);
             int randomIndex = new Random().nextInt(backgroundImages.length);
@@ -176,7 +176,7 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
             public void onClick(View v) {
                 // Update the category object with the new title
                 String newCategory = categoryTitleEditText.getText().toString();
-                int id = category.getId();
+                long id = category.getId();
                 viewModel.updateCategoryName(newCategory,id);
                 dialog.dismiss();
                 Toast.makeText(context, "Category updated successfully!", Toast.LENGTH_SHORT).show();

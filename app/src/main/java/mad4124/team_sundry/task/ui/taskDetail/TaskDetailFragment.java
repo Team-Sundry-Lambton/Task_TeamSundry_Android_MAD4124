@@ -78,7 +78,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     FragmentTaskDetailBinding binding;
     MainViewModel viewModel;
     Task task = null;
-    int parentCategoryId = -1;
+    long parentCategoryId = -1;
     boolean isEditing = false;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
     String currentPhotoPath;
@@ -134,7 +134,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        parentCategoryId = getArguments().getInt(TaskListFragment.CATEGORY_ID,-1);
+        parentCategoryId = getArguments().getLong(TaskListFragment.CATEGORY_ID,-1);
 
         initAdapters();
 
@@ -303,11 +303,12 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             @Override
             public void onClick(View view) {
                 // Handle "add image" option
-                if (isPermissionGranted(REQUEST_GALLERY_PERMISSION)) {
-                    pickImage();
-                } else {
-                    requestPermission(REQUEST_GALLERY_PERMISSION);
-                }
+                askStoragePermission();
+//                if (isPermissionGranted(REQUEST_GALLERY_PERMISSION)) {
+//                    pickImage();
+//                } else {
+//                    requestPermission(REQUEST_GALLERY_PERMISSION);
+//                }
 //                pickImage();
 
                 bottomSheetDialog.dismiss();
@@ -379,34 +380,37 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
 
         if(isEditing){
-            viewModel.update(task);
+            viewModel.update(task,audioFiles,imageFiles,subTasks);
         }
         else{
-            viewModel.insert(task);
+            viewModel.insert(task,audioFiles,imageFiles,subTasks);
         }
 
-        for(MediaFile audio: audioFiles){
-            //save audio file
-            audio.setTaskId(task.getId());
-            viewModel.insert(audio);
+//        for(MediaFile audio: audioFiles){
+//            //save audio file
+//            audio.setTaskId(task.getId());
+//            viewModel.insert(audio);
+//        }
+//
+//        for(MediaFile image: imageFiles){
+//            //save image file
+//            image.setTaskId(task.getId());
+//            viewModel.insert(image);
+//        }
+//
+//        for(SubTask subTask:subTasks){
+//            //save subTask of this task
+//            subTask.setParentTaskId(task.getId());
+//            viewModel.insert(subTask);
+//        }
+
+
+        if(calendar != null){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                NotificationHelper.scheduleNotification(NotificationHelper.getNotification(task.getTitle(),getActivity()),calendar,getActivity());
+            }
         }
 
-        for(MediaFile image: imageFiles){
-            //save image file
-            image.setTaskId(task.getId());
-            viewModel.insert(image);
-        }
-
-        for(SubTask subTask:subTasks){
-            //save subTask of this task
-            subTask.setParentTaskId(task.getId());
-            viewModel.insert(subTask);
-        }
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            NotificationHelper.scheduleNotification(NotificationHelper.getNotification(task.getTitle(),getActivity()),calendar,getActivity());
-        }
     }
 
     void initData(Task task) {
@@ -462,6 +466,11 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             requestPermissions(permissions, REQUEST_GALLERY_PERMISSION);
         }
     }
+
+
+
+
+
 
     // Check if permission to camera has been granted
     private boolean isPermissionGranted(Integer requestCode) {
@@ -557,7 +566,8 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
             //save to array list of images
             // Create a new MediaFile object using the photoFile object
-            MediaFile mediaFile = new MediaFile(photoFile.getName(), true, photoFile.getAbsolutePath(), task.getId());
+            long taskId = (task == null) ? 0 : task.getId();
+            MediaFile mediaFile = new MediaFile(photoFile.getName(), true, photoFile.getAbsolutePath(), taskId);
 
             imagesAdapter.addData(mediaFile);
 //            imageFiles.add(mediaFile);
@@ -614,7 +624,20 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     //////////////////////////////////////////////////////////////////////////////////////////
     // HANDLE ADD IMAGE FROM GALLERY
     //////////////////////////////////////////////////////////////////////////////////////////
-
+    private final ActivityResultLauncher<String[]> startForReadPermission =
+            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(),result -> {
+                pickImage();
+            });
+    public void askStoragePermission(){
+        String[] permission = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
+        if (ContextCompat.checkSelfPermission(requireContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+        ) {
+            startForReadPermission.launch(permission);
+        } else {
+            pickImage();
+        }
+    }
     public void pickImage() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -632,6 +655,8 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                             if (data != null) {
                                 Uri selectedImage = data.getData();
 
+                                String path = ExtensionsUriKt.getPath(requireContext(),selectedImage,"mad4124.team_sundry.task.fileprovider");
+
                                 // Get the image name and path
                                 String[] projection = {MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.DATA};
                                 Cursor cursor = requireContext().getContentResolver().query(selectedImage, projection, null, null, null);
@@ -641,7 +666,9 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
                                     // Create a new MediaFile object and set the file name and path
                                     isImage = true;
-                                    MediaFile mediaFile = new MediaFile(imageName, true, imagePath, task.getId());
+                                    long taskId = (task == null) ? 0 : task.getId();
+//                                    MediaFile mediaFile = new MediaFile(imageName, true, imagePath, taskId);
+                                    MediaFile mediaFile = new MediaFile(imageName, true, path, taskId);
 
                                     // Add the new MediaFile object to the ArrayList
 //                                    imageFiles.add(mediaFile);
@@ -768,7 +795,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             mediaPlayer.prepare();
 
             // save to array list
-            int taskId = (task == null) ? 0 : task.getId();
+            long taskId = (task == null) ? 0 : task.getId();
             MediaFile mediaAudioFile = new MediaFile(audioFile.getName(), false, audioFile.getAbsolutePath(), taskId);
 //            audioFiles.add(mediaAudioFile);
             audioAdapter.addData(mediaAudioFile);

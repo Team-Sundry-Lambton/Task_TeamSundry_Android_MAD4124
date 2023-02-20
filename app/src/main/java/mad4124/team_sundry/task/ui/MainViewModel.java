@@ -139,7 +139,7 @@ public class MainViewModel extends ViewModel {
         repo.update(mediaFile);
     }
     public void delete(MediaFile mediaFile){
-        repo.update(mediaFile);
+        repo.delete(mediaFile);
     }
 
     public LiveData<List<Task>> getAllLiveTasks(int categoryID){

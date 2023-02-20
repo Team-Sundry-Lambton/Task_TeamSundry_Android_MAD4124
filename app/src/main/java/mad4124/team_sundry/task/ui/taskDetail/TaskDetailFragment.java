@@ -231,7 +231,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         ImagesAdapter.ImageAdapterListener imageAdapterListener = new ImagesAdapter.ImageAdapterListener() {
             @Override
             public void remove(int position, MediaFile model) {
-//                viewModel.delete(model);
+                viewModel.delete(model);
                 imageToDelete.add(model);
                 imagesAdapter.notifyItemRemoved(position);
                 handleImages();

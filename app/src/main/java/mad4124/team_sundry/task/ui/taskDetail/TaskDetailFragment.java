@@ -921,7 +921,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     //////////////////////////////////////////////////////////////////////////////////////////
 
     private void showSchedule(Calendar calendar){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd h:mm a", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy h:mm a", Locale.getDefault());
         String formattedTime = sdf.format(calendar.getTime());
         binding.btnSchedule.setText(formattedTime);
         binding.btnSchedule.setVisibility(View.VISIBLE);
@@ -954,8 +954,14 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         myHour = hourOfDay;
         myMinute = minute;
-
+        Calendar currentCalendar = Calendar.getInstance();
         calendar.set(myYear,myMonth,myday,myHour,myMinute);
+
+        int result = currentCalendar.compareTo(calendar);
+        if (result >= 0) {
+            myMinute = myMinute + 5;
+            calendar.set(currentCalendar.get(Calendar.YEAR),currentCalendar.get(Calendar.MONTH),currentCalendar.get(Calendar.DAY_OF_MONTH),currentCalendar.get(Calendar.HOUR),myMinute);
+        }
         dueDate = calendar;
         isDueDateSelected = true;
         showSchedule(calendar);

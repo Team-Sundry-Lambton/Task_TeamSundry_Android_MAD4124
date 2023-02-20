@@ -123,6 +123,8 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
     Calendar dueDate;
 
+    boolean selectLocation = false;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,6 +135,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             // We use a String here, but any type that can be put in a Bundle is supported
             location = (MapLocation) bundle.getSerializable("map");
             Log.d("Task Detail",location.toString());
+            selectLocation = false;
             // Do something with the result
         });
     }
@@ -358,89 +361,103 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
     void saveData(){
 
-        if(isDeleting){
-            return;
-        }
+        if (!selectLocation) {
+            if (isDeleting) {
+                return;
+            }
 
-        String title = binding.etTitle.getText().toString();
-        String desc = binding.etDesc.getText().toString();
+            String title = binding.etTitle.getText().toString();
+            String desc = binding.etDesc.getText().toString();
 
-        audioFiles = (ArrayList<MediaFile>) audioAdapter.getList();
-        imageFiles = (ArrayList<MediaFile>) imagesAdapter.getList();
-        subTasks = (ArrayList<SubTask>)  subTaskAdapter.getSubTasks();
+            audioFiles = (ArrayList<MediaFile>) audioAdapter.getList();
+            imageFiles = (ArrayList<MediaFile>) imagesAdapter.getList();
+            subTasks = (ArrayList<SubTask>) subTaskAdapter.getSubTasks();
 
-        if(title.isEmpty() || desc.isEmpty()){
-            Toast.makeText(getActivity(), "Title and Description cannot be empty.", Toast.LENGTH_LONG).show();
-            return;
-        }
+            if (title.isEmpty()) {
+                Toast.makeText(getActivity(), "Title cannot be empty.", Toast.LENGTH_LONG).show();
+                return;
+            }
 
 //        if(title.isEmpty() && desc.isEmpty() && audioFiles.isEmpty() && imageFiles.isEmpty() && subTasks.isEmpty()){
 //            return false;
 //        }
 
-        if(task == null){
-            task = new Task();
-            Calendar calendar = Calendar.getInstance();
-            task.setCreatedDate(calendar.getTimeInMillis());
+            if (task == null) {
+                task = new Task();
+                Calendar calendar = Calendar.getInstance();
+                task.setCreatedDate(calendar.getTimeInMillis());
 
-        }
+            }
 
-        if(dueDate != null) {
-            task.setDueDate(dueDate.getTimeInMillis());
-        }
+            if (dueDate != null) {
+                task.setDueDate(dueDate.getTimeInMillis());
+            }
 //        if(task.getCreatedDate() == 0){
 //            task.setCreatedDate(Calendar.getInstance().getTimeInMillis());
 //        }
 
-        task.setParentCategoryId(parentCategoryId);
-        task.setTitle(title);
-        task.setDescription(desc);
-        boolean isComplete = true;
+            task.setParentCategoryId(parentCategoryId);
+            task.setTitle(title);
+            task.setDescription(desc);
+            boolean isComplete = true;
 
-        if(dueDate != null) {
-            task.setDueDate(dueDate.getTimeInMillis());
-        }
+            if (dueDate != null) {
+                task.setDueDate(dueDate.getTimeInMillis());
+            }
 
 
-        if (!subTasks.isEmpty() || dueDate != null) {
-            task.setTask(true);
-            for(SubTask subTask : subTasks){
-                if(!subTask.isStatus()){
-                    isComplete = false;
-                    break;
+            if (!subTasks.isEmpty() || dueDate != null) {
+                task.setTask(true);
+                for (SubTask subTask : subTasks) {
+                    if (!subTask.isStatus()) {
+                        isComplete = false;
+                        break;
+                    }
                 }
             }
-        }if (subTasks.isEmpty() && dueDate != null) {
-            task.setTask(true);
-            isComplete = false;
-        }else {
-            task.setTask(false);
-            isComplete = false;
-        }
-        task.setStatus(isComplete);
-        Log.d("TaskDetail",""+task.toString());
+            if (subTasks.isEmpty() && dueDate != null) {
+                task.setTask(true);
+                isComplete = false;
+            } else {
+                task.setTask(false);
+                isComplete = false;
+            }
+            task.setStatus(isComplete);
+            Log.d("TaskDetail", "" + task.toString());
 
-        for(MediaFile audio:audioToDelete){
-            viewModel.delete(audio);
-        }
-        for(SubTask subTask:subTaskToDelete){
-            viewModel.delete(subTask);
-        }
-        for(MediaFile image:imageToDelete){
-            viewModel.delete(image);
-        }
+            for (MediaFile audio : audioToDelete) {
+                viewModel.delete(audio);
+            }
+            for (SubTask subTask : subTaskToDelete) {
+                viewModel.delete(subTask);
+            }
+            for (MediaFile image : imageToDelete) {
+                viewModel.delete(image);
+            }
 
-        if(isEditing){
-            viewModel.update(task,audioFiles,imageFiles,subTasks,location);
-        }
-        else{
-            viewModel.insert(task,audioFiles,imageFiles,subTasks,location);
-        }
+            if (isEditing) {
+                MapLocation saveLocation = viewModel.getMapPin(task.getId());
 
+                if(saveLocation == null){
+                    location.setTaskId(task.getId());
+                    location.setCategoryID(task.getParentCategoryId());
+                    viewModel.insertMap(location);
+                }else {
+                    saveLocation.setTaskId(task.getId());
+                    saveLocation.setCategoryID(task.getParentCategoryId());
+                    saveLocation.setLat(location.getLat());
+                    saveLocation.setLng(location.getLng());
+                    saveLocation.setName(location.getName());
+                }
+                viewModel.update(task, audioFiles, imageFiles, subTasks, saveLocation);
+            } else {
+                viewModel.insert(task, audioFiles, imageFiles, subTasks, location);
+            }
 
-        if(calendar != null && isDueDateSelected == true){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                NotificationHelper.scheduleNotification(NotificationHelper.getNotification(task.getTitle(),getActivity()),calendar,getActivity());
+            if (calendar != null && isDueDateSelected == true) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    NotificationHelper.scheduleNotification(NotificationHelper.getNotification(task.getTitle(), getActivity()), calendar, getActivity());
+                }
             }
         }
     }
@@ -850,7 +867,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         if (isEditing) {
             bundle.putSerializable(TASK_ID, task.getId());
         }
-
+        selectLocation= true;
         bundle.putSerializable(IsShowAllMap, false);
         Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_taskDetailFragment_to_mapAllTasksFragment,bundle);
     }

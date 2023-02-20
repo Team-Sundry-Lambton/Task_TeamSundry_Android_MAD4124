@@ -37,6 +37,7 @@ app:cardCornerRadius="12dp">
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="10dp"
+        android:paddingTop="5dp"
         android:orientation="horizontal">
         <TextView
             android:id="@+id/complete_status"

@@ -70,38 +70,19 @@ app:cardCornerRadius="12dp">
                 android:textAlignment="textStart"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="10dp"
-        android:orientation="horizontal">
-
-<!--        <TextView-->
-<!--            android:id="@+id/complete_status"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="25dp"-->
-<!--            android:layout_weight="1"-->
-<!--            android:text="@string/complete"-->
-<!--            android:textAlignment="textStart"-->
-<!--            android:textColor="#006400"-->
-<!--            android:textStyle="bold"-->
-<!--            android:visibility="gone"-->
-<!--            android:textSize="18sp" />-->
 
         <TextView
             android:id="@+id/task_type"
             android:layout_width="match_parent"
             android:layout_height="25dp"
             android:backgroundTint="@color/theme_color"
-            android:paddingStart="8dp"
+            android:paddingHorizontal="10dp"
             android:layout_weight="1"
             android:text="@string/title_row"
             android:textAlignment="textEnd"
             android:textColor="@color/quantum_grey600"
             android:textSize="18sp" />
 
-
-    </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

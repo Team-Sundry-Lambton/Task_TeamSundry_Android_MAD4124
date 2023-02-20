@@ -39,7 +39,8 @@ public class TaskMoveCategoryListFragment extends Fragment implements CategoryRe
 
     MainViewModel viewModel;
 
-    private  List<Integer> selectedTasksIds = new ArrayList<>();
+//    private  List<Integer> selectedTasksIds = new ArrayList<>();
+    private  long[] selectedTasksIds = new long[0];
 
     private int categoryId = 0;
 
@@ -62,7 +63,8 @@ public class TaskMoveCategoryListFragment extends Fragment implements CategoryRe
 
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
         categoryId = getArguments().getInt(CATEGORY_ID);
-        selectedTasksIds = getArguments().getIntegerArrayList(TASK_ID);
+//        selectedTasksIds = getArguments().getIntegerArrayList(TASK_ID);
+        selectedTasksIds = getArguments().getLongArray(TASK_ID);
         setCategoryListRecyclerView();
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -122,8 +124,8 @@ public class TaskMoveCategoryListFragment extends Fragment implements CategoryRe
         alertDialog.show();
     }
 
-    private void moveSelectedTasks(Integer categoryId) {
-        for (Integer taskId:selectedTasksIds
+    private void moveSelectedTasks(long categoryId) {
+        for (long taskId:selectedTasksIds
         ) {
             viewModel.changeParentOfSelectedTasks(categoryId,taskId);
         }

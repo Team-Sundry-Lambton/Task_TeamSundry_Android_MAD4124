@@ -44,11 +44,11 @@ public class MainViewModel extends ViewModel {
         return repo.getAllLiveCategory(text);
     }
 
-    public void changeParentOfSelectedTasks(int categoryId,int taskIs){
+    public void changeParentOfSelectedTasks(long categoryId,long taskIs){
         repo.changeParentOfSelectedTasks(categoryId,taskIs);
     }
 
-    public List<Task> getAllTasks(int categoryID){
+    public List<Task> getAllTasks(long categoryID){
         return repo.getAllTasks(categoryID);
     }
 
@@ -79,56 +79,62 @@ public class MainViewModel extends ViewModel {
         repo.deleteMap(mapLocation);
     }
 
-    public List<SubTask> getSubTasks(int taskId){
+    public List<SubTask> getSubTasks(long taskId){
         return repo.getSubTasks(taskId);
     }
-    public LiveData<List<SubTask>> getSubTasksLive(int taskId){
+    public LiveData<List<SubTask>> getSubTasksLive(long taskId){
         return repo.getSubTasksLive(taskId);
     }
-    public List<MediaFile> getMedia(int taskId,boolean isImage){
+    public List<MediaFile> getMedia(long taskId,boolean isImage){
         return repo.getMedia(taskId,isImage);
     }
-    public LiveData<List<MediaFile>> getMediaLive(int taskId,boolean isImage){
+    public LiveData<List<MediaFile>> getMediaLive(long taskId,boolean isImage){
         return repo.getMediaLive(taskId,isImage);
     }
 
     public void insert(Task task){
         repo.insert(task);
     }
+    public void insert(Task task,List<MediaFile> audios,List<MediaFile> images,List<SubTask> subTasks){
+        repo.insert(task,audios,images,subTasks);
+    }
+    public void update(Task task,List<MediaFile> audios,List<MediaFile> images,List<SubTask> subTasks){
+        repo.update(task,audios,images,subTasks);
+    }
 
-    public void markTaskCompleted(boolean complete, int id){
+    public void markTaskCompleted(boolean complete, long id){
         repo.markTaskCompleted(complete,id);
     }
 
-    public List<SubTask> getAllSubTask(int taskID){
+    public List<SubTask> getAllSubTask(long taskID){
         return repo.getAllSubTask(taskID);
     }
 
-    public List<Task> getAllTasksSortByCreatedDate(int categoryID){
+    public List<Task> getAllTasksSortByCreatedDate(long categoryID){
         return repo.getAllTasksSortByCreatedDate(categoryID);
     }
 
-    public List<Task> getAllTasksSortByDueDate(int categoryID){
+    public List<Task> getAllTasksSortByDueDate(long categoryID){
         return repo.getAllTasksSortByDueDate(categoryID);
     }
 
-    public List<MediaFile> getAllMedias(int taskID){
+    public List<MediaFile> getAllMedias(long taskID){
         return repo.getAllMedias(taskID);
     }
 
-    public void updateCategoryName(String categoryName,int id){ repo.updateCategoryName(categoryName, id); }
+    public void updateCategoryName(String categoryName,long id){ repo.updateCategoryName(categoryName, id); }
 
     public void deleteCategory(Category category){ repo.deleteCategory(category); }
 
-    public LiveData<List<Category>> getAllCategoriesExceptSelected(int categoryID,String text){
+    public LiveData<List<Category>> getAllCategoriesExceptSelected(long categoryID,String text){
         return repo.getAllCategoriesExceptSelected(categoryID,text);
     }
 
-    public List<MapLocation> getAllMapPin(int categoryID) {
+    public List<MapLocation> getAllMapPin(long categoryID) {
         return repo.getAllMapPin(categoryID);
     }
 
-    public MapLocation getMapPin(int taskId) {
+    public MapLocation getMapPin(long taskId) {
         return repo.getMapPin(taskId);
     }
 
@@ -139,10 +145,10 @@ public class MainViewModel extends ViewModel {
         repo.update(mediaFile);
     }
     public void delete(MediaFile mediaFile){
-        repo.update(mediaFile);
+        repo.delete(mediaFile);
     }
 
-    public LiveData<List<Task>> getAllLiveTasks(int categoryID){
+    public LiveData<List<Task>> getAllLiveTasks(long categoryID){
         return repo.getAllLiveTasks(categoryID);
     }
 }

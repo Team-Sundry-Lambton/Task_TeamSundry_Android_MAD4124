@@ -32,21 +32,21 @@ public interface DbDao {
     void deleteCategory(Category category);
 
     @Query("SELECT * FROM tasks WHERE category_id = :categoryID ORDER BY title ASC")
-    List<Task> getAllTasks(int categoryID);
+    List<Task> getAllTasks(long categoryID);
 
     @Query("Select * from medias  WHERE task_id = :taskID")
-    List<MediaFile> getAllMedias(int taskID);
+    List<MediaFile> getAllMedias(long taskID);
 
     @Update
     void update(Task task);
     @Delete
     void delete(Task task);
     @Query("Delete from medias where task_id = :taskId")
-    void deleteMedias(int taskId);
+    void deleteMedias(long taskId);
     @Query("Delete from subTasks where task_id = :taskId")
-    void deleteSubTasks(int taskId);
+    void deleteSubTasks(long taskId);
     @Query("Delete from locations where taskId = :taskId")
-    void deleteLocations(int taskId);
+    void deleteLocations(long taskId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(SubTask subTask);
@@ -55,46 +55,46 @@ public interface DbDao {
     @Delete
     void delete(SubTask subTask);
     @Query("Select * from subTasks where task_id = :taskId order by id")
-    List<SubTask> getAllSubTasks(int taskId);
+    List<SubTask> getAllSubTasks(long taskId);
     @Query("Select * from subTasks where task_id = :taskId order by id")
-    LiveData<List<SubTask>> getAllLiveSubTasks(int taskId);
+    LiveData<List<SubTask>> getAllLiveSubTasks(long taskId);
     @Query("Select * from medias where task_id = :taskId and isImage = :isImage")
-    List<MediaFile> getAllMedias(int taskId,boolean isImage);
+    List<MediaFile> getAllMedias(long taskId,boolean isImage);
     @Query("Select * from medias where task_id = :taskId and isImage = :isImage")
-    LiveData<List<MediaFile>> getAllLiveMedias(int taskId,boolean isImage);
+    LiveData<List<MediaFile>> getAllLiveMedias(long taskId,boolean isImage);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-   void insert(Task task);
+    long insert(Task task);
 
     @Query("Select * from subTasks  WHERE task_id = :taskID")
-    List<SubTask> getAllSubTask(int taskID);
+    List<SubTask> getAllSubTask(long taskID);
 
     @Query("UPDATE tasks SET status =:complete WHERE id = :id")
-    void markTaskCompleted(boolean complete, int id);
+    void markTaskCompleted(boolean complete, long id);
 
     @Query("SELECT * FROM tasks WHERE category_id = :categoryID ORDER BY title ASC")
-    LiveData<List<Task>> getAllLiveTasks(int categoryID);
+    LiveData<List<Task>> getAllLiveTasks(long categoryID);
 
     @Query("SELECT * FROM tasks WHERE category_id = :categoryID ORDER BY createdDate ASC")
-    List<Task> getAllTasksSortByCreatedDate(int categoryID);
+    List<Task> getAllTasksSortByCreatedDate(long categoryID);
 
     @Query("SELECT * FROM tasks WHERE category_id = :categoryID ORDER BY dueDate ASC")
-    List<Task> getAllTasksSortByDueDate(int categoryID);
+    List<Task> getAllTasksSortByDueDate(long categoryID);
 
     @Query("UPDATE tasks SET category_id =:categoryId WHERE id = :taskIs")
-    void changeParentOfSelectedTasks(int categoryId,int taskIs);
+    void changeParentOfSelectedTasks(long categoryId,long taskIs);
 
     @Query("UPDATE categories SET name =:categoryName WHERE id = :id")
-    void updateCategoryName(String categoryName,int id);
+    void updateCategoryName(String categoryName,long id);
 
     @Query("Select * from categories where name like '%'||:text||'%' AND  id != :categoryID")
-    LiveData<List<Category>> getAllCategoriesExceptSelected(int categoryID,String text);
+    LiveData<List<Category>> getAllCategoriesExceptSelected(long categoryID,String text);
 
     @Query("Select * from locations where categoryID = :categoryID")
-    List<MapLocation> getAllMapPin(int categoryID);
+    List<MapLocation> getAllMapPin(long categoryID);
 
     @Query("Select * from locations where taskId = :taskId limit 1")
-    MapLocation getMapPin(int taskId);
+    MapLocation getMapPin(long taskId);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertMap(MapLocation mapLocation);

@@ -8,6 +8,7 @@ import android.widget.SeekBar;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.VH> {
     private final AudioAdapterListener listener;
 
     interface AudioAdapterListener {
-        void playPause(boolean play, MediaFile model);
+        void playPause(boolean play, MediaFile model) throws IOException;
 
         void remove(int position, MediaFile model);
 
@@ -84,7 +85,11 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.VH> {
 
             binding.ivPlayPause.setOnClickListener(v -> {
                 isPlaying = !isPlaying;
-                listener.playPause(isPlaying, model);
+                try {
+                    listener.playPause(isPlaying, model);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 updatePlayPauseImageResource();
             });
 

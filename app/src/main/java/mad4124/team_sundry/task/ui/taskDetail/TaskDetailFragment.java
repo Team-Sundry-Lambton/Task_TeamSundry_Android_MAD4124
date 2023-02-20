@@ -244,8 +244,25 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
         AudioAdapter.AudioAdapterListener audioAdapterListener = new AudioAdapter.AudioAdapterListener() {
             @Override
-            public void playPause(boolean play, MediaFile model) {
+            public void playPause(boolean play, MediaFile model) throws IOException {
+                if (play) {
+                    // Handle play button press
+                     mediaPlayer = new MediaPlayer();
+                     mediaPlayer.setDataSource(model.getPath());
+                     mediaPlayer.prepare();
+                     mediaPlayer.start();
 
+                    int duration = mediaPlayer.getDuration() / 1000;
+                    int minutes = duration / 60;
+                    int seconds = duration % 60;
+                    String durationString = String.format("%d:%02d", minutes, seconds);
+
+                } else {
+                    // Handle pause button press
+                     if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                         mediaPlayer.pause();
+                     }
+                }
             }
 
             @Override
@@ -256,7 +273,10 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
             @Override
             public void scrubberProgress(int progress, MediaFile mediaFile) {
-
+                // Update the playback progress of the currently playing media file
+                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                     mediaPlayer.seekTo(progress);
+                 }
             }
         };
         audioAdapter = new AudioAdapter(requireContext(),audioAdapterListener);

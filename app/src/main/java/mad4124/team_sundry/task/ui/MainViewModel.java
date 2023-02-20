@@ -118,7 +118,7 @@ public class MainViewModel extends ViewModel {
         return repo.getAllTasksSortByDueDate(categoryID);
     }
 
-    public List<MediaFile> getAllMedias(int taskID,boolean isImage){
+    public List<MediaFile> getAllMedias(long taskID,boolean isImage){
         return repo.getAllMedias(taskID, isImage);
     }
 

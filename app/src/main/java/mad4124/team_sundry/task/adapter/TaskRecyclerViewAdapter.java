@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -63,15 +65,21 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
             itemView.setOnClickListener(this);
         }
         public void bind(Task model) {
-            int id = model.getId();
+            long id = model.getId();
             List<MediaFile> mediaFiles = viewModel.getAllMedias(id,true);
             List<MediaFile> audioFiles = viewModel.getAllMedias(id,false);
             MapLocation location = viewModel.getMapPin(id);
             binding.taskTitleRow.setText(model.getTitle());
             if (model.isTask()) {
-                binding.categoryRow.setText("Task");
+                binding.taskType.setText("Task");
             } else {
-                binding.categoryRow.setText("Note");
+                binding.taskType.setText("Note");
+            }
+
+            if(model.isStatus()){
+                binding.completeStatus.setVisibility(View.VISIBLE);
+            }else {
+                binding.completeStatus.setVisibility(View.GONE);
             }
             binding.taskDescriptionRow.setText(model.getDescription());
 
@@ -98,7 +106,13 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
             if(mediaFiles.size() > 0) {
                 binding.imageView.setVisibility(View.VISIBLE);
                 MediaFile file = mediaFiles.get(0);
-                binding.imageView.setBackgroundResource(R.drawable.ic_audio_row);
+
+                Glide.with(context.getApplicationContext())
+                        .load(file.getPath())
+                        .into(binding.imageView);
+//                binding.imageView.setBackgroundResource(R.drawable.ic_audio_row);
+
+
             }else {
                 binding.imageView.setVisibility(View.GONE);
             }

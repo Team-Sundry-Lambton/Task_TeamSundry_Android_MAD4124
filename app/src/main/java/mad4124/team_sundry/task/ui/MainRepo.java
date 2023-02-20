@@ -161,7 +161,7 @@ public class MainRepo {
         return dbDao.getAllTasksSortByDueDate(categoryID);
     }
 
-    List<MediaFile> getAllMedias(int taskID,boolean isImage){
+    List<MediaFile> getAllMedias(long taskID,boolean isImage){
         return dbDao.getAllMedias(taskID,isImage);
     }
     void updateCategoryName(String categoryName,long id){ dbDao.updateCategoryName(categoryName, id); }

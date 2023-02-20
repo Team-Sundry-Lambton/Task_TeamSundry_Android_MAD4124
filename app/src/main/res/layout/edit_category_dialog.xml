@@ -30,6 +30,8 @@
         android:inputType="text"
         android:hint="Enter Category Name"
         android:textSize="20sp"
+        android:maxLines="2"
+        android:maxLength="20"
         android:textStyle="bold"
         android:textColor="@color/black"
         android:backgroundTint="@color/theme_dark_purple"

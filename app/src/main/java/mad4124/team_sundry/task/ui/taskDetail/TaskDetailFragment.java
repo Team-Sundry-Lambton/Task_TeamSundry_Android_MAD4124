@@ -369,9 +369,14 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         imageFiles = (ArrayList<MediaFile>) imagesAdapter.getList();
         subTasks = (ArrayList<SubTask>)  subTaskAdapter.getSubTasks();
 
-        if(title.isEmpty() && desc.isEmpty() && audioFiles.isEmpty() && imageFiles.isEmpty() && subTasks.isEmpty()){
+        if(title.isEmpty() || desc.isEmpty()){
+            Toast.makeText(getActivity(), "Title and Description cannot be empty.", Toast.LENGTH_LONG).show();
             return;
         }
+
+//        if(title.isEmpty() && desc.isEmpty() && audioFiles.isEmpty() && imageFiles.isEmpty() && subTasks.isEmpty()){
+//            return false;
+//        }
 
         if(task == null){
             task = new Task();
@@ -383,19 +388,36 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         if(dueDate != null) {
             task.setDueDate(dueDate.getTimeInMillis());
         }
+//        if(task.getCreatedDate() == 0){
+//            task.setCreatedDate(Calendar.getInstance().getTimeInMillis());
+//        }
+
         task.setParentCategoryId(parentCategoryId);
         task.setTitle(title);
         task.setDescription(desc);
         boolean isComplete = true;
-        for(SubTask subTask : subTasks){
-            if(!subTask.isStatus()){
-                isComplete = false;
-                break;
+
+        if(dueDate != null) {
+            task.setDueDate(dueDate.getTimeInMillis());
+        }
+
+
+        if (!subTasks.isEmpty() || dueDate != null) {
+            task.setTask(true);
+            for(SubTask subTask : subTasks){
+                if(!subTask.isStatus()){
+                    isComplete = false;
+                    break;
+                }
             }
+        }if (subTasks.isEmpty() && dueDate != null) {
+            task.setTask(true);
+            isComplete = false;
+        }else {
+            task.setTask(false);
+            isComplete = false;
         }
         task.setStatus(isComplete);
-        task.setTask(!subTasks.isEmpty());
-
         Log.d("TaskDetail",""+task.toString());
 
         for(MediaFile audio:audioToDelete){
@@ -407,7 +429,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         for(MediaFile image:imageToDelete){
             viewModel.delete(image);
         }
-
 
         if(isEditing){
             viewModel.update(task,audioFiles,imageFiles,subTasks,location);
@@ -422,7 +443,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                 NotificationHelper.scheduleNotification(NotificationHelper.getNotification(task.getTitle(),getActivity()),calendar,getActivity());
             }
         }
-
     }
 
     void initData(Task task) {
@@ -458,8 +478,8 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
     @Override
     public void onDestroyView() {
-        saveData();
-        super.onDestroyView();
+       saveData();
+            super.onDestroyView();
     }
 
 

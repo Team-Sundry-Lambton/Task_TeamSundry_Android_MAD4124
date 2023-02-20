@@ -69,7 +69,7 @@ app:cardCornerRadius="12dp">
                 android:paddingHorizontal="10dp"
                 android:textAlignment="textStart"
                 android:textColor="@color/black"
-                android:textSize="18sp" />
+                android:textSize="13sp" />
 
         <TextView
             android:id="@+id/task_type"
@@ -95,8 +95,9 @@ app:cardCornerRadius="12dp">
                 android:layout_weight="1"
                 android:paddingEnd="8dp"
                 android:text="@string/due_date_row"
+                android:padding="5dp"
                 android:textColor="@color/black"
-                android:textSize="18sp" />
+                android:textSize="13sp" />
         </LinearLayout>
 
         <LinearLayout

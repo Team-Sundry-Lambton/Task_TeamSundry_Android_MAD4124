@@ -115,10 +115,12 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     ImagesAdapter imagesAdapter;
     AudioAdapter audioAdapter;
 
-    int day, month, year, hour, minute;
+//    int day, month, year, hour, minute;
     int myday, myMonth, myYear, myHour, myMinute;
 
     boolean isDeleting = false;
+
+    Calendar dueDate;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -376,11 +378,15 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             task = new Task();
 //            task.setCreatedDate(Calendar.getInstance().getTimeInMillis());
             task.setCreatedDate(calendar.getTimeInMillis());
+            if(dueDate != null) {
+                task.setDueDate(dueDate.getTimeInMillis());
+            }
+
         }
 //        if(task.getCreatedDate() == 0){
 //            task.setCreatedDate(Calendar.getInstance().getTimeInMillis());
 //        }
-        task.setDueDate(0L);
+//        task.setDueDate(0L);
         task.setParentCategoryId(parentCategoryId);
         task.setTitle(title);
         task.setDescription(desc);
@@ -850,7 +856,9 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
     private void showNotify() {
 
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+        pickDateTime();
+
+      /*  if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestNotificationPermission();
             return;
         }
@@ -895,13 +903,16 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                 calendar.set(Calendar.HOUR, 8);
                 day = calendar.get(Calendar.DAY_OF_MONTH);
                 myHour = 8;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    NotificationHelper.scheduleNotification(NotificationHelper.getNotification("5 second more",getActivity()),calendar,getActivity());
+                }
                 bottomSheetDialog.dismiss();
             }
         });
 
 
         // Show the bottom bar
-        bottomSheetDialog.show();
+        bottomSheetDialog.show();*/
     }
     //////////////////////////////////////////////////////////////////////////////////////////
     // END OF HANDLE SHOW NOTIFY
@@ -911,9 +922,9 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
         // Get Current Date
         Calendar calendar = Calendar.getInstance();
-        year = calendar.get(Calendar.YEAR);
-        month = calendar.get(Calendar.MONTH);
-        day = calendar.get(Calendar.DAY_OF_MONTH);
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
         DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), this,year,month,day);
         datePickerDialog.show();
     }
@@ -921,11 +932,11 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         myYear = year;
-        myday = day;
+        myday = dayOfMonth;
         myMonth = month;
         Calendar c = Calendar.getInstance();
-        hour = c.get(Calendar.HOUR);
-        minute = c.get(Calendar.MINUTE);
+        int hour = c.get(Calendar.HOUR);
+        int minute = c.get(Calendar.MINUTE);
         TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));
         timePickerDialog.show();
     }
@@ -937,6 +948,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(myYear,myMonth,myday,myHour,myMinute);
+        dueDate = calendar;
 //        calendar.add(Calendar.SECOND, calendar);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             NotificationHelper.scheduleNotification(NotificationHelper.getNotification("5 second more",getActivity()),calendar,getActivity());

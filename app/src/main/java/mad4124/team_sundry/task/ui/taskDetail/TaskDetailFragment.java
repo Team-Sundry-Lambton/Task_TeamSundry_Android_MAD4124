@@ -1,6 +1,7 @@
 package mad4124.team_sundry.task.ui.taskDetail;
 
 
+import static android.app.Activity.RESULT_OK;
 import static mad4124.team_sundry.task.ui.task.TaskListFragment.IsShowAllMap;
 import static mad4124.team_sundry.task.ui.task.TaskListFragment.TASK_ID;
 
@@ -8,6 +9,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
@@ -20,6 +22,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.provider.OpenableColumns;
 import android.text.format.DateFormat;
 import android.util.Log;
 
@@ -53,6 +56,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -318,11 +322,12 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             @Override
             public void onClick(View view) {
                 // Handle "add image" option
-                if (isPermissionGranted(REQUEST_GALLERY_PERMISSION)) {
+                /*if (isPermissionGranted(REQUEST_GALLERY_PERMISSION)) {
                     pickImage();
                 } else {
                     requestPermission(REQUEST_GALLERY_PERMISSION);
-                }
+                }*/
+                pickImage();
                 bottomSheetDialog.dismiss();
             }
         });
@@ -630,24 +635,79 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     //////////////////////////////////////////////////////////////////////////////////////////
 
     public void pickImage() {
-        Intent intent = new Intent();
+        /*Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        galleryLauncher.launch(Intent.createChooser(intent, "Select Picture"));
+        galleryLauncher.launch(Intent.createChooser(intent, "Select Picture"));*/
+
+//        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//        intent.setType("image/*");
+//        startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_GALLERY_PERMISSION);
+
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        startActivityForResult(intent, REQUEST_GALLERY_PERMISSION);
     }
 
+    @Override
+    public void onActivityResult(int reqCode, int resultCode, Intent data) {
+        super.onActivityResult(reqCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            Uri imageUri = data.getData();
+            String picturePath = getPath(requireActivity().getApplicationContext( ), imageUri);
+            String pictureName = picturePath.substring(picturePath.lastIndexOf("/") + 1);
+
+            // Create a new MediaFile object and set the file name and path
+            isImage = true;
+            MediaFile mediaFile = new MediaFile(pictureName, true, picturePath, task.getId());
+
+            // Add the new MediaFile object to the ArrayList
+            imagesAdapter.addData(mediaFile);
+            handleImages();
+
+        }else {
+            Toast.makeText(getActivity(), "You haven't picked Image",Toast.LENGTH_LONG).show();
+        }
+    }
+
+
     // Create the ActivityResultLauncher for the gallery intent
-    private ActivityResultLauncher<Intent> galleryLauncher =
+    /*private ActivityResultLauncher<Intent> galleryLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                     result -> {
-                        if (result.getResultCode() == Activity.RESULT_OK) {
+                        if (result.getResultCode() == RESULT_OK) {
                             // The user has selected an image from the gallery
                             Intent data = result.getData();
                             if (data != null) {
                                 Uri selectedImage = data.getData();
+                                String picturePath = getPath(requireActivity().getApplicationContext( ), selectedImage);
+                                Log.d("Picture Path", picturePath);
 
+
+                                if (selectedImage != null) {
+                                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                                    Cursor cursor = requireContext().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                                    if (cursor != null) {
+                                        cursor.moveToFirst();
+                                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                                        String imagePath = cursor.getString(columnIndex);
+                                        String imageName = cursor.getString(columnIndex);
+                                        cursor.close();
+
+                                        Log.d("Image", imageName);
+                                        Log.d("Image", imagePath);
+
+                                        // Create a new MediaFile object and set the file name and path
+                                        isImage = true;
+                                        MediaFile mediaFile = new MediaFile(imageName, true, imagePath, task.getId());
+
+                                        // Add the new MediaFile object to the ArrayList
+                                        imagesAdapter.addData(mediaFile);
+                                        // Do something with the image path
+                                    }
+                                }
                                 // Get the image name and path
-                                String[] projection = {MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.DATA};
+                                *//*String[] projection = {MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.DATA};
                                 Cursor cursor = requireContext().getContentResolver().query(selectedImage, projection, null, null, null);
                                 if (cursor != null && cursor.moveToFirst()) {
                                     String imageName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
@@ -662,13 +722,29 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                                     imagesAdapter.addData(mediaFile);
 
                                     cursor.close();
-                                }
+                                }*//*
 
                                 handleImages();
                             }
                         }
-                    });
+                    });*/
 
+    public static String getPath(Context context, Uri uri ) {
+        String result = null;
+        String[] proj = { MediaStore.Images.Media.DATA };
+        Cursor cursor = context.getContentResolver( ).query( uri, proj, null, null, null );
+        if(cursor != null){
+            if ( cursor.moveToFirst( ) ) {
+                int column_index = cursor.getColumnIndexOrThrow( proj[0] );
+                result = cursor.getString( column_index );
+            }
+            cursor.close( );
+        }
+        if(result == null) {
+            result = "Not found";
+        }
+        return result;
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // END OF HANDLE ADD IMAGE FROM GALLERY

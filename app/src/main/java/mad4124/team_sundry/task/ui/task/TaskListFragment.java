@@ -466,7 +466,6 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
         adapter.notifyItemRemoved(position);
         Snackbar.make(binding.recyclerView, deletedTask.getTitle() + " is deleted!", Snackbar.LENGTH_LONG)
                 .setAction("Undo", v -> viewModel.insert(deletedTask)).show();
-        Toast.makeText(getActivity(), task.getTitle() + " deleted", Toast.LENGTH_SHORT).show();
     }
 
 }

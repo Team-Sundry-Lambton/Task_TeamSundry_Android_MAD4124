@@ -14,6 +14,7 @@ import java.util.List;
 
 import mad4124.team_sundry.task.R;
 import mad4124.team_sundry.task.databinding.TaskRowBinding;
+import mad4124.team_sundry.task.model.MapLocation;
 import mad4124.team_sundry.task.model.MediaFile;
 import mad4124.team_sundry.task.model.Task;
 import mad4124.team_sundry.task.ui.MainViewModel;
@@ -62,8 +63,10 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
             itemView.setOnClickListener(this);
         }
         public void bind(Task model) {
-            long id = model.getId();
-            List<MediaFile> mediaFiles = viewModel.getAllMedias(id);
+            int id = model.getId();
+            List<MediaFile> mediaFiles = viewModel.getAllMedias(id,true);
+            List<MediaFile> audioFiles = viewModel.getAllMedias(id,false);
+            MapLocation location = viewModel.getMapPin(id);
             binding.taskTitleRow.setText(model.getTitle());
             if (model.isTask()) {
                 binding.categoryRow.setText("Task");
@@ -95,13 +98,21 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
             if(mediaFiles.size() > 0) {
                 binding.imageView.setVisibility(View.VISIBLE);
                 MediaFile file = mediaFiles.get(0);
-                if(file.isImage()){
-                    binding.imageView.setBackgroundResource(R.drawable.ic_audio);
-                }else {
-                    binding.imageView.setBackgroundResource(R.drawable.ic_audio);
-                }
+                binding.imageView.setBackgroundResource(R.drawable.ic_audio_row);
             }else {
                 binding.imageView.setVisibility(View.GONE);
+            }
+
+            if(audioFiles.size()  > 0) {
+                binding.audioIcon.setVisibility(View.VISIBLE);
+            }else {
+                binding.audioIcon.setVisibility(View.GONE);
+            }
+
+            if(location != null) {
+                binding.mapIcon.setVisibility(View.VISIBLE);
+            }else {
+                binding.mapIcon.setVisibility(View.GONE);
             }
         }
 

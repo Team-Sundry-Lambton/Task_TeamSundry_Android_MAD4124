@@ -322,12 +322,12 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             @Override
             public void onClick(View view) {
                 // Handle "add image" option
-                /*if (isPermissionGranted(REQUEST_GALLERY_PERMISSION)) {
+                if (isPermissionGranted(REQUEST_GALLERY_PERMISSION)) {
                     pickImage();
                 } else {
                     requestPermission(REQUEST_GALLERY_PERMISSION);
-                }*/
-                pickImage();
+                }
+                //pickImage();
                 bottomSheetDialog.dismiss();
             }
         });
@@ -529,7 +529,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         if (requestCode == REQUEST_GALLERY_PERMISSION ) {
 
             // If permission is granted
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length > 0 && 0 == PackageManager.PERMISSION_GRANTED) {
                 // Displaying a toast
                 Toast.makeText(getActivity(), "Permission granted now you can gallery", Toast.LENGTH_LONG).show();
                 pickImage();

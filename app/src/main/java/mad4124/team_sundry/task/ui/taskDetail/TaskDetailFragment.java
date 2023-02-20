@@ -889,6 +889,10 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                 calendar.set(Calendar.HOUR, 18);
                 Date today = calendar.getTime();
                 myHour = 18;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    NotificationHelper.scheduleNotification(NotificationHelper.getNotification("5 second more",getActivity()),calendar,getActivity());
+                }
+                showSchedule(calendar);
                 bottomSheetDialog.dismiss();
             }
         });
@@ -916,6 +920,12 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     // END OF HANDLE SHOW NOTIFY
     //////////////////////////////////////////////////////////////////////////////////////////
 
+    private void showSchedule(Calendar calendar){
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy h:mm a", Locale.getDefault());
+        String formattedTime = sdf.format(calendar.getTime());
+        binding.btnSchedule.setText(formattedTime);
+        binding.btnSchedule.setVisibility(View.VISIBLE);
+    }
     public void pickDateTime(){
 
         // Get Current Date
@@ -924,6 +934,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), this,year,month,day);
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
         datePickerDialog.show();
     }
 
@@ -943,10 +954,17 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         myHour = hourOfDay;
         myMinute = minute;
-
+        Calendar currentCalendar = Calendar.getInstance();
         calendar.set(myYear,myMonth,myday,myHour,myMinute);
+
+        int result = currentCalendar.compareTo(calendar);
+        if (result >= 0) {
+            myMinute = myMinute + 5;
+            calendar.set(currentCalendar.get(Calendar.YEAR),currentCalendar.get(Calendar.MONTH),currentCalendar.get(Calendar.DAY_OF_MONTH),currentCalendar.get(Calendar.HOUR),myMinute);
+        }
         dueDate = calendar;
         isDueDateSelected = true;
+        showSchedule(calendar);
     }
 
 }

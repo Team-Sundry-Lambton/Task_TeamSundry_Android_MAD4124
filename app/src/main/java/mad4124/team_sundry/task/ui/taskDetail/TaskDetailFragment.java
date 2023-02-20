@@ -234,7 +234,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         ImagesAdapter.ImageAdapterListener imageAdapterListener = new ImagesAdapter.ImageAdapterListener() {
             @Override
             public void remove(int position, MediaFile model) {
-//                viewModel.delete(model);
+                viewModel.delete(model);
                 imageToDelete.add(model);
                 imagesAdapter.notifyItemRemoved(position);
                 handleImages();
@@ -304,12 +304,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             public void onClick(View view) {
                 // Handle "add image" option
                 askStoragePermission();
-//                if (isPermissionGranted(REQUEST_GALLERY_PERMISSION)) {
-//                    pickImage();
-//                } else {
-//                    requestPermission(REQUEST_GALLERY_PERMISSION);
-//                }
-//                pickImage();
 
                 bottomSheetDialog.dismiss();
             }

@@ -119,6 +119,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     int myday, myMonth, myYear, myHour, myMinute;
 
     boolean isDeleting = false;
+    boolean isDueDateSelected = false;
 
     Calendar dueDate;
 
@@ -134,8 +135,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             Log.d("Task Detail",location.toString());
             // Do something with the result
         });
-
-        calendar = Calendar.getInstance();
     }
 
     @Nullable
@@ -376,13 +375,11 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
         if(task == null){
             task = new Task();
-//            task.setCreatedDate(Calendar.getInstance().getTimeInMillis());
+            Calendar calendar = Calendar.getInstance();
             task.setCreatedDate(calendar.getTimeInMillis());
 
         }
-//        if(task.getCreatedDate() == 0){
-//            task.setCreatedDate(Calendar.getInstance().getTimeInMillis());
-//        }
+
         if(dueDate != null) {
             task.setDueDate(dueDate.getTimeInMillis());
         }
@@ -420,7 +417,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         }
 
 
-        if(calendar != null){
+        if(calendar != null && isDueDateSelected == true){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 NotificationHelper.scheduleNotification(NotificationHelper.getNotification(task.getTitle(),getActivity()),calendar,getActivity());
             }
@@ -855,9 +852,14 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
     private void showNotify() {
 
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestNotificationPermission();
+            return;
+        }
+
         pickDateTime();
 
-      /*  if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+      /* if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestNotificationPermission();
             return;
         }
@@ -887,9 +889,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                 calendar.set(Calendar.HOUR, 18);
                 Date today = calendar.getTime();
                 myHour = 18;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    NotificationHelper.scheduleNotification(NotificationHelper.getNotification("5 second more",getActivity()),calendar,getActivity());
-                }
                 bottomSheetDialog.dismiss();
             }
         });
@@ -920,7 +919,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     public void pickDateTime(){
 
         // Get Current Date
-        Calendar calendar = Calendar.getInstance();
+        calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -945,13 +944,9 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         myHour = hourOfDay;
         myMinute = minute;
 
-        Calendar calendar = Calendar.getInstance();
         calendar.set(myYear,myMonth,myday,myHour,myMinute);
         dueDate = calendar;
-//        calendar.add(Calendar.SECOND, calendar);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            NotificationHelper.scheduleNotification(NotificationHelper.getNotification("5 second more",getActivity()),calendar,getActivity());
-        }
+        isDueDateSelected = true;
     }
 
 }

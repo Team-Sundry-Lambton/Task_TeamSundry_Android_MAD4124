@@ -130,8 +130,8 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
         });
 
         //obtain bundle
-        int categoryID = getArguments().getInt(CATEGORY_ID,-1);
-        int taskId = getArguments().getInt(TASK_ID,-1);
+        long categoryID = getArguments().getLong(CATEGORY_ID,-1);
+        long taskId = getArguments().getLong(TASK_ID,-1);
 
         isShowAllMap = getArguments().getBoolean(IsShowAllMap, false);
 
@@ -225,8 +225,6 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
         if (!isShowAllMap) {
             mMap.clear();
             setSelectLocation(latLng, title);
-        } else {
-            setSelectLocation(null, null);
         }
 
         MarkerOptions options = new MarkerOptions().position(latLng)

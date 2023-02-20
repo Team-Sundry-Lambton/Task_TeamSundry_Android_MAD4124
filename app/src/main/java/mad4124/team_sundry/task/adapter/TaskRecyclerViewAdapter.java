@@ -75,9 +75,12 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
             } else {
                 binding.taskType.setText("Note");
             }
-
-            if(model.isStatus()){
-                binding.completeStatus.setVisibility(View.VISIBLE);
+            if (model.isTask()) {
+                if (model.isStatus()) {
+                    binding.completeStatus.setVisibility(View.VISIBLE);
+                } else {
+                    binding.completeStatus.setVisibility(View.GONE);
+                }
             }else {
                 binding.completeStatus.setVisibility(View.GONE);
             }

@@ -1,6 +1,9 @@
 package mad4124.team_sundry.task.ui.taskDetail;
 
 import android.content.Context;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
@@ -8,6 +11,7 @@ import android.widget.SeekBar;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,15 +81,100 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.VH> {
         }
 
         boolean isPlaying = false;
+        MediaFile model;
+        MediaPlayer player = null;
+        SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int playerProgress = progress * 1000;
+                if(player!= null && fromUser){
+                    player.seekTo(playerProgress);
+                    listener.scrubberProgress(progress, model);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        };
+
+        Handler handler;
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                int currentPosition = player.getCurrentPosition() / 1000;
+                int total = player.getDuration();
+
+                while (player!=null && player.isPlaying() && currentPosition<total){
+                    try {
+                        Thread.sleep(1000);
+                        currentPosition = player.getCurrentPosition();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    binding.seekBar.setProgress(currentPosition);
+                }
+            }
+        };
+        public void playMedia(){
+            Uri uri = Uri.parse(model.getPath());
+
+            player = new MediaPlayer();
+
+
+            try {
+                player.setDataSource(uri.getPath());
+
+                player.setOnPreparedListener(mp -> {
+                    player = mp;
+                    int duration = mp.getDuration() / 1000;
+                    binding.seekBar.setMax(duration);
+                    binding.seekBar.setOnSeekBarChangeListener(seekBarChangeListener);
+                    handler = new Handler();
+                    player.start();
+                    handler.post(runnable);
+
+                });
+                player.setOnCompletionListener(mp -> {
+                    binding.seekBar.setOnSeekBarChangeListener(null);
+                    isPlaying = false;
+                    handler.removeCallbacks(runnable);
+                    binding.ivPlayPause.setImageResource(R.drawable.ic_outline_play_circle_filled_24);
+                });
+                player.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+        public void stopMedia(){
+            handler.removeCallbacks(runnable);
+            handler = null;
+            player.stop();
+            player.release();
+            player = null;
+            binding.seekBar.setProgress(0);
+        }
 
         public void bind(MediaFile model, AudioAdapterListener listener, int position) {
 
-            updatePlayPauseImageResource();
+            this.model = model;
+            if (isPlaying) {
+                binding.ivPlayPause.setImageResource(R.drawable.ic_baseline_pause_circle_filled_24);
+            } else {
+                binding.ivPlayPause.setImageResource(R.drawable.ic_outline_play_circle_filled_24);
+            }
 
             binding.ivPlayPause.setOnClickListener(v -> {
+                updatePlayPauseImageResource();
                 isPlaying = !isPlaying;
                 listener.playPause(isPlaying, model);
-                updatePlayPauseImageResource();
             });
 
             binding.ivDelete.setOnClickListener(v -> {
@@ -93,33 +182,16 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.VH> {
                 listener.remove(position, model);
             });
 
-            binding.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    if (fromUser) {
-                        listener.scrubberProgress(progress, model);
-                    }
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-
-                }
-            });
-
-
         }
+
 
         void updatePlayPauseImageResource() {
             if (isPlaying) {
-                binding.ivPlayPause.setImageResource(R.drawable.ic_baseline_pause_circle_filled_24);
-            } else {
+                stopMedia();
                 binding.ivPlayPause.setImageResource(R.drawable.ic_outline_play_circle_filled_24);
+            } else {
+                playMedia();
+                binding.ivPlayPause.setImageResource(R.drawable.ic_baseline_pause_circle_filled_24);
             }
         }
 

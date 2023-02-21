@@ -38,16 +38,6 @@
             app:layout_constraintStart_toEndOf="@+id/ivPlayPause"
             />
 
-        <TextView
-            android:id="@+id/tvTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="0:06"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            android:layout_marginHorizontal="4dp"
-            />
-
         <ImageView
             android:id="@+id/ivDelete"
             android:layout_width="28dp"

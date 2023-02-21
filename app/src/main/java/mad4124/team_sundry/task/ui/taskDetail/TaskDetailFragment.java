@@ -152,6 +152,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (binding == null) {
             binding = FragmentTaskDetailBinding.inflate(inflater, container, false);
+            initAdapters();
         }
         return binding.getRoot();
     }
@@ -163,7 +164,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
 
         isPickingMap = false;
 
-        initAdapters();
+//        initAdapters();
 
         if (getArguments() != null) {
             task = (Task) getArguments().getSerializable(TaskListFragment.TASK_MODEL);
@@ -499,16 +500,19 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                 binding.btnAddSubTask.setVisibility(View.VISIBLE);
                 binding.rvSubTasks.setVisibility(View.VISIBLE);
             }
-            subTaskAdapter.setData(subTasks);
+//            subTaskAdapter.setData(subTasks);
+            subTaskAdapter.setData((subTaskAdapter.getSubTasks().isEmpty()) ? subTasks : subTaskAdapter.getSubTasks());
         });
 
         viewModel.getMediaLive(task.getId(),true).observe(getViewLifecycleOwner(),images -> {
-            imagesAdapter.setData(images);
+//            imagesAdapter.setData(images);
+            imagesAdapter.setData((imagesAdapter.getList().isEmpty()) ? images : imagesAdapter.getList());
             handleImages();
         });
 
         viewModel.getMediaLive(task.getId(),false).observe(getViewLifecycleOwner(),audios -> {
-            audioAdapter.setData(audios);
+//            audioAdapter.setData(audios);
+            audioAdapter.setData((audioAdapter.getList().isEmpty()) ? audios : audioAdapter.getList());
         });
 
         MapLocation location = viewModel.getMapPin(task.getId());

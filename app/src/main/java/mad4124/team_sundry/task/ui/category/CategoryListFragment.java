@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -69,8 +70,8 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if(binding == null){
-            binding = FragmentCategoryListBinding.inflate(inflater,container, false);
+        if (binding == null) {
+            binding = FragmentCategoryListBinding.inflate(inflater, container, false);
         }
         return binding.getRoot();
     }
@@ -80,7 +81,7 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
         setCategoryListRecyclerView();
-        binding.fabCategory.setOnClickListener(v->{
+        binding.fabCategory.setOnClickListener(v -> {
             showAddCategoryModal();
         });
 
@@ -111,18 +112,18 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
 
     @Override
     public void onItemClick(int position) {
-            Category clickedCategory = categoryList.get(position);
-            Bundle bundle = new Bundle();
-            bundle.putSerializable(TaskListFragment.CATEGORY_ID, clickedCategory.getId());
-            Navigation.findNavController(requireActivity(),R.id.fragContainerView).navigate(R.id.action_categoryListFragment_to_taskListFragment,bundle);
+        Category clickedCategory = categoryList.get(position);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(TaskListFragment.CATEGORY_ID, clickedCategory.getId());
+        Navigation.findNavController(requireActivity(), R.id.fragContainerView).navigate(R.id.action_categoryListFragment_to_taskListFragment, bundle);
     }
 
     // set adapter
 
-    private void setCategoryListRecyclerView(){
+    private void setCategoryListRecyclerView() {
         adapter = new CategoryListRecyclerViewAdapter(categoryList, getContext(), this, viewModel);
         binding.categoryRecycler.setHasFixedSize(true);
-        binding.categoryRecycler.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL,false));
+        binding.categoryRecycler.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false));
         binding.categoryRecycler.setAdapter(adapter);
     }
 
@@ -142,11 +143,22 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
             public void onClick(View view) {
                 // Add the new category to the database or data source
                 String categoryTitle = etCategoryTitle.getText().toString();
-                Category category = new Category();
-                category.setName(categoryTitle);
-                viewModel.addCategory(category);
-                dialog.dismiss();
-                Toast.makeText(getContext(), "Category added successfully!", Toast.LENGTH_SHORT).show();
+                if (categoryTitle.isEmpty()) {
+                    Toast.makeText(getContext(), "Category name should not be empty!", Toast.LENGTH_LONG).show();
+                } else {
+                    long categoryId = 0;
+                    int checkCategory = viewModel.getCategoryByName(categoryTitle, categoryId);
+                    if (checkCategory > 0) {
+                        Toast.makeText(getContext(), "Category with this name already exists!", Toast.LENGTH_LONG).show();
+                        etCategoryTitle.setText("");
+                    } else {
+                        Category category = new Category();
+                        category.setName(categoryTitle);
+                        viewModel.addCategory(category);
+                        dialog.dismiss();
+                        Toast.makeText(getContext(), "Category added successfully!", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         });
 
@@ -160,27 +172,24 @@ public class CategoryListFragment extends Fragment implements CategoryListRecycl
         dialog.show();
     }
 
-    public void loadRecyclerData(String keyword){
-        viewModel.getAllLiveCategories(keyword).observe(getViewLifecycleOwner(),categories -> {
+    public void loadRecyclerData(String keyword) {
+        viewModel.getAllLiveCategories(keyword).observe(getViewLifecycleOwner(), categories -> {
             categoryList = categories;
             adapter.setDataList(categories);
 
-            if(keyword.isEmpty()){
-                binding.categoryToolbar.setTitle("All Categories ("+categories.size()+" available)");
-            }
-            else{
-                binding.categoryToolbar.setTitle("Searched Categories ("+categories.size()+" available)");
+            if (keyword.isEmpty()) {
+                binding.categoryToolbar.setTitle("All Categories (" + categories.size() + " available)");
+            } else {
+                binding.categoryToolbar.setTitle("Searched Categories (" + categories.size() + " available)");
             }
 
             if (categoryList.size() > 0) {
                 binding.emptyView.setVisibility(View.INVISIBLE);
-            }else {
+            } else {
                 binding.emptyView.setVisibility(View.VISIBLE);
             }
         });
     }
-
-
 
 
 }

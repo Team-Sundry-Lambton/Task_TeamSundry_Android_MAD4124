@@ -510,6 +510,13 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         }else {
             binding.locationView.setVisibility(View.GONE);
         }
+
+        if (task.getDueDate() != 0){
+            Long dueDate = task.getDueDate();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(dueDate);
+            showSchedule(calendar);
+        }
     }
 
     @Override

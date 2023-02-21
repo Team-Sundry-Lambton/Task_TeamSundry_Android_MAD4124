@@ -90,7 +90,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
                 Long dueDate = model.getDueDate();
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(dueDate);
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
                 System.out.println(format.format(calendar.getTime()));
                 binding.dueDateRow.setText(format.format(calendar.getTime()));
                 binding.dueDateRow.setVisibility(View.VISIBLE);
@@ -98,7 +98,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
                 Long createDate = model.getCreatedDate();
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(createDate);
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
                 System.out.println(format.format(calendar.getTime()));
                 binding.dueDateRow.setText(format.format(calendar.getTime()));
                 binding.dueDateRow.setVisibility(View.VISIBLE);

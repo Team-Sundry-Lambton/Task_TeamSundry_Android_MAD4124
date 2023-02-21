@@ -270,7 +270,7 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
         if(status){
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Mark Complete");
-            builder.setMessage("You have uncompleted subtasks under this Task.Therefore you cannot completed the task. Please complete all subtasks and continue...");
+            builder.setMessage("You have uncompleted subtasks under this task. Therefore you cannot completed the task. Please complete all subtasks and continue...");
             builder.setPositiveButton("OK", (dialog, which) -> adapter.notifyItemChanged(position));
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
@@ -423,11 +423,12 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
         Button btnNegative = dialogView.findViewById(R.id.btn_negative);
         Button btnPositive = dialogView.findViewById(R.id.btn_positive);
         if (isMultiSelection) {
-            title.setText("Delete Selected Tasks");
-            message.setText("Deleting Tasks will delete it subtasks also. Do you want to delete?");
+            title.setText("Delete item");
+            message.setText("Deleting notes/tasks will delete it subtasks also. Do you want to delete?");
         }else{
-            title.setText("Delete Selected Task");
-            message.setText("Deleting Task will delete it subtasks also. Do you want to delete?");
+            String str = (task.isTask() ? "Deleting this task will delete it subtasks also. Do you want to delete it?" : "Do you want to delete this note?");
+            title.setText("Delete item");
+            message.setText(str);
         }
 
         btnNegative.setOnClickListener(new View.OnClickListener() {

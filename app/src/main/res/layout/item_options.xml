@@ -22,7 +22,7 @@
         style="@style/MyTextButton.Options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Mark Complete"
+        android:text="Mark complete"
         app:icon="@drawable/menu_view"
         />
 
@@ -31,7 +31,7 @@
         style="@style/MyTextButton.Options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Edit Task"
+        android:text="Edit item"
         app:icon="@drawable/menu_edit"
         />
 
@@ -40,7 +40,7 @@
         style="@style/MyTextButton.Options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Delete Task"
+        android:text="Delete item"
         app:icon="@drawable/menu_delete"
         />
 

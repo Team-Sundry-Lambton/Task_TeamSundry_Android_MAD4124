@@ -176,6 +176,20 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
                     setMarker(new LatLng(selectedLocationObj.getLat(), selectedLocationObj.getLng()), selectedLocationObj.getName());
                 }
             }
+            @Override
+            public void onProviderEnabled(@NonNull String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(@NonNull String provider) {
+
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
         };
 
         if (!hasLocationPermission())

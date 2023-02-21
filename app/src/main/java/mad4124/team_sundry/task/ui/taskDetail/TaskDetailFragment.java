@@ -290,7 +290,8 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             @Override
             public void remove(int position, MediaFile model) {
                 audioToDelete.add(model);
-                audioAdapter.notifyItemRemoved(position);
+                audioAdapter.notifyDataSetChanged();
+//                audioAdapter.notifyItemRemoved(position);
             }
 
             @Override

@@ -140,6 +140,9 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             binding.taskLocation.setText(location.getName());
             Log.d("Task Detail",location.toString());
             selectLocation = false;
+            if(location != null){
+                Log.d("Task Detail",location.toString());
+            }
             // Do something with the result
         });
     }

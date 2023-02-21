@@ -301,6 +301,7 @@ public class TaskListFragment extends Fragment implements TaskRecyclerViewAdapte
             binding.bottomAppBar.setVisibility(View.GONE);
             binding.addTask.setVisibility(View.VISIBLE);
             binding.addTaskBottomBar.setVisibility(View.VISIBLE);
+            selectedTasks.clear();
             adapter.setSelection(isMultiSelection);
         }else {
             isMultiSelection = true;

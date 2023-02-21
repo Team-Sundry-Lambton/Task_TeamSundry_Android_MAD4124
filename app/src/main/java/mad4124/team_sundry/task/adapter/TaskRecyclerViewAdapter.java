@@ -66,6 +66,10 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         }
         public void bind(Task model) {
             long id = model.getId();
+            if(!isMultiSelection){
+                binding.checkBox.setVisibility(View.GONE);
+            }
+
             List<MediaFile> mediaFiles = viewModel.getAllMedias(id,true);
             List<MediaFile> audioFiles = viewModel.getAllMedias(id,false);
             MapLocation location = viewModel.getMapPin(id);

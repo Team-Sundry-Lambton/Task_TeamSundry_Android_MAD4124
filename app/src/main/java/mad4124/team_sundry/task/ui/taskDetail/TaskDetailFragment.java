@@ -98,6 +98,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     private File audioFile;
     private static final int REQUEST_GALLERY_PERMISSION = 300;
     private static final int NOTIFICATION_PERMISSION_CODE = 123;
+    private File photoFile = null;
 
 
     Calendar calendar;
@@ -632,7 +633,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     private void launchCamera() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Create the File where the photo should go
-        File photoFile = null;
         try {
             photoFile = createImageFile();
         } catch (IOException ex) {
@@ -646,16 +646,6 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
             Uri uri = FileProvider.getUriForFile(requireActivity(), "mad4124.team_sundry.task.fileprovider", photoFile);
             takePictureLauncher.launch(uri);
-
-            //save to array list of images
-            // Create a new MediaFile object using the photoFile object
-            long taskId = (task == null) ? 0 : task.getId();
-            MediaFile mediaFile = new MediaFile(photoFile.getName(), true, photoFile.getAbsolutePath(), taskId);
-
-            imagesAdapter.addData(mediaFile);
-//            imageFiles.add(mediaFile);
-
-            handleImages();
         }
     }
 
@@ -665,13 +655,12 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         if (result) {
             // The picture was taken successfully
             // Get the image from the camera
-            if(imageFiles.size() == 1){
-                Glide.with(this)
-                        .load(currentPhotoPath)
-                        .into(binding.ivTask);
-            } else {
-
-            }
+            // save to array list of images
+            // Create a new MediaFile object using the photoFile object
+            long taskId = (task == null) ? 0 : task.getId();
+            MediaFile mediaFile = new MediaFile(photoFile.getName(), true, photoFile.getAbsolutePath(), taskId);
+            imagesAdapter.addData(mediaFile);
+            handleImages();
         } else {
             // The user cancelled the operation
             Log.d("Take photo", "Taken picture was unsuccessfully");

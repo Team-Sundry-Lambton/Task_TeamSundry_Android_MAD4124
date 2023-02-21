@@ -77,6 +77,7 @@ import mad4124.team_sundry.task.utils.NotificationHelper;
 @AndroidEntryPoint
 public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
+    public static final String SELECTED_LOCATION = "selected_location";
     FragmentTaskDetailBinding binding;
     MainViewModel viewModel;
     Task task = null;
@@ -866,6 +867,9 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         Bundle bundle = new Bundle();
         if (isEditing) {
             bundle.putSerializable(TASK_ID, task.getId());
+        }
+        if(location != null){
+            bundle.putSerializable(SELECTED_LOCATION, location);
         }
         selectLocation= true;
         bundle.putSerializable(IsShowAllMap, false);

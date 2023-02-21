@@ -3,6 +3,7 @@ package mad4124.team_sundry.task.ui.maps;
 import static mad4124.team_sundry.task.ui.task.TaskListFragment.CATEGORY_ID;
 import static mad4124.team_sundry.task.ui.task.TaskListFragment.IsShowAllMap;
 import static mad4124.team_sundry.task.ui.task.TaskListFragment.TASK_ID;
+import static mad4124.team_sundry.task.ui.taskDetail.TaskDetailFragment.SELECTED_LOCATION;
 
 import android.Manifest;
 import android.content.Context;
@@ -132,14 +133,16 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
         //obtain bundle
         long categoryID = getArguments().getLong(CATEGORY_ID,-1);
         long taskId = getArguments().getLong(TASK_ID,-1);
-
-        isShowAllMap = getArguments().getBoolean(IsShowAllMap, false);
+        MapLocation mapLocation = (MapLocation) getArguments().getSerializable(SELECTED_LOCATION);
+        isShowAllMap =  getArguments().getBoolean(IsShowAllMap, false);
 
         if (categoryID != -1) {
             locations = viewModel.getAllMapPin(categoryID);
         } else if (taskId != -1) {
             isEditingMode = true;
             selectedLocationObj = viewModel.getMapPin(taskId);
+        }else if (mapLocation != null){
+            selectedLocationObj = mapLocation;
         }
     }
 
@@ -169,6 +172,7 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
                         e.printStackTrace();
                     }
                 } else if (selectedLocationObj != null && !isShowAllMap && currentLocation == null) { //edit map
+                    currentLocation = location;
                     setMarker(new LatLng(selectedLocationObj.getLat(), selectedLocationObj.getLng()), selectedLocationObj.getName());
                 }
             }
@@ -234,15 +238,17 @@ public class MapAllTasksFragment extends Fragment implements OnMapReadyCallback 
     }
 
     private void setCurrentLocationMarker() throws IOException {
-        mMap.clear();
-        LatLng userLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-        MarkerOptions options = new MarkerOptions().position(userLocation)
-                .title("You are here")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-                .snippet("Your Location");
-        mMap.addMarker(options);
-        setSelectLocation(userLocation, getAddress(userLocation));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+        if (currentLocation != null) {
+            mMap.clear();
+            LatLng userLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+            MarkerOptions options = new MarkerOptions().position(userLocation)
+                    .title("You are here")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                    .snippet("Your Location");
+            mMap.addMarker(options);
+            setSelectLocation(userLocation, getAddress(userLocation));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+        }
     }
 
     private void setSelectLocation(LatLng latLng, String title) {

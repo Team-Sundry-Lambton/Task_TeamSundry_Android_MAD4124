@@ -1,9 +1,10 @@
 package mad4124.team_sundry.task.ui.taskDetail;
 
+import android.app.Activity;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
@@ -14,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import mad4124.team_sundry.task.R;
 import mad4124.team_sundry.task.databinding.ItemTaskAudioBinding;
@@ -104,24 +107,6 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.VH> {
             }
         };
 
-        Handler handler;
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                int currentPosition = player.getCurrentPosition() / 1000;
-                int total = player.getDuration();
-
-                while (player!=null && player.isPlaying() && currentPosition<total){
-                    try {
-                        Thread.sleep(1000);
-                        currentPosition = player.getCurrentPosition();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    binding.seekBar.setProgress(currentPosition);
-                }
-            }
-        };
         public void playMedia(){
             Uri uri = Uri.parse(model.getPath());
 
@@ -130,21 +115,28 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.VH> {
 
             try {
                 player.setDataSource(uri.getPath());
-
+                binding.seekBar.setOnSeekBarChangeListener(seekBarChangeListener);
                 player.setOnPreparedListener(mp -> {
                     player = mp;
                     int duration = mp.getDuration() / 1000;
                     binding.seekBar.setMax(duration);
-                    binding.seekBar.setOnSeekBarChangeListener(seekBarChangeListener);
-                    handler = new Handler();
+
                     player.start();
-                    handler.post(runnable);
+
+                    new Timer().scheduleAtFixedRate(new TimerTask() {
+                        @Override
+                        public void run() {
+                            int currentPosition = player.getCurrentPosition() / 1000;
+                            Log.d("Position",""+currentPosition);
+                            binding.seekBar.setProgress(currentPosition);
+                        }
+                    },0,1000);
+
 
                 });
                 player.setOnCompletionListener(mp -> {
                     binding.seekBar.setOnSeekBarChangeListener(null);
                     isPlaying = false;
-                    handler.removeCallbacks(runnable);
                     binding.ivPlayPause.setImageResource(R.drawable.ic_outline_play_circle_filled_24);
                 });
                 player.prepare();
@@ -154,8 +146,6 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.VH> {
 
         }
         public void stopMedia(){
-            handler.removeCallbacks(runnable);
-            handler = null;
             player.stop();
             player.release();
             player = null;

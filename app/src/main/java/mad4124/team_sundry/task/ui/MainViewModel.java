@@ -44,6 +44,10 @@ public class MainViewModel extends ViewModel {
         return repo.getAllLiveCategory(text);
     }
 
+    public int getCategoryByName(String text, long id){
+        return repo.getCategoryByName(text, id);
+    }
+
     public void changeParentOfSelectedTasks(long categoryId,long taskIs){
         repo.changeParentOfSelectedTasks(categoryId,taskIs);
     }

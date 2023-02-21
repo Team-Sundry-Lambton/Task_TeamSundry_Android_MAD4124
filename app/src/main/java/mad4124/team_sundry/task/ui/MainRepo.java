@@ -2,6 +2,7 @@ package mad4124.team_sundry.task.ui;
 
 
 import androidx.lifecycle.LiveData;
+import androidx.room.Query;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -50,6 +51,10 @@ public class MainRepo {
 
     LiveData<List<Category>> getAllLiveCategory(String text) {
         return dbDao.getAllLiveCategories(text);
+    }
+
+    int getCategoryByName(String text, long id){
+        return dbDao.getCategoryByName(text, id);
     }
 
     void changeParentOfSelectedTasks(long categoryId,long taskIs){

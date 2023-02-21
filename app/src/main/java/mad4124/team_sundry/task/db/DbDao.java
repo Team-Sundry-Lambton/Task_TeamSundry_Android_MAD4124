@@ -28,6 +28,9 @@ public interface DbDao {
     @Query("Select * from categories where name like '%'||:text||'%'")
     LiveData<List<Category>> getAllLiveCategories(String text);
 
+    @Query("Select COUNT(*) from categories where LOWER(name) = LOWER(:text) AND (id <> :categoryId OR :categoryId = 0)")
+    int getCategoryByName(String text, long categoryId);
+
     @Delete
     void deleteCategory(Category category);
 

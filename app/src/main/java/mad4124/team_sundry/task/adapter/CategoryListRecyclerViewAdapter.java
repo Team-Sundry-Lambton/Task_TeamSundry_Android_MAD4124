@@ -40,14 +40,15 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
 
     final private Context context;
     private OnItemClickListener onItemClickListener;
-    private List<Category> categoryList ;
+    private List<Category> categoryList;
 
     private MainViewModel viewModel;
     private AlertDialog dialog;
 
-    private int[] backgroundImages = new int[] { R.drawable.asset_bg_green, R.drawable.asset_bg_paleblue, R.drawable.asset_bg_paleorange , R.drawable.asset_bg_palegreen, R.drawable.asset_bg_yellow};
-    private int[] backgroundColors= new int[] { R.drawable.gradient_color_2, R.drawable.gradient_color_1, R.drawable.gradient_color_5, R.drawable.gradient_color_4, R.drawable.gradient_color_3};
-    public CategoryListRecyclerViewAdapter(List<Category> categoryList, Context context, OnItemClickListener onItemClickListener, MainViewModel viewModel){
+    private int[] backgroundImages = new int[]{R.drawable.asset_bg_green, R.drawable.asset_bg_paleblue, R.drawable.asset_bg_paleorange, R.drawable.asset_bg_palegreen, R.drawable.asset_bg_yellow};
+    private int[] backgroundColors = new int[]{R.drawable.gradient_color_2, R.drawable.gradient_color_1, R.drawable.gradient_color_5, R.drawable.gradient_color_4, R.drawable.gradient_color_3};
+
+    public CategoryListRecyclerViewAdapter(List<Category> categoryList, Context context, OnItemClickListener onItemClickListener, MainViewModel viewModel) {
         this.context = context;
         this.onItemClickListener = onItemClickListener;
         this.categoryList = categoryList;
@@ -59,7 +60,7 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         CategoryRowBinding binding = CategoryRowBinding.inflate(
-                LayoutInflater.from(context),parent,false
+                LayoutInflater.from(context), parent, false
         );
 
         return new ViewHolder(binding);
@@ -77,7 +78,7 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
             public boolean onLongClick(View v) {
                 // Show the action popup
                 int position = holder.getAdapterPosition();
-                showPopupMenu(v,position);
+                showPopupMenu(v, position);
                 return false;
             }
         });
@@ -88,13 +89,15 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
         return categoryList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         CategoryRowBinding binding;
-        public ViewHolder(CategoryRowBinding binding){
+
+        public ViewHolder(CategoryRowBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
-        public void bind(Category model){
+
+        public void bind(Category model) {
             long id = model.getId();
             binding.getRoot().setOnClickListener(this);
             List<Task> tasks = viewModel.getAllTasksSortByCreatedDate(id);
@@ -102,7 +105,7 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
             binding.imageClassAdapter.setBackgroundResource(backgroundImages[randomIndex]);
             binding.frameBg.setBackgroundResource(backgroundColors[randomIndex]);
             binding.categoryName.setText(model.getName());
-            binding.totalTasks.setText("Tasks/Notes: "+ tasks.size());
+            binding.totalTasks.setText("Tasks/Notes: " + tasks.size());
 
             itemView.setOnClickListener(this);
         }
@@ -176,10 +179,21 @@ public class CategoryListRecyclerViewAdapter extends RecyclerView.Adapter<Catego
             public void onClick(View v) {
                 // Update the category object with the new title
                 String newCategory = categoryTitleEditText.getText().toString();
-                long id = category.getId();
-                viewModel.updateCategoryName(newCategory,id);
-                dialog.dismiss();
-                Toast.makeText(context, "Category updated successfully!", Toast.LENGTH_SHORT).show();
+                if (newCategory.isEmpty()) {
+                    Toast.makeText(context, "Category name should not be empty!", Toast.LENGTH_LONG).show();
+                } else {
+                    long id = category.getId();
+                    int checkCategory = viewModel.getCategoryByName(newCategory, id);
+                    if (checkCategory > 0) {
+                        Toast.makeText(context, "Category with this name already exists!", Toast.LENGTH_LONG).show();
+                        categoryTitleEditText.setText("");
+                    } else {
+                        viewModel.updateCategoryName(newCategory, id);
+                        dialog.dismiss();
+                        Toast.makeText(context, "Category updated successfully!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
             }
         });
 

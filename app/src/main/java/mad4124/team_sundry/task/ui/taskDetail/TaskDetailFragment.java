@@ -119,6 +119,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     int myday, myMonth, myYear, myHour, myMinute;
 
     boolean isDeleting = false;
+    boolean isPickingMap = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -150,6 +151,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         parentCategoryId = getArguments().getLong(TaskListFragment.CATEGORY_ID,-1);
 
 
+        isPickingMap = false;
 
         initAdapters();
 
@@ -358,6 +360,9 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     void saveData(){
 
         if(isDeleting){
+            return;
+        }
+        if(isPickingMap){
             return;
         }
 
@@ -824,6 +829,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     // END OF HANDLE PICK LOCATION
     //////////////////////////////////////////////////////////////////////////////////////////
     private void pickLocation() {
+        isPickingMap = true;
         Bundle bundle = new Bundle();
         if (isEditing) {
             bundle.putSerializable(TASK_ID, task.getId());

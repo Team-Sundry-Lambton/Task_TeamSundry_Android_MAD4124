@@ -125,6 +125,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     Calendar dueDate;
 
     boolean selectLocation = false;
+    boolean isPickingMap = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -139,6 +140,9 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             binding.taskLocation.setText(location.getName());
             Log.d("Task Detail",location.toString());
             selectLocation = false;
+            if(location != null){
+                Log.d("Task Detail",location.toString());
+            }
             // Do something with the result
         });
     }
@@ -157,6 +161,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         parentCategoryId = getArguments().getLong(TaskListFragment.CATEGORY_ID,-1);
 
 
+        isPickingMap = false;
 
         initAdapters();
 
@@ -365,6 +370,9 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     void saveData(){
 
         if (!selectLocation) {
+            if(isPickingMap){
+                return;
+            }
             if (isDeleting) {
                 return;
             }
@@ -889,6 +897,7 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
     // END OF HANDLE PICK LOCATION
     //////////////////////////////////////////////////////////////////////////////////////////
     private void pickLocation() {
+        isPickingMap = true;
         Bundle bundle = new Bundle();
         if (isEditing) {
             bundle.putSerializable(TASK_ID, task.getId());

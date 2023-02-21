@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     app:cardBackgroundColor="#eaeaea"
+    app:cardElevation="0dp"
     android:layout_marginTop="8dp"
     android:layout_marginHorizontal="16dp"
     app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent">
@@ -36,16 +36,6 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivPlayPause"
-            />
-
-        <TextView
-            android:id="@+id/tvTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="0:06"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            android:layout_marginHorizontal="4dp"
             />
 
         <ImageView

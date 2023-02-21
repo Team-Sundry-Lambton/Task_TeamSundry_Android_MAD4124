@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -21,12 +22,14 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import mad4124.team_sundry.task.R;
 import mad4124.team_sundry.task.adapter.CategoryListRecyclerViewAdapter;
 import mad4124.team_sundry.task.adapter.CategoryRecyclerViewAdapter;
 import mad4124.team_sundry.task.databinding.FragmentTaskMoveCategoryListBinding;
 import mad4124.team_sundry.task.model.Category;
+import mad4124.team_sundry.task.model.MapLocation;
 import mad4124.team_sundry.task.ui.MainViewModel;
 
 public class TaskMoveCategoryListFragment extends Fragment implements CategoryRecyclerViewAdapter.OnItemClickListener{
@@ -125,6 +128,12 @@ public class TaskMoveCategoryListFragment extends Fragment implements CategoryRe
     }
 
     private void moveSelectedTasks(long categoryId) {
+        for (long taskId:selectedTasksIds
+        ) {
+            MapLocation location = viewModel.getMapPin(taskId);
+            viewModel.changeCategoryOfSelectedLocation(categoryId,location.getId());
+        }
+
         for (long taskId:selectedTasksIds
         ) {
             viewModel.changeParentOfSelectedTasks(categoryId,taskId);

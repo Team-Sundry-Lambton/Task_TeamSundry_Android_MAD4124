@@ -416,9 +416,17 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                     }
                 }
             }
-            if (subTasks.isEmpty() && dueDate != null) {
+            else if (subTasks.isEmpty() && dueDate != null) {
                 task.setTask(true);
                 isComplete = false;
+            }else if (!subTasks.isEmpty() && dueDate == null) {
+                task.setTask(true);
+                for (SubTask subTask : subTasks) {
+                    if (!subTask.isStatus()) {
+                        isComplete = false;
+                        break;
+                    }
+                }
             } else {
                 task.setTask(false);
                 isComplete = false;
@@ -439,11 +447,11 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             if (isEditing) {
                 MapLocation saveLocation = viewModel.getMapPin(task.getId());
 
-                if(saveLocation == null){
+                if(saveLocation == null && location != null){
                     location.setTaskId(task.getId());
                     location.setCategoryID(task.getParentCategoryId());
                     viewModel.insertMap(location);
-                }else {
+                }else if(saveLocation != null && location != null){
                     saveLocation.setTaskId(task.getId());
                     saveLocation.setCategoryID(task.getParentCategoryId());
                     saveLocation.setLat(location.getLat());

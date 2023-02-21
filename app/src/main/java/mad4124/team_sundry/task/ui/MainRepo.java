@@ -230,4 +230,8 @@ public class MainRepo {
     LiveData<List<Task>> getAllLiveTasks(long categoryID){
         return dbDao.getAllLiveTasks(categoryID);
     }
+
+    void changeCategoryOfSelectedLocation(long categoryId,long locationID){
+        dbDao.changeCategoryOfSelectedLocation( categoryId, locationID);
+    }
 }

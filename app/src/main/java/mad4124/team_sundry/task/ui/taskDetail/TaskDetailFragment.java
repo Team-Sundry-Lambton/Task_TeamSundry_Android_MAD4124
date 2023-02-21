@@ -135,6 +135,8 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         getParentFragmentManager().setFragmentResultListener("requestKey", this, (requestKey, bundle) -> {
             // We use a String here, but any type that can be put in a Bundle is supported
             location = (MapLocation) bundle.getSerializable("map");
+            binding.locationView.setVisibility(View.VISIBLE);
+            binding.taskLocation.setText(location.getName());
             Log.d("Task Detail",location.toString());
             selectLocation = false;
             // Do something with the result
@@ -500,6 +502,21 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         viewModel.getMediaLive(task.getId(),false).observe(getViewLifecycleOwner(),audios -> {
             audioAdapter.setData(audios);
         });
+
+        MapLocation location = viewModel.getMapPin(task.getId());
+        if(location != null){
+            binding.taskLocation.setText(location.getName());
+            binding.locationView.setVisibility(View.VISIBLE);
+        }else {
+            binding.locationView.setVisibility(View.GONE);
+        }
+
+        if (task.getDueDate() != 0){
+            Long dueDate = task.getDueDate();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(dueDate);
+            showSchedule(calendar);
+        }
     }
 
     @Override

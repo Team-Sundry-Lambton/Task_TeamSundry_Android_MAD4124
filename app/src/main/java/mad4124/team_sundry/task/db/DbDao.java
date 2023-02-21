@@ -108,4 +108,7 @@ public interface DbDao {
     void update(MediaFile mediaFile);
     @Delete
     void delete(MediaFile mediaFile);
+
+    @Query("UPDATE locations SET category_id =:categoryId WHERE id = :locationId")
+    void changeCategoryOfSelectedLocation(long categoryId,long locationId);
 }

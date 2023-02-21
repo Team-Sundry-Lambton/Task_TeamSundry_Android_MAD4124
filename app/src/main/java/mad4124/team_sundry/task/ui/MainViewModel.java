@@ -151,4 +151,8 @@ public class MainViewModel extends ViewModel {
     public LiveData<List<Task>> getAllLiveTasks(long categoryID){
         return repo.getAllLiveTasks(categoryID);
     }
+
+    public void changeCategoryOfSelectedLocation(long categoryId,long locationID){
+        repo.changeCategoryOfSelectedLocation(categoryId,locationID);
+    }
 }

@@ -77,6 +77,7 @@ import mad4124.team_sundry.task.utils.NotificationHelper;
 @AndroidEntryPoint
 public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
+    public static final String SELECTED_LOCATION = "selected_location";
     FragmentTaskDetailBinding binding;
     MainViewModel viewModel;
     Task task = null;
@@ -415,9 +416,17 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
                     }
                 }
             }
-            if (subTasks.isEmpty() && dueDate != null) {
+            else if (subTasks.isEmpty() && dueDate != null) {
                 task.setTask(true);
                 isComplete = false;
+            }else if (!subTasks.isEmpty() && dueDate == null) {
+                task.setTask(true);
+                for (SubTask subTask : subTasks) {
+                    if (!subTask.isStatus()) {
+                        isComplete = false;
+                        break;
+                    }
+                }
             } else {
                 task.setTask(false);
                 isComplete = false;
@@ -438,11 +447,11 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
             if (isEditing) {
                 MapLocation saveLocation = viewModel.getMapPin(task.getId());
 
-                if(saveLocation == null){
+                if(saveLocation == null && location != null){
                     location.setTaskId(task.getId());
                     location.setCategoryID(task.getParentCategoryId());
                     viewModel.insertMap(location);
-                }else {
+                }else if(saveLocation != null && location != null){
                     saveLocation.setTaskId(task.getId());
                     saveLocation.setCategoryID(task.getParentCategoryId());
                     saveLocation.setLat(location.getLat());
@@ -866,6 +875,9 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         Bundle bundle = new Bundle();
         if (isEditing) {
             bundle.putSerializable(TASK_ID, task.getId());
+        }
+        if(location != null){
+            bundle.putSerializable(SELECTED_LOCATION, location);
         }
         selectLocation= true;
         bundle.putSerializable(IsShowAllMap, false);

@@ -107,6 +107,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.VH> {
             }
         };
 
+        Timer timer;
         public void playMedia(){
             Uri uri = Uri.parse(model.getPath());
 
@@ -123,7 +124,8 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.VH> {
 
                     player.start();
 
-                    new Timer().scheduleAtFixedRate(new TimerTask() {
+                    timer = new Timer();
+                    timer.scheduleAtFixedRate(new TimerTask() {
                         @Override
                         public void run() {
                             int currentPosition = player.getCurrentPosition() / 1000;
@@ -146,6 +148,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.VH> {
 
         }
         public void stopMedia(){
+            timer.cancel();
             player.stop();
             player.release();
             player = null;

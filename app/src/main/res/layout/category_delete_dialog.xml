@@ -46,7 +46,8 @@
             android:layout_gravity="end"
             android:layout_weight="1"
             android:text="No"
-            android:backgroundTint="@color/theme_dark_purple"/>
+            android:backgroundTint="@color/gray_middle"
+            />
 
         <View
             android:layout_width="0dp"

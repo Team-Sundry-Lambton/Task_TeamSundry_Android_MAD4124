@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Mark complete"
-        app:icon="@drawable/menu_view"
+        app:icon="@drawable/ic_item_select_row"
         />
 
     <com.google.android.material.button.MaterialButton

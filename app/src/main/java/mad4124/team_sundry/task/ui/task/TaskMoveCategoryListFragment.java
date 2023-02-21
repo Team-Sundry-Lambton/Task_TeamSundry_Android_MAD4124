@@ -131,7 +131,9 @@ public class TaskMoveCategoryListFragment extends Fragment implements CategoryRe
         for (long taskId:selectedTasksIds
         ) {
             MapLocation location = viewModel.getMapPin(taskId);
-            viewModel.changeCategoryOfSelectedLocation(categoryId,location.getId());
+            if(location != null) {
+                viewModel.changeCategoryOfSelectedLocation(categoryId, location.getId());
+            }
         }
 
         for (long taskId:selectedTasksIds

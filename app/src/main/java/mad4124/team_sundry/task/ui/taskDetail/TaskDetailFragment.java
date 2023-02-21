@@ -130,7 +130,9 @@ public class TaskDetailFragment extends Fragment implements DatePickerDialog.OnD
         getParentFragmentManager().setFragmentResultListener("requestKey", this, (requestKey, bundle) -> {
             // We use a String here, but any type that can be put in a Bundle is supported
             location = (MapLocation) bundle.getSerializable("map");
-            Log.d("Task Detail",location.toString());
+            if(location != null){
+                Log.d("Task Detail",location.toString());
+            }
             // Do something with the result
         });
 

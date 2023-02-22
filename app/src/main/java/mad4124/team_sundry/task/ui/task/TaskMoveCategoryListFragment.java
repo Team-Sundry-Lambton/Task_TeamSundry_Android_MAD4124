@@ -45,7 +45,7 @@ public class TaskMoveCategoryListFragment extends Fragment implements CategoryRe
 //    private  List<Integer> selectedTasksIds = new ArrayList<>();
     private  long[] selectedTasksIds = new long[0];
 
-    private int categoryId = 0;
+    private long categoryId = 0;
 
     public static final String TASK_ID = "task_id";
     public static final String CATEGORY_ID = "category_id";
@@ -65,7 +65,7 @@ public class TaskMoveCategoryListFragment extends Fragment implements CategoryRe
         super.onViewCreated(view, savedInstanceState);
 
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
-        categoryId = getArguments().getInt(CATEGORY_ID);
+        categoryId = getArguments().getLong(CATEGORY_ID);
 //        selectedTasksIds = getArguments().getIntegerArrayList(TASK_ID);
         selectedTasksIds = getArguments().getLongArray(TASK_ID);
         setCategoryListRecyclerView();

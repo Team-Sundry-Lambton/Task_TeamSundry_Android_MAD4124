@@ -90,7 +90,7 @@ public interface DbDao {
     @Query("UPDATE categories SET name =:categoryName WHERE id = :id")
     void updateCategoryName(String categoryName,long id);
 
-    @Query("Select * from categories where name like '%'||:text||'%' AND  id != :categoryID")
+    @Query("Select * from categories where (name like '%'||:text||'%') AND ( id <> :categoryID)")
     LiveData<List<Category>> getAllCategoriesExceptSelected(long categoryID,String text);
 
     @Query("Select * from locations where category_id = :categoryID")
